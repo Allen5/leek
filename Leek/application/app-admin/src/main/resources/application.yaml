@@ -1,0 +1,7 @@
+
+application:
+  name: app-admin
+
+spring:
+  profiles:
+    active: dev
