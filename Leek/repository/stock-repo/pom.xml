@@ -10,7 +10,7 @@
     </parent>
 
     <groupId>club.cybecraftman.leek.repo</groupId>
-    <artifactId>stock</artifactId>
+    <artifactId>stock-repo</artifactId>
 
     <properties>
         <maven.compiler.source>11</maven.compiler.source>

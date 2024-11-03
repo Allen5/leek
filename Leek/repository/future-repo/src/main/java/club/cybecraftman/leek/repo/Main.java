@@ -1,4 +1,4 @@
-package club.cybecraftman.leek;
+package club.cybecraftman.leek.repo;
 
 public class Main {
     public static void main(String[] args) {

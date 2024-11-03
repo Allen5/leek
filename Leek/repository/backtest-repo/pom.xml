@@ -5,36 +5,17 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>club.cybecraftman.leek</groupId>
-        <artifactId>application</artifactId>
+        <artifactId>repository</artifactId>
         <version>1.0.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>app-backtest</artifactId>
+    <groupId>club.cybecraftman.leek.repo</groupId>
+    <artifactId>backtest-repo</artifactId>
 
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
-
-    <dependencies>
-
-        <dependency>
-            <groupId>club.cybecraftman.leek</groupId>
-            <artifactId>core</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-
-    </dependencies>
 
 </project>
