@@ -26,10 +26,10 @@ public class FutureContract {
     private String productCode;
 
     /**
-     * 交易代码
+     * 合约代码
      */
     @Column(nullable = false, unique = true)
-    private String symbol;
+    private String contractCode;
 
     /**
      * 合约名称
@@ -53,6 +53,21 @@ public class FutureContract {
     private Date lastDeliverDate;
 
     // TODO: 保证金比例因人而已，单独建个表维护
+
+    /**
+     * 最小报价单位
+     */
+    private BigDecimal priceTick;
+
+    /**
+     * 合约乘数
+     */
+    private BigDecimal multiplier;
+
+    /**
+     * 合约状态： TODO: 待补充
+     */
+    private Integer status;
 
     /**
      * 创建时间
