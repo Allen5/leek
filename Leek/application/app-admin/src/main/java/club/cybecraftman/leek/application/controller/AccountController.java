@@ -1,4 +1,4 @@
-package club.cybecraftman.leek.applicatiion.controller;
+package club.cybecraftman.leek.application.controller;
 
 import club.cybecraftman.leek.common.dto.BaseResultDTO;
 import lombok.extern.slf4j.Slf4j;

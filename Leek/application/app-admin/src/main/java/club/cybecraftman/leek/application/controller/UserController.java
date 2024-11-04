@@ -1,4 +1,4 @@
-package club.cybecraftman.leek.applicatiion.controller;
+package club.cybecraftman.leek.application.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RequestMapping;

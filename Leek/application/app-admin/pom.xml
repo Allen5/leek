@@ -40,7 +40,7 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <version>${spring.boot.version}</version>
                 <configuration>
-                    <mainClass>club.cybecraftman.leek.applicatiion.AdminApplication</mainClass>
+                    <mainClass>club.cybecraftman.leek.application.AdminApplication</mainClass>
                 </configuration>
                 <executions>
                     <execution>
