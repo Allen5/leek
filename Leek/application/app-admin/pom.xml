@@ -54,7 +54,6 @@
                 <version>${spring.boot.version}</version>
                 <configuration>
                     <mainClass>club.cybecraftman.leek.application.AdminApplication</mainClass>
-                    <outputDirectory>${project.parent.parent.basedir}/dist/${project.out.name}</outputDirectory>
                 </configuration>
                 <executions>
                     <execution>
@@ -64,8 +63,33 @@
                     </execution>
                 </executions>
             </plugin>
-
-            <!-- TODO: 构建为Docker镜像 -->
+            <plugin>
+                <groupId>io.fabric8</groupId>
+                <artifactId>docker-maven-plugin</artifactId>
+                <version>0.45.1</version>
+                <configuration>
+                    <images>
+                        <image>
+                            <alias>${project.build.finalName}</alias>
+                            <name>leek/${project.build.finalName}:${project.version}</name>
+                            <build>
+                                <dockerFile>${project.basedir}/Dockerfile</dockerFile>
+                            </build>
+                        </image>
+                    </images>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>build-image</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>build</goal>
+                            <!-- TODO: 暂时不推送 -->
+<!--                            <goal>push</goal>-->
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 
