@@ -26,8 +26,8 @@
         <leek.version>${project.version}</leek.version>
         <lombok.version>1.18.34</lombok.version>
         <spring.boot.version>2.7.18</spring.boot.version>
-        <mysql.connector.java>8.0.33</mysql.connector.java>
 
+        <leek.infrastructure.version>1.0.0-SNAPSHOT</leek.infrastructure.version>
         <leek.repository.version>1.0.0-SNAPSHOT</leek.repository.version>
     </properties>
 
@@ -55,12 +55,6 @@
             </dependency>
 
             <dependency>
-                <groupId>mysql</groupId>
-                <artifactId>mysql-connector-java</artifactId>
-                <version>${mysql.connector.java}</version>
-            </dependency>
-
-            <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-starter-test</artifactId>
                 <version>${spring.boot.version}</version>
@@ -70,6 +64,12 @@
             <dependency>
                 <groupId>club.cybecraftman.leek</groupId>
                 <artifactId>common</artifactId>
+                <version>${leek.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>club.cybecraftman.leek</groupId>
+                <artifactId>core</artifactId>
                 <version>${leek.version}</version>
             </dependency>
 
@@ -98,15 +98,21 @@
             </dependency>
 
             <dependency>
-                <groupId>club.cybecraftman.leek</groupId>
-                <artifactId>core</artifactId>
-                <version>${leek.version}</version>
+                <groupId>club.cybecraftman.leek.infrastructure</groupId>
+                <artifactId>database</artifactId>
+                <version>${leek.infrastructure.version}</version>
             </dependency>
 
             <dependency>
-                <groupId>club.cybecraftman.leek</groupId>
-                <artifactId>infrastructure</artifactId>
-                <version>${leek.version}</version>
+                <groupId>club.cybecraftman.leek.infrastructure</groupId>
+                <artifactId>cache</artifactId>
+                <version>${leek.infrastructure.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>club.cybecraftman.leek.infrastructure</groupId>
+                <artifactId>messagequeue</artifactId>
+                <version>${leek.infrastructure.version}</version>
             </dependency>
 
         </dependencies>
