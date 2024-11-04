@@ -9,7 +9,9 @@
         <version>1.0.0-SNAPSHOT</version>
     </parent>
 
+    <groupId>club.cybecraftman.leek.application</groupId>
     <artifactId>application</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <modules>
         <module>app-admin</module>
@@ -23,5 +25,14 @@
         <maven.compiler.target>11</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
+
+    <dependencies>
+
+        <dependency>
+            <groupId>club.cybecraftman.leek</groupId>
+            <artifactId>common</artifactId>
+        </dependency>
+
+    </dependencies>
 
 </project>
