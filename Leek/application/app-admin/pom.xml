@@ -32,4 +32,27 @@
 
     </dependencies>
 
+    <build>
+        <finalName>leek-admin-service</finalName>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>${spring.boot.version}</version>
+                <configuration>
+                    <mainClass>club.cybecraftman.leek.applicatiion.AdminApplication</mainClass>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- TODO: 构建为Docker镜像 -->
+        </plugins>
+    </build>
+
 </project>
