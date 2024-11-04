@@ -9,7 +9,9 @@
         <version>1.0.0-SNAPSHOT</version>
     </parent>
 
+    <groupId>club.cybecraftman.leek.domain</groupId>
     <artifactId>domain</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <modules>
         <module>domain-backtest</module>
