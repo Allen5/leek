@@ -21,4 +21,13 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
+    <dependencies>
+
+        <dependency>
+            <groupId>club.cybecraftman.leek.repo</groupId>
+            <artifactId>backtest-repo</artifactId>
+        </dependency>
+
+    </dependencies>
+
 </project>

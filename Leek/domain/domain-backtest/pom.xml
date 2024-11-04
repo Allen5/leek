@@ -21,8 +21,8 @@
     <dependencies>
 
         <dependency>
-            <groupId>club.cybecraftman.leek</groupId>
-            <artifactId>repository</artifactId>
+            <groupId>club.cybecraftman.leek.repo</groupId>
+            <artifactId>backtest-repo</artifactId>
         </dependency>
 
         <dependency>

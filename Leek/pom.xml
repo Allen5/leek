@@ -15,6 +15,7 @@
         <module>common</module>
         <module>core</module>
         <module>domain</module>
+        <module>infrastructure</module>
     </modules>
 
     <properties>
@@ -26,6 +27,8 @@
         <lombok.version>1.18.34</lombok.version>
         <spring.boot.version>2.7.18</spring.boot.version>
         <mysql.connector.java>8.0.33</mysql.connector.java>
+
+        <leek.repository.version>1.0.0-SNAPSHOT</leek.repository.version>
     </properties>
 
     <dependencyManagement>
@@ -71,14 +74,38 @@
             </dependency>
 
             <dependency>
-                <groupId>club.cybecraftman.leek</groupId>
-                <artifactId>repository</artifactId>
-                <version>${leek.version}</version>
+                <groupId>club.cybecraftman.leek.repo</groupId>
+                <artifactId>backtest-repo</artifactId>
+                <version>${leek.repository.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>club.cybecraftman.leek.repo</groupId>
+                <artifactId>admin-repo</artifactId>
+                <version>${leek.repository.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>club.cybecraftman.leek.repo</groupId>
+                <artifactId>future-repo</artifactId>
+                <version>${leek.repository.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>club.cybecraftman.leek.repo</groupId>
+                <artifactId>stock-repo</artifactId>
+                <version>${leek.repository.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>club.cybecraftman.leek</groupId>
                 <artifactId>core</artifactId>
+                <version>${leek.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>club.cybecraftman.leek</groupId>
+                <artifactId>infrastructure</artifactId>
                 <version>${leek.version}</version>
             </dependency>
 
