@@ -75,8 +75,8 @@
 
             <dependency>
                 <groupId>club.cybecraftman.leek.repo</groupId>
-                <artifactId>backtest-repo</artifactId>
-                <version>${leek.repository.version}</version>
+                <artifactId>meta-repo</artifactId>
+                <version>1.0.0-SNAPSHOT</version>
             </dependency>
 
             <dependency>
@@ -94,6 +94,12 @@
             <dependency>
                 <groupId>club.cybecraftman.leek.repo</groupId>
                 <artifactId>stock-repo</artifactId>
+                <version>${leek.repository.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>club.cybecraftman.leek.repo</groupId>
+                <artifactId>backtest-repo</artifactId>
                 <version>${leek.repository.version}</version>
             </dependency>
 

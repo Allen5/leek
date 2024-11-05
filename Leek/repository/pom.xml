@@ -18,6 +18,7 @@
         <module>stock-repo</module>
         <module>backtest-repo</module>
         <module>admin-repo</module>
+        <module>meta-repo</module>
     </modules>
 
     <properties>

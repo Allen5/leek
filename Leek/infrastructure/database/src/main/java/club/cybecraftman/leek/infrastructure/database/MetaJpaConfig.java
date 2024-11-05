@@ -20,27 +20,29 @@ import javax.sql.DataSource;
 @Configuration
 @EnableTransactionManagement
 @EnableJpaRepositories(
-        basePackages = "club.cybecraftman.leek.repo.admin.repository",
-        entityManagerFactoryRef = "adminEntityManagerFactory",
-        transactionManagerRef = "adminTransactionManager"
+        basePackages = "club.cybecraftman.leek.repo.meta.repository",
+        entityManagerFactoryRef = "metaEntityManagerFactory",
+        transactionManagerRef = "metaTransactionManager"
 )
-public class AdminJpaConfig {
+public class MetaJpaConfig {
 
-    @Bean(name = "adminJpaProperties")
-    @ConfigurationProperties(prefix = "spring.jpa.admin")
+    @Primary
+    @Bean(name = "metaJpaProperties")
+    @ConfigurationProperties(prefix = "spring.jpa.meta")
     public JpaProperties jpaProperties() {
         return new JpaProperties();
     }
 
-    @Bean(name = "adminEntityManagerFactory")
-    public LocalContainerEntityManagerFactoryBean entityManagerFactoryBean(@Qualifier("adminDataSource") DataSource dataSource,
-                                                                           @Qualifier("adminJpaProperties") JpaProperties jpaProperties,
+    @Primary
+    @Bean(name = "metaEntityManagerFactory")
+    public LocalContainerEntityManagerFactoryBean entityManagerFactoryBean(@Qualifier("metaDataSource") DataSource dataSource,
+                                                                           @Qualifier("metaJpaProperties") JpaProperties jpaProperties,
                                                                            EntityManagerFactoryBuilder builder) {
         return builder
                 .dataSource(dataSource)
                 .properties(jpaProperties.getProperties())
-                .packages("club.cybecraftman.leek.repo.admin.model")
-                .persistenceUnit("adminPersistenceUnit").build();
+                .packages("club.cybecraftman.leek.repo.meta.model")
+                .persistenceUnit("metaPersistenceUnit").build();
     }
 
     /**
@@ -48,8 +50,9 @@ public class AdminJpaConfig {
      * @param factory
      * @return
      */
-    @Bean(name = "adminEntityManager")
-    public EntityManager entityManager(@Qualifier("adminEntityManagerFactory") EntityManagerFactory factory) {
+    @Primary
+    @Bean(name = "metaEntityManager")
+    public EntityManager entityManager(@Qualifier("metaEntityManagerFactory") EntityManagerFactory factory) {
         return factory.createEntityManager();
     }
 
@@ -58,8 +61,9 @@ public class AdminJpaConfig {
      * @param factory
      * @return
      */
-    @Bean(name = "adminTransactionManager")
-    public PlatformTransactionManager transactionManager(@Qualifier("adminEntityManagerFactory") EntityManagerFactory factory) {
+    @Primary
+    @Bean(name = "metaTransactionManager")
+    public PlatformTransactionManager transactionManager(@Qualifier("metaEntityManagerFactory") EntityManagerFactory factory) {
         return new JpaTransactionManager(factory);
     }
 
