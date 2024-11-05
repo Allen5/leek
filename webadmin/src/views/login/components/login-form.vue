@@ -41,23 +41,10 @@
           </template>
         </a-input-password>
       </a-form-item>
-      <a-space :size="16" direction="vertical">
-        <div class="login-form-password-actions">
-          <a-checkbox
-            checked="rememberPassword"
-            :model-value="loginConfig.rememberPassword"
-            @change="setRememberPassword as any"
-          >
-            {{ $t('login.form.rememberPassword') }}
-          </a-checkbox>
-          <a-link>{{ $t('login.form.forgetPassword') }}</a-link>
-        </div>
+      <a-space :size="16" direction="vertical">        
         <a-button type="primary" html-type="submit" long :loading="loading">
           {{ $t('login.form.login') }}
-        </a-button>
-        <a-button type="text" long class="login-form-register-btn">
-          {{ $t('login.form.register') }}
-        </a-button>
+        </a-button>       
       </a-space>
     </a-form>
   </div>
