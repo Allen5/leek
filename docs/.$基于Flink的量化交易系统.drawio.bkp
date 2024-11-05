@@ -235,7 +235,7 @@
     </mxGraphModel>
   </diagram>
   <diagram id="N4ltIIIxOTcb-bPWhQs-" name="执行框架-local">
-    <mxGraphModel dx="1026" dy="1941" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="1140" dy="2027" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -335,6 +335,9 @@
         </mxCell>
         <mxCell id="egLg9VPtpwonoMTycoeB-31" value="&lt;h1 style=&quot;margin-top: 0px;&quot;&gt;总流程&lt;/h1&gt;" style="text;html=1;whiteSpace=wrap;overflow=hidden;rounded=0;" vertex="1" parent="1">
           <mxGeometry x="340" y="-20" width="80" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="egLg9VPtpwonoMTycoeB-32" value="&lt;h1 style=&quot;margin-top: 0px;&quot;&gt;策略流程&lt;/h1&gt;" style="text;html=1;whiteSpace=wrap;overflow=hidden;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="1110" y="-20" width="110" height="40" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>

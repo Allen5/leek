@@ -1,0 +1,1 @@
+import{_ as t}from"./index.ab1f62e6.js";import{C as a,aE as _,aH as s,aM as n,be as r}from"./arco.a0c00135.js";const c={};function f(d,e){const o=r;return a(),_(o,{class:"footer"},{default:s(()=>e[0]||(e[0]=[n("Leek@2024")])),_:1})}const x=t(c,[["render",f],["__scopeId","data-v-f93feeaa"]]);export{x as F};
