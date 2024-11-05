@@ -16,7 +16,7 @@ public class BackTestDataSourceConfig {
      * 数据源配置
      * @return
      */
-    @Bean(name = "backTestDataSourceConfig")
+    @Bean(name = "backTestDataSourceProperties")
     @ConfigurationProperties(prefix = "spring.datasource.backtest")
     public DataSourceProperties dataSourceProperties() {
         return new DataSourceProperties();
@@ -28,7 +28,7 @@ public class BackTestDataSourceConfig {
      * @return
      */
     @Bean(name = "backTestDataSource")
-    public DataSource dataSource(@Qualifier("backTestDataSourceConfig") DataSourceProperties dataSourceProperties) {
+    public DataSource dataSource(@Qualifier("backTestDataSourceProperties") DataSourceProperties dataSourceProperties) {
         return dataSourceProperties.initializeDataSourceBuilder().build();
     }
 

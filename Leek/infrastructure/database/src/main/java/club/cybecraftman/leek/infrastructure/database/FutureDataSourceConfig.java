@@ -16,7 +16,7 @@ public class FutureDataSourceConfig {
      * 数据源配置
      * @return
      */
-    @Bean(name = "futureDataSourceConfig")
+    @Bean(name = "futureDataSourceProperties")
     @ConfigurationProperties(prefix = "spring.datasource.future")
     public DataSourceProperties dataSourceProperties() {
         return new DataSourceProperties();
@@ -28,7 +28,7 @@ public class FutureDataSourceConfig {
      * @return
      */
     @Bean(name = "futureDataSource")
-    public DataSource dataSource(@Qualifier("futureDataSourceConfig") DataSourceProperties dataSourceProperties) {
+    public DataSource dataSource(@Qualifier("futureDataSourceProperties") DataSourceProperties dataSourceProperties) {
         return dataSourceProperties.initializeDataSourceBuilder().build();
     }
 

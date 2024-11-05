@@ -1,6 +1,8 @@
 package club.cybecraftman.leek.infrastructure.database;
 
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.orm.jpa.JpaProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder;
@@ -25,13 +27,16 @@ import javax.sql.DataSource;
 )
 public class StockJpaConfig {
 
+    // TODO: 这里有问题。 按需开启这个数据源的配置未生效！！
     @Bean(name = "stockJpaProperties")
     @ConfigurationProperties(prefix = "spring.jpa.stock")
+    @ConditionalOnProperty(name = "spring.jpa.stock")
     public JpaProperties jpaProperties() {
         return new JpaProperties();
     }
 
     @Bean(name = "stockEntityManagerFactory")
+    @ConditionalOnBean(name = {"stockDataSource", "stockJpaProperties"})
     public LocalContainerEntityManagerFactoryBean entityManagerFactoryBean(@Qualifier("stockDataSource") DataSource dataSource,
                                                                            @Qualifier("stockJpaProperties") JpaProperties jpaProperties,
                                                                            EntityManagerFactoryBuilder builder) {
@@ -48,6 +53,7 @@ public class StockJpaConfig {
      * @return
      */
     @Bean(name = "stockEntityManager")
+    @ConditionalOnBean(name = "stockEntityManagerFactory")
     public EntityManager entityManager(@Qualifier("stockEntityManagerFactory") EntityManagerFactory factory) {
         return factory.createEntityManager();
     }
@@ -58,6 +64,7 @@ public class StockJpaConfig {
      * @return
      */
     @Bean(name = "stockTransactionManager")
+    @ConditionalOnBean(name = "stockEntityManagerFactory")
     public PlatformTransactionManager transactionManager(@Qualifier("stockEntityManagerFactory") EntityManagerFactory factory) {
         return new JpaTransactionManager(factory);
     }

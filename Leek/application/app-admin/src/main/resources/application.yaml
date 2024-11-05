@@ -3,5 +3,7 @@ application:
   name: app-admin
 
 spring:
+  main:
+    allow-bean-definition-overriding: true
   profiles:
     active: dev

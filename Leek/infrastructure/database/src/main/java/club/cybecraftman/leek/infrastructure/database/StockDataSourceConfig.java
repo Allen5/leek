@@ -1,6 +1,8 @@
 package club.cybecraftman.leek.infrastructure.database;
 
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -16,8 +18,9 @@ public class StockDataSourceConfig {
      * 数据源配置
      * @return
      */
-    @Bean(name = "stockDataSourceConfig")
+    @Bean(name = "stockDataSourceProperties")
     @ConfigurationProperties(prefix = "spring.datasource.stock")
+    @ConditionalOnProperty(name = "spring.datasource.stock")
     public DataSourceProperties dataSourceProperties() {
         return new DataSourceProperties();
     }
@@ -28,11 +31,13 @@ public class StockDataSourceConfig {
      * @return
      */
     @Bean(name = "stockDataSource")
-    public DataSource dataSource(@Qualifier("stockDataSourceConfig") DataSourceProperties dataSourceProperties) {
+    @ConditionalOnBean(name = "stockDataSourceProperties")
+    public DataSource dataSource(@Qualifier("stockDataSourceProperties") DataSourceProperties dataSourceProperties) {
         return dataSourceProperties.initializeDataSourceBuilder().build();
     }
 
     @Bean(name = "stockJdbcTemplate")
+    @ConditionalOnBean(name = "stockDataSource")
     public JdbcTemplate jdbcTemplate(@Qualifier("stockDataSource") DataSource dataSource) {
         return new JdbcTemplate(dataSource);
     }
