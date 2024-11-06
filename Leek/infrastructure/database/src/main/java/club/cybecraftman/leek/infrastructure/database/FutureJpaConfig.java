@@ -1,6 +1,8 @@
 package club.cybecraftman.leek.infrastructure.database;
 
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.orm.jpa.JpaProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder;
@@ -27,11 +29,13 @@ public class FutureJpaConfig {
 
     @Bean(name = "futureJpaProperties")
     @ConfigurationProperties(prefix = "spring.jpa.future")
+    @ConditionalOnProperty(prefix = "spring.datasource.future", name = "enabled", havingValue = "true")
     public JpaProperties jpaProperties() {
         return new JpaProperties();
     }
 
     @Bean(name = "futureEntityManagerFactory")
+    @ConditionalOnBean(name = {"futureDataSource", "futureJpaProperties"})
     public LocalContainerEntityManagerFactoryBean entityManagerFactoryBean(@Qualifier("futureDataSource") DataSource dataSource,
                                                                            @Qualifier("futureJpaProperties") JpaProperties jpaProperties,
                                                                            EntityManagerFactoryBuilder builder) {
@@ -48,6 +52,7 @@ public class FutureJpaConfig {
      * @return
      */
     @Bean(name = "futureEntityManager")
+    @ConditionalOnBean(name = "futureEntityManagerFactory")
     public EntityManager entityManager(@Qualifier("futureEntityManagerFactory") EntityManagerFactory factory) {
         return factory.createEntityManager();
     }
@@ -58,6 +63,7 @@ public class FutureJpaConfig {
      * @return
      */
     @Bean(name = "futureTransactionManager")
+    @ConditionalOnBean(name = "futureEntityManagerFactory")
     public PlatformTransactionManager transactionManager(@Qualifier("futureEntityManagerFactory") EntityManagerFactory factory) {
         return new JpaTransactionManager(factory);
     }

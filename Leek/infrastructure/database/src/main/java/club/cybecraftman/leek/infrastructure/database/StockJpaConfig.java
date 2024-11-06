@@ -27,10 +27,9 @@ import javax.sql.DataSource;
 )
 public class StockJpaConfig {
 
-    // TODO: 这里有问题。 按需开启这个数据源的配置未生效！！
     @Bean(name = "stockJpaProperties")
     @ConfigurationProperties(prefix = "spring.jpa.stock")
-    @ConditionalOnProperty(name = "spring.jpa.stock")
+    @ConditionalOnProperty(prefix = "spring.datasource.stock", name = "enabled", havingValue = "true")
     public JpaProperties jpaProperties() {
         return new JpaProperties();
     }

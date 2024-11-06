@@ -1,6 +1,8 @@
 package club.cybecraftman.leek.infrastructure.database;
 
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.orm.jpa.JpaProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder;
@@ -27,11 +29,13 @@ public class AdminJpaConfig {
 
     @Bean(name = "adminJpaProperties")
     @ConfigurationProperties(prefix = "spring.jpa.admin")
+    @ConditionalOnProperty(prefix = "spring.datasource.admin", name = "enabled", havingValue = "true")
     public JpaProperties jpaProperties() {
         return new JpaProperties();
     }
 
     @Bean(name = "adminEntityManagerFactory")
+    @ConditionalOnBean(name = {"adminDataSource", "adminJpaProperties"})
     public LocalContainerEntityManagerFactoryBean entityManagerFactoryBean(@Qualifier("adminDataSource") DataSource dataSource,
                                                                            @Qualifier("adminJpaProperties") JpaProperties jpaProperties,
                                                                            EntityManagerFactoryBuilder builder) {
@@ -48,6 +52,7 @@ public class AdminJpaConfig {
      * @return
      */
     @Bean(name = "adminEntityManager")
+    @ConditionalOnBean(name = "adminEntityManagerFactory")
     public EntityManager entityManager(@Qualifier("adminEntityManagerFactory") EntityManagerFactory factory) {
         return factory.createEntityManager();
     }
@@ -58,6 +63,7 @@ public class AdminJpaConfig {
      * @return
      */
     @Bean(name = "adminTransactionManager")
+    @ConditionalOnBean(name = "adminEntityManagerFactory")
     public PlatformTransactionManager transactionManager(@Qualifier("adminEntityManagerFactory") EntityManagerFactory factory) {
         return new JpaTransactionManager(factory);
     }

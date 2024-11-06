@@ -12,6 +12,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import javax.sql.DataSource;
 
 @Configuration
+@ConditionalOnProperty(prefix = "spring.datasource.stock", name = "enabled", havingValue = "true")
 public class StockDataSourceConfig {
 
     /**
@@ -20,7 +21,6 @@ public class StockDataSourceConfig {
      */
     @Bean(name = "stockDataSourceProperties")
     @ConfigurationProperties(prefix = "spring.datasource.stock")
-    @ConditionalOnProperty(name = "spring.datasource.stock")
     public DataSourceProperties dataSourceProperties() {
         return new DataSourceProperties();
     }

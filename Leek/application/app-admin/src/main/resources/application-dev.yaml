@@ -3,7 +3,9 @@ server:
 
 spring:
   datasource:
+    # meta库必须配置 TODO: 后续改为动态数据源
     meta:
+      enabled: true
       url: jdbc:mysql://localhost:3306/leek_meta?serverTimezone=GMT&seUnicode=true&characterEncoding=UTF-8&useSSL=false&allowMultiQueries=true&autoReconnect=true&allowPublicKeyRetrieval=true
       username: leek_dev
       password: leek_dev
@@ -12,10 +14,11 @@ spring:
         minimum-idle: 5
         maximum-pool-size: 20
         idle-timeout: 30000
-        pool-name: AdminDataSourceHikariCP
+        pool-name: MeteDataSourceHikariCP
         max-lifetime: 60000
         connection-timeout: 30000
     admin:
+      enabled: true
       url: jdbc:mysql://localhost:3306/leek_admin?serverTimezone=GMT&seUnicode=true&characterEncoding=UTF-8&useSSL=false&allowMultiQueries=true&autoReconnect=true&allowPublicKeyRetrieval=true
       username: leek_dev
       password: leek_dev
@@ -28,6 +31,7 @@ spring:
         max-lifetime: 60000
         connection-timeout: 30000
     backtest:
+      enabled: true
       url: jdbc:mysql://localhost:3306/leek_backtest?serverTimezone=GMT&seUnicode=true&characterEncoding=UTF-8&useSSL=false&allowMultiQueries=true&autoReconnect=true&allowPublicKeyRetrieval=true
       username: leek_dev
       password: leek_dev
@@ -40,6 +44,7 @@ spring:
         max-lifetime: 60000
         connection-timeout: 30000
     future:
+      enabled: true
       url: jdbc:mysql://localhost:3306/leek_future?serverTimezone=GMT&seUnicode=true&characterEncoding=UTF-8&useSSL=false&allowMultiQueries=true&autoReconnect=true&allowPublicKeyRetrieval=true
       username: leek_dev
       password: leek_dev
@@ -52,6 +57,7 @@ spring:
         max-lifetime: 60000
         connection-timeout: 30000
     stock:
+      enabled: true
       url: jdbc:mysql://localhost:3306/leek_stock?serverTimezone=GMT&seUnicode=true&characterEncoding=UTF-8&useSSL=false&allowMultiQueries=true&autoReconnect=true&allowPublicKeyRetrieval=true
       username: leek_dev
       password: leek_dev
@@ -64,6 +70,13 @@ spring:
         max-lifetime: 60000
         connection-timeout: 30000
   jpa:
+    meta:
+      show-sql: true
+      properties:
+        hibernate:
+          hbm2ddl:
+            auto: update
+          dialect: org.hibernate.dialect.MySQL8Dialect
     admin:
       show-sql: true
       properties:
@@ -79,6 +92,13 @@ spring:
             auto: update
           dialect: org.hibernate.dialect.MySQL8Dialect
     future:
+      show-sql: true
+      properties:
+        hibernate:
+          hbm2ddl:
+            auto: update
+          dialect: org.hibernate.dialect.MySQL8Dialect
+    stock:
       show-sql: true
       properties:
         hibernate:

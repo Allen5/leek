@@ -1,6 +1,8 @@
 package club.cybecraftman.leek.infrastructure.database;
 
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.orm.jpa.JpaProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder;
@@ -27,11 +29,13 @@ public class BackTestJpaConfig {
 
     @Bean(name = "backTestJpaProperties")
     @ConfigurationProperties(prefix = "spring.jpa.backtest")
+    @ConditionalOnProperty(prefix = "spring.datasource.backtest", name = "enabled", havingValue = "true")
     public JpaProperties jpaProperties() {
         return new JpaProperties();
     }
 
     @Bean(name = "backTestEntityManagerFactory")
+    @ConditionalOnBean(name = {"backTestDataSource", "backTestJpaProperties"})
     public LocalContainerEntityManagerFactoryBean entityManagerFactoryBean(@Qualifier("backTestDataSource") DataSource dataSource,
                                                                            @Qualifier("backTestJpaProperties") JpaProperties jpaProperties,
                                                                            EntityManagerFactoryBuilder builder) {
@@ -48,6 +52,7 @@ public class BackTestJpaConfig {
      * @return
      */
     @Bean(name = "backTestEntityManager")
+    @ConditionalOnBean(name = "backTestEntityManagerFactory")
     public EntityManager entityManager(@Qualifier("backTestEntityManagerFactory") EntityManagerFactory factory) {
         return factory.createEntityManager();
     }
@@ -58,6 +63,7 @@ public class BackTestJpaConfig {
      * @return
      */
     @Bean(name = "backTestTransactionManager")
+    @ConditionalOnBean(name = "backTestEntityManagerFactory")
     public PlatformTransactionManager transactionManager(@Qualifier("backTestEntityManagerFactory") EntityManagerFactory factory) {
         return new JpaTransactionManager(factory);
     }
