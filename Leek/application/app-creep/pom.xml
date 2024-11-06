@@ -15,7 +15,6 @@
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <project.out.name>leek-creep-service</project.out.name>
     </properties>
 
     <dependencies>
@@ -35,7 +34,7 @@
 
 
     <build>
-        <finalName>${project.out.name}</finalName>
+        <finalName>leek-creep-service</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -44,7 +43,7 @@
                 <configuration>
                     <filesets>
                         <fileset>
-                            <directory>${project.parent.parent.basedir}/dist/${project.out.name}</directory>
+                            <directory>${project.parent.parent.basedir}/dist/${project.build.finalName}</directory>
                         </fileset>
                     </filesets>
                 </configuration>
@@ -72,7 +71,8 @@
                     <images>
                         <image>
                             <alias>${project.build.finalName}</alias>
-                            <name>leek/${project.build.finalName}:${project.version}</name>
+                            <name>cyber-craftman/${project.build.finalName}:${project.version}</name>
+                            <registry>registry.cn-hangzhou.aliyuncs.com</registry>
                             <build>
                                 <dockerFile>${project.basedir}/Dockerfile</dockerFile>
                             </build>
@@ -85,8 +85,7 @@
                         <phase>package</phase>
                         <goals>
                             <goal>build</goal>
-                            <!-- TODO: 暂时不推送 -->
-                            <!--                            <goal>push</goal>-->
+                            <goal>push</goal>
                         </goals>
                     </execution>
                 </executions>
