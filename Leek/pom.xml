@@ -27,8 +27,11 @@
         <lombok.version>1.18.34</lombok.version>
         <spring.boot.version>2.7.18</spring.boot.version>
 
+        <leek.core.version>1.0.0-SNAPSHOT</leek.core.version>
         <leek.infrastructure.version>1.0.0-SNAPSHOT</leek.infrastructure.version>
         <leek.repository.version>1.0.0-SNAPSHOT</leek.repository.version>
+        <leek.domain.version>1.0.0-SNAPSHOT</leek.domain.version>
+
     </properties>
 
     <dependencyManagement>
@@ -101,6 +104,18 @@
                 <groupId>club.cybecraftman.leek.repo</groupId>
                 <artifactId>backtest-repo</artifactId>
                 <version>${leek.repository.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>club.cybecraftman.leek.domain</groupId>
+                <artifactId>domain-future</artifactId>
+                <version>${leek.domain.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>club.cybecraftman.leek.domain</groupId>
+                <artifactId>domain-backtest</artifactId>
+                <version>${leek.domain.version}</version>
             </dependency>
 
             <dependency>

@@ -1,6 +1,7 @@
 server:
   port: 9090
 
+## TODO: 加入配置中心
 spring:
   datasource:
     # meta库必须配置 TODO: 后续改为动态数据源

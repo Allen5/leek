@@ -1,0 +1,8 @@
+application:
+  name: leek-backtest-service
+
+spring:
+  main:
+    allow-bean-definition-overriding: true
+  profiles:
+    active: dev

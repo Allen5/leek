@@ -18,6 +18,7 @@
         <module>app-backtest</module>
         <module>app-etl</module>
         <module>app-creep</module>
+        <module>app-monitor</module>
     </modules>
 
     <properties>

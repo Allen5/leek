@@ -20,8 +20,13 @@
     <dependencies>
 
         <dependency>
-            <groupId>club.cybecraftman.leek</groupId>
-            <artifactId>core</artifactId>
+            <groupId>club.cybecraftman.leek.domain</groupId>
+            <artifactId>domain-backtest</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>club.cybecraftman.leek.infrastructure</groupId>
+            <artifactId>message-queue</artifactId>
         </dependency>
 
         <dependency>
@@ -57,7 +62,7 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <version>${spring.boot.version}</version>
                 <configuration>
-                    <mainClass>club.cybecraftman.leek.application.BackTestApplication</mainClass>
+                    <mainClass>club.cybecraftman.leek.BackTestApplication</mainClass>
                 </configuration>
                 <executions>
                     <execution>

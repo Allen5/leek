@@ -1,0 +1,8 @@
+application:
+  name: leek-creep-service
+
+spring:
+  main:
+    allow-bean-definition-overriding: true
+  profiles:
+    active: dev

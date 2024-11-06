@@ -1,6 +1,5 @@
-
 application:
-  name: leek-admin-service
+  name: leek-monitor-service
 
 spring:
   main:

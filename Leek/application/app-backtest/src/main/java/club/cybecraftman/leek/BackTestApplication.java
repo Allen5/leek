@@ -1,4 +1,4 @@
-package club.cybecraftman.leek.application;
+package club.cybecraftman.leek;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;

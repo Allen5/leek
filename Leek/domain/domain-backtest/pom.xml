@@ -24,11 +24,6 @@
             <artifactId>backtest-repo</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>club.cybecraftman.leek</groupId>
-            <artifactId>core</artifactId>
-        </dependency>
-
     </dependencies>
 
 </project>
