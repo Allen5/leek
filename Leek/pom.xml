@@ -117,7 +117,13 @@
 
             <dependency>
                 <groupId>club.cybecraftman.leek.infrastructure</groupId>
-                <artifactId>messagequeue</artifactId>
+                <artifactId>message-queue</artifactId>
+                <version>${leek.infrastructure.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>club.cybecraftman.leek.infrastructure</groupId>
+                <artifactId>massive-compute</artifactId>
                 <version>${leek.infrastructure.version}</version>
             </dependency>
 

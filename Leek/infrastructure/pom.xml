@@ -15,8 +15,9 @@
     <packaging>pom</packaging>
     <modules>
         <module>database</module>
-        <module>messagequeue</module>
+        <module>message-queue</module>
         <module>cache</module>
+        <module>massive-compute</module>
     </modules>
 
     <properties>
