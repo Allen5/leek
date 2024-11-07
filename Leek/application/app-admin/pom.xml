@@ -97,9 +97,15 @@
                 <executions>
                     <execution>
                         <id>build-image</id>
-                        <phase>deploy</phase>
+                        <phase>package</phase>
                         <goals>
                             <goal>build</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>push-image</id>
+                        <phase>install</phase>
+                        <goals>
                             <goal>push</goal>
                         </goals>
                     </execution>
