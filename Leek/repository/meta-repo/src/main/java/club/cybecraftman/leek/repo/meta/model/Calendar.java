@@ -1,5 +1,7 @@
 package club.cybecraftman.leek.repo.meta.model;
 
+import club.cybecraftman.leek.common.constant.finance.FinanceType;
+import club.cybecraftman.leek.common.constant.finance.Market;
 import lombok.*;
 
 import javax.persistence.*;
@@ -20,13 +22,13 @@ public class Calendar {
 
     /**
      * 市场代码
-     * @see club.cybecraftman.leek.common.constant.Market
+     * @see Market
      */
     private String marketCode;
 
     /**
      * 金融产品类型
-     * @see club.cybecraftman.leek.common.constant.FinanceType
+     * @see FinanceType
      */
     private String financeType;
 

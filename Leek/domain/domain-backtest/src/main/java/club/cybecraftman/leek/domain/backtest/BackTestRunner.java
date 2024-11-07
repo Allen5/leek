@@ -1,7 +1,7 @@
 package club.cybecraftman.leek.domain.backtest;
 
-import club.cybecraftman.leek.common.constant.FinanceType;
-import club.cybecraftman.leek.common.constant.Market;
+import club.cybecraftman.leek.common.constant.finance.FinanceType;
+import club.cybecraftman.leek.common.constant.finance.Market;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 

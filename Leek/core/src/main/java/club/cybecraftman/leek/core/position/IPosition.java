@@ -1,6 +1,6 @@
 package club.cybecraftman.leek.core.position;
 
-import club.cybecraftman.leek.common.constant.Direction;
+import club.cybecraftman.leek.common.constant.finance.Direction;
 
 import java.math.BigDecimal;
 

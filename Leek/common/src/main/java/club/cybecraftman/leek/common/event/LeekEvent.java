@@ -1,7 +1,5 @@
 package club.cybecraftman.leek.common.event;
 
-import lombok.Getter;
-
 public interface LeekEvent {
 
     // 执行回测触发事件

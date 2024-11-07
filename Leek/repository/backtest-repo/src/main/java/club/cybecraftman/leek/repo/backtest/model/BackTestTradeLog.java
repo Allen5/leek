@@ -1,7 +1,7 @@
 package club.cybecraftman.leek.repo.backtest.model;
 
-import club.cybecraftman.leek.common.constant.Direction;
-import club.cybecraftman.leek.common.constant.TradeType;
+import club.cybecraftman.leek.common.constant.finance.Direction;
+import club.cybecraftman.leek.common.constant.finance.TradeType;
 import lombok.Data;
 import lombok.ToString;
 

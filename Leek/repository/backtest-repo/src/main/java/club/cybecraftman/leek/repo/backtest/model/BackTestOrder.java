@@ -1,5 +1,6 @@
 package club.cybecraftman.leek.repo.backtest.model;
 
+import club.cybecraftman.leek.common.constant.finance.OrderStatus;
 import lombok.Data;
 import lombok.ToString;
 
@@ -28,7 +29,7 @@ public class BackTestOrder {
 
     /**
      * 订单状态
-     * @see club.cybecraftman.leek.common.constant.OrderStatus
+     * @see OrderStatus
      */
     private Integer status;
 

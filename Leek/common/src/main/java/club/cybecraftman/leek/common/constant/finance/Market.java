@@ -1,4 +1,4 @@
-package club.cybecraftman.leek.common.constant;
+package club.cybecraftman.leek.common.constant.finance;
 
 import lombok.Getter;
 

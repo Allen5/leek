@@ -20,6 +20,7 @@
         <module>admin-repo</module>
         <module>meta-repo</module>
         <module>trade-repo</module>
+        <module>monitor-repo</module>
     </modules>
 
     <properties>

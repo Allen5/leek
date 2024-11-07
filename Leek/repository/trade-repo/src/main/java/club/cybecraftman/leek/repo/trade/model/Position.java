@@ -1,5 +1,8 @@
 package club.cybecraftman.leek.repo.trade.model;
 
+import club.cybecraftman.leek.common.constant.finance.Direction;
+import club.cybecraftman.leek.common.constant.finance.FinanceType;
+import club.cybecraftman.leek.common.constant.finance.Market;
 import lombok.*;
 
 import javax.persistence.*;
@@ -22,19 +25,19 @@ public class Position {
     private Long userId;
 
     /**
-     * @see club.cybecraftman.leek.common.constant.Direction
+     * @see Direction
      */
     private Integer direction;
 
     /**
      * 市场代码
-     * @see club.cybecraftman.leek.common.constant.Market
+     * @see Market
      */
     private String marketCode;
 
     /**
      * 金融产品类型
-     * @see club.cybecraftman.leek.common.constant.FinanceType
+     * @see FinanceType
      */
     private String financeType;
 

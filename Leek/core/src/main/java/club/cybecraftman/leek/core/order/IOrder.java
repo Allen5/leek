@@ -1,6 +1,6 @@
 package club.cybecraftman.leek.core.order;
 
-import club.cybecraftman.leek.common.constant.Direction;
+import club.cybecraftman.leek.common.constant.finance.Direction;
 
 /**
  * 订单接口

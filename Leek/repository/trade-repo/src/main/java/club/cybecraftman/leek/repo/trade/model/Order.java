@@ -1,5 +1,6 @@
 package club.cybecraftman.leek.repo.trade.model;
 
+import club.cybecraftman.leek.common.constant.finance.OrderStatus;
 import lombok.*;
 
 import javax.persistence.*;
@@ -25,7 +26,7 @@ public class Order {
 
     /**
      * 订单状态
-     * @see club.cybecraftman.leek.common.constant.OrderStatus
+     * @see OrderStatus
      */
     private Integer status;
 

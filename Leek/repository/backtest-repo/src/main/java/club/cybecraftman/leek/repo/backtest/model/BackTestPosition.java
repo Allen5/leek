@@ -1,6 +1,8 @@
 package club.cybecraftman.leek.repo.backtest.model;
 
-import club.cybecraftman.leek.common.constant.Direction;
+import club.cybecraftman.leek.common.constant.finance.Direction;
+import club.cybecraftman.leek.common.constant.finance.FinanceType;
+import club.cybecraftman.leek.common.constant.finance.Market;
 import lombok.Data;
 import lombok.ToString;
 
@@ -29,13 +31,13 @@ public class BackTestPosition {
 
     /**
      * 市场代码
-     * @see club.cybecraftman.leek.common.constant.Market
+     * @see Market
      */
     private String marketCode;
 
     /**
      * 金融产品
-     * @see club.cybecraftman.leek.common.constant.FinanceType
+     * @see FinanceType
      */
     private String financeType;
 

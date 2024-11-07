@@ -123,6 +123,12 @@
             </dependency>
 
             <dependency>
+                <groupId>club.cybecraftman.leek.repo</groupId>
+                <artifactId>monitor-repo</artifactId>
+                <version>${leek.repository.version}</version>
+            </dependency>
+
+            <dependency>
                 <groupId>club.cybecraftman.leek.domain</groupId>
                 <artifactId>domain-future</artifactId>
                 <version>${leek.domain.version}</version>
@@ -137,6 +143,12 @@
             <dependency>
                 <groupId>club.cybecraftman.leek.domain</groupId>
                 <artifactId>domain-trade</artifactId>
+                <version>${leek.domain.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>club.cybecraftman.leek.domain</groupId>
+                <artifactId>domain-monitor</artifactId>
                 <version>${leek.domain.version}</version>
             </dependency>
 
