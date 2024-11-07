@@ -1,0 +1,18 @@
+spring:
+  application:
+    name: leek-monitor-service
+  cloud:
+    nacos:
+      config:
+        namespace: ${NACOS_NAMESPACE:aa4d95a3-be7a-47b8-a2f3-049ef8665853}
+        server-addr: ${NACOS_IP:localhost}:${NACOS_PORT:8848}
+        username: ${NACOS_USERNAME:nacos}
+        password: ${NACOS_PASSWORD:nacos}
+        file-extension: yaml
+        config-retry-time: 300000
+        shared-configs: common.yaml
+      discovery:
+        namespace: ${NACOS_NAMESPACE:aa4d95a3-be7a-47b8-a2f3-049ef8665853}
+        server-addr: ${NACOS_IP:localhost}:${NACOS_PORT:8848}
+        username: ${NACOS_USERNAME:nacos}
+        password: ${NACOS_PASSWORD:nacos}

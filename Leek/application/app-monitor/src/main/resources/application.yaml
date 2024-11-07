@@ -1,8 +1,0 @@
-application:
-  name: leek-monitor-service
-
-spring:
-  main:
-    allow-bean-definition-overriding: true
-  profiles:
-    active: dev

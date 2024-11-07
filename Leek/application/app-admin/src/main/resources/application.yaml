@@ -1,9 +1,0 @@
-
-application:
-  name: leek-admin-service
-
-spring:
-  main:
-    allow-bean-definition-overriding: true
-  profiles:
-    active: dev

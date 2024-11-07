@@ -2,6 +2,13 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>2.6.13</version>
+    </parent>
+
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>club.cybecraftman.leek</groupId>
@@ -25,7 +32,10 @@
 
         <leek.version>${project.version}</leek.version>
         <lombok.version>1.18.34</lombok.version>
-        <spring.boot.version>2.7.18</spring.boot.version>
+        <spring.boot.version>2.6.13</spring.boot.version>
+        <spring.cloud.version>2021.0.5</spring.cloud.version>
+        <spring.cloud.alibaba.version>2021.0.5.0</spring.cloud.alibaba.version>
+
 
         <leek.core.version>1.0.0-SNAPSHOT</leek.core.version>
         <leek.infrastructure.version>1.0.0-SNAPSHOT</leek.infrastructure.version>
@@ -120,6 +130,12 @@
 
             <dependency>
                 <groupId>club.cybecraftman.leek.infrastructure</groupId>
+                <artifactId>config-center</artifactId>
+                <version>${leek.infrastructure.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>club.cybecraftman.leek.infrastructure</groupId>
                 <artifactId>database</artifactId>
                 <version>${leek.infrastructure.version}</version>
             </dependency>
@@ -147,6 +163,28 @@
     </dependencyManagement>
 
     <dependencies>
+
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-dependencies</artifactId>
+            <version>${spring.cloud.version}</version>
+            <type>pom</type>
+            <scope>import</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-alibaba-dependencies</artifactId>
+            <version>${spring.cloud.alibaba.version}</version>
+            <type>pom</type>
+            <scope>import</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-bootstrap</artifactId>
+            <version>3.0.4</version>
+        </dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
