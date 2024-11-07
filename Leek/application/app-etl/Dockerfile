@@ -4,4 +4,4 @@ COPY target/leek-etl-service.jar /application.jar
 
 EXPOSE 8080
 
-ENTRYPOINT ["java", "-jar", "/application.jar", "--spring.profiles.active=docker"]
+ENTRYPOINT ["java", "-jar", "/application.jar", "--spring.profiles.active=prod"]

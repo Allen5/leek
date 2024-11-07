@@ -15,6 +15,8 @@
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+        <ta-lib.version>0.4.0</ta-lib.version>
     </properties>
 
     <dependencies>
@@ -22,6 +24,12 @@
         <dependency>
             <groupId>club.cybecraftman.leek</groupId>
             <artifactId>common</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.tictactec</groupId>
+            <artifactId>ta-lib</artifactId>
+            <version>${ta-lib.version}</version>
         </dependency>
 
     </dependencies>

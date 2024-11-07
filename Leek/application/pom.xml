@@ -40,6 +40,11 @@
             <artifactId>config-center</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>club.cybecraftman.leek.repo</groupId>
+            <artifactId>meta-repo</artifactId>
+        </dependency>
+
     </dependencies>
 
 </project>

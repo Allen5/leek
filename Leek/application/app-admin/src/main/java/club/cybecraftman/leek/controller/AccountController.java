@@ -21,15 +21,6 @@ public class AccountController {
     }
 
     /**
-     * 注册
-     * @return
-     */
-    @PostMapping(path = "/regist")
-    public BaseResultDTO<Object> regist() {
-        return null;
-    }
-
-    /**
      * token续订
      * @return
      */
