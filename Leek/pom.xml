@@ -117,6 +117,12 @@
             </dependency>
 
             <dependency>
+                <groupId>club.cybecraftman.leek.repo</groupId>
+                <artifactId>trade-repo</artifactId>
+                <version>${leek.repository.version}</version>
+            </dependency>
+
+            <dependency>
                 <groupId>club.cybecraftman.leek.domain</groupId>
                 <artifactId>domain-future</artifactId>
                 <version>${leek.domain.version}</version>
@@ -125,6 +131,12 @@
             <dependency>
                 <groupId>club.cybecraftman.leek.domain</groupId>
                 <artifactId>domain-backtest</artifactId>
+                <version>${leek.domain.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>club.cybecraftman.leek.domain</groupId>
+                <artifactId>domain-trade</artifactId>
                 <version>${leek.domain.version}</version>
             </dependency>
 

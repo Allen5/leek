@@ -10,7 +10,7 @@ spring:
         password: ${NACOS_PASSWORD:nacos}
         file-extension: yaml
         config-retry-time: 300000
-        shared-configs: common.yaml
+        shared-configs: common.yaml,database.yaml,kafka.yaml
       discovery:
         namespace: ${NACOS_NAMESPACE:aa4d95a3-be7a-47b8-a2f3-049ef8665853}
         server-addr: ${NACOS_IP:localhost}:${NACOS_PORT:8848}

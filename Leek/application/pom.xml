@@ -19,6 +19,7 @@
         <module>app-etl</module>
         <module>app-creep</module>
         <module>app-monitor</module>
+        <module>app-trade</module>
     </modules>
 
     <properties>

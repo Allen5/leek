@@ -1,6 +1,6 @@
 spring:
   application:
-    name: leek-admin-service
+    name: leek-trade-service
   cloud:
     nacos:
       config:

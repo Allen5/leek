@@ -19,6 +19,7 @@
         <module>backtest-repo</module>
         <module>admin-repo</module>
         <module>meta-repo</module>
+        <module>trade-repo</module>
     </modules>
 
     <properties>
