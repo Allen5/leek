@@ -2,6 +2,7 @@ package club.cybecraftman.leek.common.constant;
 
 import lombok.Getter;
 
+@Getter
 public enum ExecuteStatus {
 
     EXECUTING(0, "执行中"),
@@ -15,10 +16,8 @@ public enum ExecuteStatus {
         this.description = description;
     }
 
-    @Getter
-    private Integer status;
+    private final Integer status;
 
-    @Getter
-    private String description;
+    private final String description;
 
 }

@@ -1,4 +1,4 @@
-package club.cybecraftman.leek.domain.backtest.order;
+package club.cybecraftman.leek.domain.backtest;
 
 import club.cybecraftman.leek.common.constant.finance.Direction;
 import club.cybecraftman.leek.core.order.IOrder;
