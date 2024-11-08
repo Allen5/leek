@@ -1,5 +1,6 @@
 package club.cybecraftman.leek.repo.financedata.model.future;
 
+import club.cybecraftman.leek.common.constant.finance.future.FutureProductStatus;
 import lombok.Data;
 import lombok.ToString;
 
@@ -25,6 +26,13 @@ public class FutureProduct {
     private String exchangeCode;
 
     /**
+     * 品种所属类别
+     * @see club.cybecraftman.leek.common.constant.finance.future.ProductCategory
+     */
+    @Column(name = "category", nullable = false, length = 4)
+    private Integer category;
+
+    /**
      * 品种代码
      */
     @Column(name = "code", nullable = false, unique = true, length = 8)
@@ -37,19 +45,8 @@ public class FutureProduct {
     private String name;
 
     /**
-     * 上市时间
-     */
-    @Column(name = "list_date", nullable = false)
-    private Date listDate;
-
-    /**
-     * 退市时间
-     */
-    @Column(name = "delist_date", nullable = false)
-    private Date delistDate;
-
-    /**
      * 品种状态
+     * @see FutureProductStatus
      */
     @Column(name = "status", nullable = false, length = 4)
     private Integer status;

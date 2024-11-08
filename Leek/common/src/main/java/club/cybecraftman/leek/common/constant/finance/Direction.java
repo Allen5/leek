@@ -5,6 +5,7 @@ import lombok.Getter;
 /**
  * 方向
  */
+@Getter
 public enum Direction {
 
     LONG(0, "多头"),
@@ -17,10 +18,8 @@ public enum Direction {
         this.description = description;
     }
 
-    @Getter
-    private Integer type;
+    private final Integer type;
 
-    @Getter
-    private String description;
+    private final String description;
 
 }

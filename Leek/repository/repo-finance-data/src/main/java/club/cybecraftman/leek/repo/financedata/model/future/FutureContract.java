@@ -20,6 +20,12 @@ public class FutureContract {
     private Long id;
 
     /**
+     * 交易所代码
+     */
+    @Column(name = "exchange_code", nullable = false, length = 8)
+    private String exchangeCode;
+
+    /**
      * 品种代码
      */
     @Column(name = "product_code", nullable = false, length = 8)
@@ -28,7 +34,7 @@ public class FutureContract {
     /**
      * 合约代码
      */
-    @Column(name = "code", nullable = false, unique = true, length = 8)
+    @Column(name = "code", nullable = false, unique = true, length = 16)
     private String code;
 
     /**
