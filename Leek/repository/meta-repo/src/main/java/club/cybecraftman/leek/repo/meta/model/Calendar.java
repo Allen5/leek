@@ -12,7 +12,7 @@ import java.util.Date;
  */
 @Entity
 @Table(name = "meta_calendar", uniqueConstraints = {
-        @UniqueConstraint(name = "uc_calendar_date_marketcode", columnNames = {"date", "market_code", "finance_type"})
+        @UniqueConstraint(name = "uc_calendar_date_marketCode", columnNames = {"date", "market_code", "finance_type"})
 })
 @Getter
 @Setter
@@ -21,6 +21,9 @@ import java.util.Date;
 public class Calendar {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
     @Column(nullable = false)
     private Date date;
 
