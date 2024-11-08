@@ -21,12 +21,17 @@
 
         <dependency>
             <groupId>club.cybecraftman.leek.repo</groupId>
-            <artifactId>backtest-repo</artifactId>
+            <artifactId>repo-monitor</artifactId>
         </dependency>
 
         <dependency>
             <groupId>club.cybecraftman.leek.repo</groupId>
-            <artifactId>meta-repo</artifactId>
+            <artifactId>repo-meta</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>club.cybecraftman.leek.repo</groupId>
+            <artifactId>repo-finance-data</artifactId>
         </dependency>
 
     </dependencies>

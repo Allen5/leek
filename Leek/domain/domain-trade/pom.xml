@@ -20,7 +20,7 @@
     <dependencies>
         <dependency>
             <groupId>club.cybecraftman.leek.repo</groupId>
-            <artifactId>trade-repo</artifactId>
+            <artifactId>repo-trade</artifactId>
         </dependency>
     </dependencies>
 

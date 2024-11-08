@@ -36,7 +36,7 @@
 
         <dependency>
             <groupId>club.cybecraftman.leek.repo</groupId>
-            <artifactId>meta-repo</artifactId>
+            <artifactId>repo-meta</artifactId>
         </dependency>
 
         <dependency>

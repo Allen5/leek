@@ -3,8 +3,6 @@ package club.cybecraftman.leek.domain.backtest;
 import club.cybecraftman.leek.common.thread.AbstractTask;
 import club.cybecraftman.leek.core.strategy.IStrategy;
 import club.cybecraftman.leek.core.strategy.dto.Bar;
-import club.cybecraftman.leek.repo.meta.model.Calendar;
-import club.cybecraftman.leek.repo.meta.repository.ICalendarRepo;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

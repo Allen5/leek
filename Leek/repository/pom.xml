@@ -14,13 +14,11 @@
     <version>1.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <modules>
-        <module>future-repo</module>
-        <module>stock-repo</module>
-        <module>backtest-repo</module>
-        <module>admin-repo</module>
-        <module>meta-repo</module>
-        <module>trade-repo</module>
-        <module>monitor-repo</module>
+        <module>repo-admin</module>
+        <module>repo-meta</module>
+        <module>repo-trade</module>
+        <module>repo-monitor</module>
+        <module>repo-finance-data</module>
     </modules>
 
     <properties>

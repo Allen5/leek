@@ -1,6 +1,6 @@
 package club.cybecraftman.leek.domain.monitor.creep;
 
-import club.cybecraftman.leek.common.constant.ExecuteStatus;
+import club.cybecraftman.leek.common.constant.CommonExecuteStatus;
 import club.cybecraftman.leek.common.dto.event.creep.CreepEvent;
 import club.cybecraftman.leek.common.exception.LeekRuntimeException;
 import club.cybecraftman.leek.repo.monitor.model.CreepLog;
@@ -44,7 +44,7 @@ public class CreepActionMonitor {
         creepLog.setDataType(event.getDataType());
         creepLog.setSourceName(event.getSourceName());
         creepLog.setSource(event.getSource());
-        creepLog.setStatus(ExecuteStatus.EXECUTING.getStatus());
+        creepLog.setStatus(CommonExecuteStatus.EXECUTING.getStatus());
         creepLog.setCreatedAt(new Date());
         creepLog = creeperLog.save(creepLog);
         return creepLog.getId();
@@ -53,7 +53,7 @@ public class CreepActionMonitor {
     @Transactional
     public void fail(final Long logId) {
         CreepLog creepLog = getById(logId);
-        creepLog.setStatus(ExecuteStatus.FAIL.getStatus());
+        creepLog.setStatus(CommonExecuteStatus.FAIL.getStatus());
         creepLog.setUpdatedAt(new Date());
         creeperLog.save(creepLog);
     }
@@ -61,7 +61,7 @@ public class CreepActionMonitor {
     @Transactional
     public void success(final Long logId) {
         CreepLog creepLog = getById(logId);
-        creepLog.setStatus(ExecuteStatus.SUCCESS.getStatus());
+        creepLog.setStatus(CommonExecuteStatus.SUCCESS.getStatus());
         creepLog.setUpdatedAt(new Date());
         creeperLog.save(creepLog);
     }

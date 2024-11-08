@@ -88,43 +88,31 @@
 
             <dependency>
                 <groupId>club.cybecraftman.leek.repo</groupId>
-                <artifactId>meta-repo</artifactId>
-                <version>1.0.0-SNAPSHOT</version>
-            </dependency>
-
-            <dependency>
-                <groupId>club.cybecraftman.leek.repo</groupId>
-                <artifactId>admin-repo</artifactId>
+                <artifactId>repo-meta</artifactId>
                 <version>${leek.repository.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>club.cybecraftman.leek.repo</groupId>
-                <artifactId>future-repo</artifactId>
+                <artifactId>repo-admin</artifactId>
                 <version>${leek.repository.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>club.cybecraftman.leek.repo</groupId>
-                <artifactId>stock-repo</artifactId>
+                <artifactId>repo-trade</artifactId>
                 <version>${leek.repository.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>club.cybecraftman.leek.repo</groupId>
-                <artifactId>backtest-repo</artifactId>
+                <artifactId>repo-monitor</artifactId>
                 <version>${leek.repository.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>club.cybecraftman.leek.repo</groupId>
-                <artifactId>trade-repo</artifactId>
-                <version>${leek.repository.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>club.cybecraftman.leek.repo</groupId>
-                <artifactId>monitor-repo</artifactId>
+                <artifactId>repo-finance-data</artifactId>
                 <version>${leek.repository.version}</version>
             </dependency>
 

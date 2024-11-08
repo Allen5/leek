@@ -27,22 +27,27 @@
 
         <dependency>
             <groupId>club.cybecraftman.leek.repo</groupId>
-            <artifactId>admin-repo</artifactId>
+            <artifactId>repo-meta</artifactId>
         </dependency>
 
         <dependency>
             <groupId>club.cybecraftman.leek.repo</groupId>
-            <artifactId>backtest-repo</artifactId>
+            <artifactId>repo-admin</artifactId>
         </dependency>
 
         <dependency>
             <groupId>club.cybecraftman.leek.repo</groupId>
-            <artifactId>future-repo</artifactId>
+            <artifactId>repo-finance-data</artifactId>
         </dependency>
 
         <dependency>
             <groupId>club.cybecraftman.leek.repo</groupId>
-            <artifactId>meta-repo</artifactId>
+            <artifactId>repo-monitor</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>club.cybecraftman.leek.repo</groupId>
+            <artifactId>repo-trade</artifactId>
         </dependency>
 
         <dependency>
