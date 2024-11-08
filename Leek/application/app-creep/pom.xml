@@ -39,7 +39,7 @@
 
         <dependency>
             <groupId>club.cybecraftman.leek.domain</groupId>
-            <artifactId>domain-future</artifactId>
+            <artifactId>domain-finance-data</artifactId>
         </dependency>
 
         <dependency>

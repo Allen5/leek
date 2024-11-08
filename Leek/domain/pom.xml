@@ -15,10 +15,10 @@
     <packaging>pom</packaging>
     <modules>
         <module>domain-backtest</module>
-        <module>domain-future</module>
         <module>domain-monitor</module>
         <module>domain-trade</module>
         <module>domain-meta</module>
+        <module>domain-finance-data</module>
     </modules>
 
     <properties>
