@@ -9,7 +9,7 @@ import java.util.Date;
 
 // TODO: 思考是否要加入user_id?以及broker_id?
 @Entity
-@Table(name = "meta_commission")
+@Table(name = "commission")
 @Data
 @ToString
 public class Commission {

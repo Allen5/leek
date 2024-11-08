@@ -14,7 +14,7 @@ import java.util.Date;
  * 交易日期
  */
 @Entity
-@Table(name = "meta_calendar", uniqueConstraints = {
+@Table(name = "calendar", uniqueConstraints = {
         @UniqueConstraint(name = "uc_calendar_date_marketCode", columnNames = {"date", "market_code", "finance_type"})
 })
 @Getter
