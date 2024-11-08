@@ -1,6 +1,8 @@
 package club.cybecraftman.leek.repo.financedata.repository;
 
+import club.cybecraftman.leek.infrastructure.database.datasource.FinanceDataDataSourceConfig;
 import club.cybecraftman.leek.repo.financedata.model.Calendar;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -10,6 +12,7 @@ import java.util.Date;
 import java.util.List;
 
 @Repository
+@ConditionalOnBean(FinanceDataDataSourceConfig.class)
 public interface ICalendarRepo extends JpaRepository<Calendar, String> {
 
     /**

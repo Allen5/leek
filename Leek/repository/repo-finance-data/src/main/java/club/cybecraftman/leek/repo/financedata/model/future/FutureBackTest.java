@@ -8,12 +8,13 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 /**
- * 期货日行情信息
+ * 期货回测数据集. 通过ETL得到
  */
-@Entity(name = "future_bar_1day")
+@Entity
+@Table(name = "future_backtest")
 @Data
 @ToString
-public class FutureBar1Day {
+public class FutureBackTest {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -75,5 +76,13 @@ public class FutureBar1Day {
      */
     @Column(name = "amount", precision = 18, scale = 3)
     private BigDecimal amount;
+
+    /**
+     * 在当前的交易中，该合约是否为主力合约
+     */
+    @Column(name = "is_main_contract", nullable = false, length = 4)
+    private Integer isMainContract;
+
+    // TODO: 补充信息
 
 }
