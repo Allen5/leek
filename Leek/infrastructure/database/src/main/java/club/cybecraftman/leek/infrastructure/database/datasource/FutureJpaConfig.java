@@ -1,4 +1,4 @@
-package club.cybecraftman.leek.infrastructure.database;
+package club.cybecraftman.leek.infrastructure.database.datasource;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -21,29 +21,29 @@ import javax.sql.DataSource;
 @Configuration
 @EnableTransactionManagement
 @EnableJpaRepositories(
-        basePackages = "club.cybecraftman.leek.repo.stock.repository",
-        entityManagerFactoryRef = "stockEntityManagerFactory",
-        transactionManagerRef = "stockTransactionManager"
+        basePackages = "club.cybecraftman.leek.repo.future.repository",
+        entityManagerFactoryRef = "futureEntityManagerFactory",
+        transactionManagerRef = "futureTransactionManager"
 )
-public class StockJpaConfig {
+public class FutureJpaConfig {
 
-    @Bean(name = "stockJpaProperties")
-    @ConfigurationProperties(prefix = "spring.jpa.stock")
-    @ConditionalOnProperty(prefix = "spring.datasource.stock", name = "enabled", havingValue = "true")
+    @Bean(name = "futureJpaProperties")
+    @ConfigurationProperties(prefix = "spring.jpa.future")
+    @ConditionalOnProperty(prefix = "spring.datasource.future", name = "enabled", havingValue = "true")
     public JpaProperties jpaProperties() {
         return new JpaProperties();
     }
 
-    @Bean(name = "stockEntityManagerFactory")
-    @ConditionalOnBean(name = {"stockDataSource", "stockJpaProperties"})
-    public LocalContainerEntityManagerFactoryBean entityManagerFactoryBean(@Qualifier("stockDataSource") DataSource dataSource,
-                                                                           @Qualifier("stockJpaProperties") JpaProperties jpaProperties,
+    @Bean(name = "futureEntityManagerFactory")
+    @ConditionalOnBean(name = {"futureDataSource", "futureJpaProperties"})
+    public LocalContainerEntityManagerFactoryBean entityManagerFactoryBean(@Qualifier("futureDataSource") DataSource dataSource,
+                                                                           @Qualifier("futureJpaProperties") JpaProperties jpaProperties,
                                                                            EntityManagerFactoryBuilder builder) {
         return builder
                 .dataSource(dataSource)
                 .properties(jpaProperties.getProperties())
-                .packages("club.cybecraftman.leek.repo.stock.model")
-                .persistenceUnit("stockPersistenceUnit").build();
+                .packages("club.cybecraftman.leek.repo.future.model")
+                .persistenceUnit("futurePersistenceUnit").build();
     }
 
     /**
@@ -51,9 +51,9 @@ public class StockJpaConfig {
      * @param factory
      * @return
      */
-    @Bean(name = "stockEntityManager")
-    @ConditionalOnBean(name = "stockEntityManagerFactory")
-    public EntityManager entityManager(@Qualifier("stockEntityManagerFactory") EntityManagerFactory factory) {
+    @Bean(name = "futureEntityManager")
+    @ConditionalOnBean(name = "futureEntityManagerFactory")
+    public EntityManager entityManager(@Qualifier("futureEntityManagerFactory") EntityManagerFactory factory) {
         return factory.createEntityManager();
     }
 
@@ -62,9 +62,9 @@ public class StockJpaConfig {
      * @param factory
      * @return
      */
-    @Bean(name = "stockTransactionManager")
-    @ConditionalOnBean(name = "stockEntityManagerFactory")
-    public PlatformTransactionManager transactionManager(@Qualifier("stockEntityManagerFactory") EntityManagerFactory factory) {
+    @Bean(name = "futureTransactionManager")
+    @ConditionalOnBean(name = "futureEntityManagerFactory")
+    public PlatformTransactionManager transactionManager(@Qualifier("futureEntityManagerFactory") EntityManagerFactory factory) {
         return new JpaTransactionManager(factory);
     }
 }

@@ -1,4 +1,4 @@
-package club.cybecraftman.leek.infrastructure.database;
+package club.cybecraftman.leek.infrastructure.database.datasource;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -12,15 +12,15 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import javax.sql.DataSource;
 
 @Configuration
-@ConditionalOnProperty(prefix = "spring.datasource.backtest", name = "enabled", havingValue = "true")
-public class BackTestDataSourceConfig {
+@ConditionalOnProperty(prefix = "spring.datasource.future", name = "enabled", havingValue = "true")
+public class FutureDataSourceConfig {
 
     /**
      * 数据源配置
      * @return
      */
-    @Bean(name = "backTestDataSourceProperties")
-    @ConfigurationProperties(prefix = "spring.datasource.backtest")
+    @Bean(name = "futureDataSourceProperties")
+    @ConfigurationProperties(prefix = "spring.datasource.future")
     public DataSourceProperties dataSourceProperties() {
         return new DataSourceProperties();
     }
@@ -30,15 +30,15 @@ public class BackTestDataSourceConfig {
      * @param dataSourceProperties
      * @return
      */
-    @Bean(name = "backTestDataSource")
-    @ConditionalOnBean(name = "backTestDataSourceProperties")
-    public DataSource dataSource(@Qualifier("backTestDataSourceProperties") DataSourceProperties dataSourceProperties) {
+    @Bean(name = "futureDataSource")
+    @ConditionalOnBean(name = "futureDataSourceProperties")
+    public DataSource dataSource(@Qualifier("futureDataSourceProperties") DataSourceProperties dataSourceProperties) {
         return dataSourceProperties.initializeDataSourceBuilder().build();
     }
 
-    @Bean(name = "backTestJdbcTemplate")
-    @ConditionalOnBean(name = "backTestDataSource")
-    public JdbcTemplate jdbcTemplate(@Qualifier("backTestDataSource") DataSource dataSource) {
+    @Bean(name = "futureJdbcTemplate")
+    @ConditionalOnBean(name = "futureDataSource")
+    public JdbcTemplate jdbcTemplate(@Qualifier("futureDataSource") DataSource dataSource) {
         return new JdbcTemplate(dataSource);
     }
 

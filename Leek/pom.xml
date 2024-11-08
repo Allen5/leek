@@ -153,6 +153,12 @@
             </dependency>
 
             <dependency>
+                <groupId>club.cybecraftman.leek.domain</groupId>
+                <artifactId>domain-meta</artifactId>
+                <version>${leek.domain.version}</version>
+            </dependency>
+
+            <dependency>
                 <groupId>club.cybecraftman.leek.infrastructure</groupId>
                 <artifactId>config-center</artifactId>
                 <version>${leek.infrastructure.version}</version>

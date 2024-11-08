@@ -4,22 +4,12 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>club.cybecraftman.leek</groupId>
-        <artifactId>Leek</artifactId>
+        <groupId>club.cybecraftman.leek.domain</groupId>
+        <artifactId>domain</artifactId>
         <version>1.0.0-SNAPSHOT</version>
     </parent>
 
-    <groupId>club.cybecraftman.leek.domain</groupId>
-    <artifactId>domain</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
-    <packaging>pom</packaging>
-    <modules>
-        <module>domain-backtest</module>
-        <module>domain-future</module>
-        <module>domain-monitor</module>
-        <module>domain-trade</module>
-        <module>domain-meta</module>
-    </modules>
+    <artifactId>domain-meta</artifactId>
 
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
@@ -30,8 +20,8 @@
     <dependencies>
 
         <dependency>
-            <groupId>club.cybecraftman.leek</groupId>
-            <artifactId>core</artifactId>
+            <groupId>club.cybecraftman.leek.repo</groupId>
+            <artifactId>meta-repo</artifactId>
         </dependency>
 
     </dependencies>

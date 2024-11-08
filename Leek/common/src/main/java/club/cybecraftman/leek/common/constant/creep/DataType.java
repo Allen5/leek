@@ -8,7 +8,7 @@ public enum DataType {
     FUTURE_CONTRACT("contract", "合约信息爬取"),
 
 
-    BAR("行情信息爬取", "日行情信息爬取"),
+    BAR("bar", "日行情信息爬取"),
 
     // Tips: 待扩展
     ;

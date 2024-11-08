@@ -1,4 +1,4 @@
-package club.cybecraftman.leek.infrastructure.database;
+package club.cybecraftman.leek.infrastructure.database.datasource;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;

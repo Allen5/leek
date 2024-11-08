@@ -3,7 +3,7 @@ package club.cybecraftman.leek.repo.meta.model;
 import lombok.*;
 
 import javax.persistence.*;
-import java.util.Date;
+import java.time.LocalTime;
 
 @Getter
 @Setter
@@ -11,7 +11,7 @@ import java.util.Date;
 @ToString
 @Entity
 @Table(name = "meta_creeper", uniqueConstraints = {
-        @UniqueConstraint(name = "udx_creeper", columnNames = {"market", "financeType", "dataType", "sourceName"})
+        @UniqueConstraint(name = "udx_creeper", columnNames = {"market_code", "finance_type", "data_type", "source_name"})
 })
 public class Creeper {
 
@@ -23,38 +23,43 @@ public class Creeper {
     /**
      * @see club.cybecraftman.leek.common.constant.finance.Market
      */
-    private String market;
+    @Column(name = "market_code", nullable = false, length = 4)
+    private String marketCode;
 
     /**
      * @see club.cybecraftman.leek.common.constant.finance.FinanceType
      */
+    @Column(name = "finance_type", nullable = false, length = 20)
     private String financeType;
 
     /**
      * @see club.cybecraftman.leek.common.constant.creep.DataType
      */
+    @Column(name = "data_type", nullable = false, length = 20)
     private String dataType;
 
     /**
      * 爬取的数据源名称
      */
-    @Column(nullable = false)
+    @Column(name = "source_name", nullable = false, length = 20)
     private String sourceName;
 
     /**
      * 爬取数据源地址
      */
-    @Column(nullable = false)
+    @Column(name = "source", nullable = false)
     private String source;
 
     /**
      * @see club.cybecraftman.leek.common.constant.ValidStatus
      */
-    @Column(nullable = false)
+    @Column(name = "status", nullable = false, length = 4)
     private Integer status;
 
-    private Date createdAt;
+    @Column(name = "created_at", nullable = false)
+    private LocalTime createdAt;
 
-    private Date updatedAt;
+    @Column(name = "updated_at")
+    private LocalTime updatedAt;
 
 }

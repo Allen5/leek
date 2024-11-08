@@ -1,4 +1,4 @@
-package club.cybecraftman.leek.infrastructure.database;
+package club.cybecraftman.leek.infrastructure.database.datasource;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -21,29 +21,29 @@ import javax.sql.DataSource;
 @Configuration
 @EnableTransactionManagement
 @EnableJpaRepositories(
-        basePackages = "club.cybecraftman.leek.repo.admin.repository",
-        entityManagerFactoryRef = "adminEntityManagerFactory",
-        transactionManagerRef = "adminTransactionManager"
+        basePackages = "club.cybecraftman.leek.repo.stock.repository",
+        entityManagerFactoryRef = "stockEntityManagerFactory",
+        transactionManagerRef = "stockTransactionManager"
 )
-public class AdminJpaConfig {
+public class StockJpaConfig {
 
-    @Bean(name = "adminJpaProperties")
-    @ConfigurationProperties(prefix = "spring.jpa.admin")
-    @ConditionalOnProperty(prefix = "spring.datasource.admin", name = "enabled", havingValue = "true")
+    @Bean(name = "stockJpaProperties")
+    @ConfigurationProperties(prefix = "spring.jpa.stock")
+    @ConditionalOnProperty(prefix = "spring.datasource.stock", name = "enabled", havingValue = "true")
     public JpaProperties jpaProperties() {
         return new JpaProperties();
     }
 
-    @Bean(name = "adminEntityManagerFactory")
-    @ConditionalOnBean(name = {"adminDataSource", "adminJpaProperties"})
-    public LocalContainerEntityManagerFactoryBean entityManagerFactoryBean(@Qualifier("adminDataSource") DataSource dataSource,
-                                                                           @Qualifier("adminJpaProperties") JpaProperties jpaProperties,
+    @Bean(name = "stockEntityManagerFactory")
+    @ConditionalOnBean(name = {"stockDataSource", "stockJpaProperties"})
+    public LocalContainerEntityManagerFactoryBean entityManagerFactoryBean(@Qualifier("stockDataSource") DataSource dataSource,
+                                                                           @Qualifier("stockJpaProperties") JpaProperties jpaProperties,
                                                                            EntityManagerFactoryBuilder builder) {
         return builder
                 .dataSource(dataSource)
                 .properties(jpaProperties.getProperties())
-                .packages("club.cybecraftman.leek.repo.admin.model")
-                .persistenceUnit("adminPersistenceUnit").build();
+                .packages("club.cybecraftman.leek.repo.stock.model")
+                .persistenceUnit("stockPersistenceUnit").build();
     }
 
     /**
@@ -51,9 +51,9 @@ public class AdminJpaConfig {
      * @param factory
      * @return
      */
-    @Bean(name = "adminEntityManager")
-    @ConditionalOnBean(name = "adminEntityManagerFactory")
-    public EntityManager entityManager(@Qualifier("adminEntityManagerFactory") EntityManagerFactory factory) {
+    @Bean(name = "stockEntityManager")
+    @ConditionalOnBean(name = "stockEntityManagerFactory")
+    public EntityManager entityManager(@Qualifier("stockEntityManagerFactory") EntityManagerFactory factory) {
         return factory.createEntityManager();
     }
 
@@ -62,10 +62,9 @@ public class AdminJpaConfig {
      * @param factory
      * @return
      */
-    @Bean(name = "adminTransactionManager")
-    @ConditionalOnBean(name = "adminEntityManagerFactory")
-    public PlatformTransactionManager transactionManager(@Qualifier("adminEntityManagerFactory") EntityManagerFactory factory) {
+    @Bean(name = "stockTransactionManager")
+    @ConditionalOnBean(name = "stockEntityManagerFactory")
+    public PlatformTransactionManager transactionManager(@Qualifier("stockEntityManagerFactory") EntityManagerFactory factory) {
         return new JpaTransactionManager(factory);
     }
-
 }

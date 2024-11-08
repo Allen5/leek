@@ -1,4 +1,4 @@
-package club.cybecraftman.leek.infrastructure.database;
+package club.cybecraftman.leek.infrastructure.database.datasource;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -12,15 +12,15 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import javax.sql.DataSource;
 
 @Configuration
-@ConditionalOnProperty(prefix = "spring.datasource.stock", name = "enabled", havingValue = "true")
-public class StockDataSourceConfig {
+@ConditionalOnProperty(prefix = "spring.datasource.admin", name = "enabled", havingValue = "true")
+public class AdminDataSourceConfig {
 
     /**
      * 数据源配置
      * @return
      */
-    @Bean(name = "stockDataSourceProperties")
-    @ConfigurationProperties(prefix = "spring.datasource.stock")
+    @Bean(name = "adminDataSourceProperties")
+    @ConfigurationProperties(prefix = "spring.datasource.admin")
     public DataSourceProperties dataSourceProperties() {
         return new DataSourceProperties();
     }
@@ -30,15 +30,15 @@ public class StockDataSourceConfig {
      * @param dataSourceProperties
      * @return
      */
-    @Bean(name = "stockDataSource")
-    @ConditionalOnBean(name = "stockDataSourceProperties")
-    public DataSource dataSource(@Qualifier("stockDataSourceProperties") DataSourceProperties dataSourceProperties) {
+    @Bean(name = "adminDataSource")
+    @ConditionalOnBean(name = "adminDataSourceProperties")
+    public DataSource dataSource(@Qualifier("adminDataSourceProperties") DataSourceProperties dataSourceProperties) {
         return dataSourceProperties.initializeDataSourceBuilder().build();
     }
 
-    @Bean(name = "stockJdbcTemplate")
-    @ConditionalOnBean(name = "stockDataSource")
-    public JdbcTemplate jdbcTemplate(@Qualifier("stockDataSource") DataSource dataSource) {
+    @Bean(name = "adminJdbcTemplate")
+    @ConditionalOnBean(name = "adminDataSource")
+    public JdbcTemplate jdbcTemplate(@Qualifier("adminDataSource") DataSource dataSource) {
         return new JdbcTemplate(dataSource);
     }
 

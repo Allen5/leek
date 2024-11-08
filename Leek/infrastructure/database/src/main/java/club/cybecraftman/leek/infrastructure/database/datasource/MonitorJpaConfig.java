@@ -1,4 +1,4 @@
-package club.cybecraftman.leek.infrastructure.database;
+package club.cybecraftman.leek.infrastructure.database.datasource;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -21,29 +21,29 @@ import javax.sql.DataSource;
 @Configuration
 @EnableTransactionManagement
 @EnableJpaRepositories(
-        basePackages = "club.cybecraftman.leek.repo.future.repository",
-        entityManagerFactoryRef = "futureEntityManagerFactory",
-        transactionManagerRef = "futureTransactionManager"
+        basePackages = "club.cybecraftman.leek.repo.monitor.repository",
+        entityManagerFactoryRef = "monitorEntityManagerFactory",
+        transactionManagerRef = "monitorTransactionManager"
 )
-public class FutureJpaConfig {
+public class MonitorJpaConfig {
 
-    @Bean(name = "futureJpaProperties")
-    @ConfigurationProperties(prefix = "spring.jpa.future")
-    @ConditionalOnProperty(prefix = "spring.datasource.future", name = "enabled", havingValue = "true")
+    @Bean(name = "monitorJpaProperties")
+    @ConfigurationProperties(prefix = "spring.jpa.monitor")
+    @ConditionalOnProperty(prefix = "spring.datasource.monitor", name = "enabled", havingValue = "true")
     public JpaProperties jpaProperties() {
         return new JpaProperties();
     }
 
-    @Bean(name = "futureEntityManagerFactory")
-    @ConditionalOnBean(name = {"futureDataSource", "futureJpaProperties"})
-    public LocalContainerEntityManagerFactoryBean entityManagerFactoryBean(@Qualifier("futureDataSource") DataSource dataSource,
-                                                                           @Qualifier("futureJpaProperties") JpaProperties jpaProperties,
+    @Bean(name = "monitorEntityManagerFactory")
+    @ConditionalOnBean(name = {"monitorDataSource", "monitorJpaProperties"})
+    public LocalContainerEntityManagerFactoryBean entityManagerFactoryBean(@Qualifier("monitorDataSource") DataSource dataSource,
+                                                                           @Qualifier("monitorJpaProperties") JpaProperties jpaProperties,
                                                                            EntityManagerFactoryBuilder builder) {
         return builder
                 .dataSource(dataSource)
                 .properties(jpaProperties.getProperties())
-                .packages("club.cybecraftman.leek.repo.future.model")
-                .persistenceUnit("futurePersistenceUnit").build();
+                .packages("club.cybecraftman.leek.repo.monitor.model")
+                .persistenceUnit("monitorPersistenceUnit").build();
     }
 
     /**
@@ -51,9 +51,9 @@ public class FutureJpaConfig {
      * @param factory
      * @return
      */
-    @Bean(name = "futureEntityManager")
-    @ConditionalOnBean(name = "futureEntityManagerFactory")
-    public EntityManager entityManager(@Qualifier("futureEntityManagerFactory") EntityManagerFactory factory) {
+    @Bean(name = "monitorEntityManager")
+    @ConditionalOnBean(name = "monitorEntityManagerFactory")
+    public EntityManager entityManager(@Qualifier("monitorEntityManagerFactory") EntityManagerFactory factory) {
         return factory.createEntityManager();
     }
 
@@ -62,9 +62,9 @@ public class FutureJpaConfig {
      * @param factory
      * @return
      */
-    @Bean(name = "futureTransactionManager")
-    @ConditionalOnBean(name = "futureEntityManagerFactory")
-    public PlatformTransactionManager transactionManager(@Qualifier("futureEntityManagerFactory") EntityManagerFactory factory) {
+    @Bean(name = "monitorTransactionManager")
+    @ConditionalOnBean(name = "monitorEntityManagerFactory")
+    public PlatformTransactionManager transactionManager(@Qualifier("monitorEntityManagerFactory") EntityManagerFactory factory) {
         return new JpaTransactionManager(factory);
     }
 }

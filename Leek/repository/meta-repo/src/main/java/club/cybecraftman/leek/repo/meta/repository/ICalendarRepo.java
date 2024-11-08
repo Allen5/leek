@@ -22,7 +22,7 @@ public interface ICalendarRepo extends JpaRepository<Calendar, String> {
             "where t.marketCode = :market " +
             "       and t.financeType = :financeType " +
             "order by t.date")
-    List<Calendar> findAllByMarketAndFinanceType(final @Param("marketCode") String market,
+    List<Calendar> findAllByMarketAndFinanceType(final @Param("market") String market,
                                                  final @Param("financeType") String financeType);
 
     /**
@@ -39,7 +39,7 @@ public interface ICalendarRepo extends JpaRepository<Calendar, String> {
             "       and t.date >= :startTime " +
             "       and t.date <= :endTime " +
             "order by t.date")
-    List<Calendar> findAllByMarketAndFinanceTypeAndDateRange(final @Param("marketCode") String marketCode,
+    List<Calendar> findAllByMarketAndFinanceTypeAndDateRange(final @Param("market") String marketCode,
                                                              final @Param("financeType") String financeType,
                                                              final @Param("startTime") Date startTime,
                                                              final @Param("endTime") Date endTime);
