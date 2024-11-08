@@ -1,6 +1,6 @@
 FROM adoptopenjdk/openjdk11
 
-COPY target/leek-etl-service.jar /application.jar
+COPY target/leek-gateway-service.jar /application.jar
 
 EXPOSE 8080
 
