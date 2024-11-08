@@ -20,6 +20,7 @@
         <module>app-creep</module>
         <module>app-monitor</module>
         <module>app-trade</module>
+        <module>app-gateway</module>
     </modules>
 
     <properties>
@@ -38,11 +39,6 @@
         <dependency>
             <groupId>club.cybecraftman.leek.infrastructure</groupId>
             <artifactId>config-center</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>club.cybecraftman.leek.repo</groupId>
-            <artifactId>meta-repo</artifactId>
         </dependency>
 
     </dependencies>

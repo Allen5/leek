@@ -2,15 +2,18 @@ package club.cybecraftman.leek.domain.backtest;
 
 import club.cybecraftman.leek.common.thread.AbstractTask;
 import club.cybecraftman.leek.core.strategy.IStrategy;
+import club.cybecraftman.leek.core.strategy.dto.Bar;
+import club.cybecraftman.leek.repo.meta.model.Calendar;
 import club.cybecraftman.leek.repo.meta.repository.ICalendarRepo;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
 @Setter
+@Slf4j
 public class BackTestTask extends AbstractTask {
 
     /**
@@ -36,12 +39,15 @@ public class BackTestTask extends AbstractTask {
         calendars.forEach(date -> {
             // TODO: 根据参数的周期范围加载数据
             // step2: 调用策略的onNextBar触发事件
-            strategy.onNextBar();
+            // TODO: 修整bar参数
+            log.debug("[回测][日期: {}][策略: {}]开始调用onNextBar", date, strategy.getClass().getName());
+            strategy.onNextBar(new Bar());
+            log.debug("[回测][日期: {}][策略: {}]调用onNextBar结束", date, strategy.getClass().getName());
         });
     }
 
     private List<Calendar> loadTradeDays() {
-        return calendarRepo.findAllByMarketAndFinanceTypeDateRange(param.getMarketCode(),
+        return calendarRepo.findAllByMarketAndFinanceTypeAndDateRange(param.getMarketCode(),
                 param.getFinanceType(),
                 startTime,
                 endTime);
