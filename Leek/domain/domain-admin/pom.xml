@@ -4,35 +4,32 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>club.cybecraftman.leek</groupId>
-        <artifactId>Leek</artifactId>
+        <groupId>club.cybecraftman.leek.domain</groupId>
+        <artifactId>domain</artifactId>
         <version>1.0.0-SNAPSHOT</version>
     </parent>
 
-    <groupId>club.cybecraftman.leek.domain</groupId>
-    <artifactId>domain</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
-    <packaging>pom</packaging>
-    <modules>
-        <module>domain-backtest</module>
-        <module>domain-monitor</module>
-        <module>domain-trade</module>
-        <module>domain-meta</module>
-        <module>domain-finance-data</module>
-        <module>domain-admin</module>
-    </modules>
+    <artifactId>domain-admin</artifactId>
 
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+        <jjwt.version>0.12.3</jjwt.version>
     </properties>
 
     <dependencies>
 
         <dependency>
-            <groupId>club.cybecraftman.leek</groupId>
-            <artifactId>core</artifactId>
+            <groupId>club.cybecraftman.leek.repo</groupId>
+            <artifactId>repo-admin</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt</artifactId>
+            <version>${jjwt.version}</version>
         </dependency>
 
     </dependencies>

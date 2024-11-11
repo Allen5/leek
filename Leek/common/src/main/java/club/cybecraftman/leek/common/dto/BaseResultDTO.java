@@ -15,4 +15,13 @@ public class BaseResultDTO<T> {
 
     private T data;
 
+    public static <T> BaseResultDTO<T> success(final T data) {
+        BaseResultDTO<T> resp = new BaseResultDTO<>();
+        resp.setCode(200);
+        resp.setMessage("success");
+        resp.setSuccess(true);
+        resp.setData(data);
+        return resp;
+    }
+
 }

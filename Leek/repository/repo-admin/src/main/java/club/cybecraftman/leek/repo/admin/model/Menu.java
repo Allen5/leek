@@ -6,7 +6,8 @@ import lombok.ToString;
 import javax.persistence.*;
 import java.util.Date;
 
-@Entity(name = "admin_menu")
+@Entity
+@Table(name = "admin_menu")
 @Data
 @ToString
 public class Menu {
@@ -15,15 +16,15 @@ public class Menu {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(name = "permission_id", nullable = false)
     private Long permissionId;
 
-    @Column(nullable = false)
+    @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(nullable = false)
+    @Column(name = "created_at", nullable = false)
     private Date createdAt;
 
-    @Column(nullable = false)
+    @Column(name = "updated_at", nullable = false)
     private Date updatedAt;
 }

@@ -1,4 +1,4 @@
-package club.cybecraftman.leek.dto.account;
+package club.cybecraftman.leek.domain.admin.vo;
 
 import lombok.Builder;
 import lombok.Data;
@@ -7,7 +7,7 @@ import lombok.ToString;
 @Builder
 @Data
 @ToString
-public class LoginRespDTO {
+public class Token {
 
     private String token;
 
