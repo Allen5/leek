@@ -1,6 +1,7 @@
 package club.cybecraftman.leek.domain.admin;
 
 import club.cybecraftman.leek.common.constant.admin.UserStatus;
+import club.cybecraftman.leek.common.crypt.MD5Util;
 import club.cybecraftman.leek.common.exception.LeekException;
 import club.cybecraftman.leek.repo.admin.model.Token;
 import club.cybecraftman.leek.repo.admin.model.User;
@@ -40,8 +41,8 @@ public class AccountService {
             throw new LeekException("用户不存在: " + username);
         }
         User user = op.get();
-        // TODO: 密码加密
-        if ( !user.getPassword().equalsIgnoreCase(password) ) {
+        String candidate = MD5Util.generate(password).toUpperCase();
+        if ( !user.getPassword().equals(candidate) ) {
             throw new LeekException("用户名或密码错误");
         }
         // 先删除
