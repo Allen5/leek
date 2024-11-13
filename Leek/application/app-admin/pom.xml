@@ -30,23 +30,23 @@
         </dependency>
 
         <dependency>
-            <groupId>club.cybecraftman.leek.repo</groupId>
-            <artifactId>repo-meta</artifactId>
+            <groupId>club.cybecraftman.leek.domain</groupId>
+            <artifactId>domain-finance-data</artifactId>
         </dependency>
 
         <dependency>
-            <groupId>club.cybecraftman.leek.repo</groupId>
-            <artifactId>repo-finance-data</artifactId>
+            <groupId>club.cybecraftman.leek.domain</groupId>
+            <artifactId>domain-monitor</artifactId>
         </dependency>
 
         <dependency>
-            <groupId>club.cybecraftman.leek.repo</groupId>
-            <artifactId>repo-monitor</artifactId>
+            <groupId>club.cybecraftman.leek.domain</groupId>
+            <artifactId>domain-trade</artifactId>
         </dependency>
 
         <dependency>
-            <groupId>club.cybecraftman.leek.repo</groupId>
-            <artifactId>repo-trade</artifactId>
+            <groupId>club.cybecraftman.leek.domain</groupId>
+            <artifactId>domain-backtest</artifactId>
         </dependency>
 
         <dependency>

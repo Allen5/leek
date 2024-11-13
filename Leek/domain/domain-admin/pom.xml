@@ -23,7 +23,17 @@
 
         <dependency>
             <groupId>club.cybecraftman.leek.repo</groupId>
+            <artifactId>repo-meta</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>club.cybecraftman.leek.repo</groupId>
             <artifactId>repo-admin</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>club.cybecraftman.leek.repo</groupId>
+            <artifactId>repo-monitor</artifactId>
         </dependency>
 
         <dependency>

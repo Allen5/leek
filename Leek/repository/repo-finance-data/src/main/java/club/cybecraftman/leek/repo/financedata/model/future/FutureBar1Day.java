@@ -10,7 +10,8 @@ import java.util.Date;
 /**
  * 期货日行情信息
  */
-@Entity(name = "future_bar_1day")
+@Entity
+@Table(name = "future_bar_1day")
 @Data
 @ToString
 public class FutureBar1Day {
