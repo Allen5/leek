@@ -1,4 +1,4 @@
-package club.cybecraftman.leek.controller;
+package club.cybecraftman.leek.controller.account;
 
 import club.cybecraftman.leek.common.dto.BaseResultDTO;
 import club.cybecraftman.leek.common.exception.LeekException;
