@@ -66,7 +66,7 @@ public class FutureContract {
     /**
      * 最小报价单位
      */
-    @Column(name = "price_tick", precision = 18, scale = 2)
+    @Column(name = "price_tick", precision = 18, scale = 4)
     private BigDecimal priceTick;
 
     /**
