@@ -17,6 +17,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <playwright.version>1.45.1</playwright.version>
+        <easyexcel>4.0.3</easyexcel>
     </properties>
 
     <dependencies>
@@ -46,6 +47,14 @@
             <groupId>club.cybecraftman.leek.domain</groupId>
             <artifactId>domain-monitor</artifactId>
         </dependency>
+
+        <!-- https://mvnrepository.com/artifact/com.alibaba/easyexcel -->
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>easyexcel</artifactId>
+            <version>${easyexcel}</version>
+        </dependency>
+
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
