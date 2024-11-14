@@ -2,16 +2,15 @@ package club.cybecraftman.leek.common.event.etl;
 
 import club.cybecraftman.leek.common.constant.finance.BarType;
 import club.cybecraftman.leek.common.event.BaseEvent;
+import com.alibaba.fastjson2.JSONArray;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
-import java.util.List;
-
 @EqualsAndHashCode(callSuper = true)
 @Data
 @ToString
-public class BarEvent<T>  extends BaseEvent {
+public class BarEvent  extends BaseEvent {
 
     /**
      * @see BarType
@@ -31,6 +30,6 @@ public class BarEvent<T>  extends BaseEvent {
     /**
      * 数据信息
      */
-    private List<T> items;
+    private JSONArray items;
 
 }

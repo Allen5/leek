@@ -13,6 +13,8 @@ import club.cybecraftman.leek.common.exception.LeekException;
 import club.cybecraftman.leek.common.exception.LeekRuntimeException;
 import club.cybecraftman.leek.creeper.BaseCreeper;
 import club.cybecraftman.leek.reader.future.DCEExcelReader;
+import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.JSONArray;
 import com.microsoft.playwright.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -51,11 +53,11 @@ public class FutureBarDCECreeper extends BaseCreeper {
             throw new LeekRuntimeException("日期解析失败: " + currentTradeDate);
         }
         // step4: 发送消息
-        BarEvent<FutureBarEventData> event = new BarEvent<>();
+        BarEvent event = new BarEvent();
         event.setBarType(BarType.DAILY.getType());
         event.setMarketCode(getEvent().getMarketCode());
         event.setFinanceType(getEvent().getFinanceType());
-        event.setItems(items);
+        event.setItems(JSONArray.parse(JSON.toJSONString(items)));
         getKafkaProducer().publish(LeekEvent.ON_BAR_RECEIVED.topic, event);
     }
 

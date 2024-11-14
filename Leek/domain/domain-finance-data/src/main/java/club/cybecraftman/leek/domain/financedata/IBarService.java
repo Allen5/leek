@@ -3,6 +3,7 @@ package club.cybecraftman.leek.domain.financedata;
 import club.cybecraftman.leek.common.constant.finance.BarType;
 import club.cybecraftman.leek.common.constant.finance.FinanceType;
 import club.cybecraftman.leek.common.constant.finance.Market;
+import com.alibaba.fastjson2.JSONArray;
 
 import java.util.List;
 
@@ -25,6 +26,6 @@ public interface IBarService<T> {
      * 处理bars
      * @param bars
      */
-    void handleBars(final List<T> bars);
+    void handleBars(final JSONArray bars);
 
 }

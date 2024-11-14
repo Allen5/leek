@@ -7,6 +7,8 @@ import club.cybecraftman.leek.common.event.etl.future.FutureBarEventData;
 import club.cybecraftman.leek.domain.financedata.IBarService;
 import club.cybecraftman.leek.repo.financedata.model.future.FutureBar1Day;
 import club.cybecraftman.leek.repo.financedata.repository.future.IFutureBar1DayRepo;
+import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.JSONArray;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,14 +19,15 @@ import java.util.stream.Collectors;
 
 @Service
 @Slf4j
-public class FutureDailyBarService implements IBarService<FutureBarEventData> {
+public class FutureDailyBarService implements IBarService {
 
     @Autowired
     private IFutureBar1DayRepo bar1DayRepo;
 
     @Override
     @Transactional
-    public void handleBars(List<FutureBarEventData> bars) {
+    public void handleBars(JSONArray data) {
+        List<FutureBarEventData> bars = data.toJavaList(FutureBarEventData.class);
         // 先删除
         bars.forEach(b -> bar1DayRepo.deleteByDateTimeAndSymbol(b.getDatetime(), b.getSymbol()));
         // 再新增
