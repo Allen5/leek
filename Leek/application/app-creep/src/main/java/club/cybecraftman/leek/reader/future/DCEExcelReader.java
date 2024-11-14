@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 /**
  * 郑商所每日行情文件读取
  */
-public class CZCEExcelReader {
+public class DCEExcelReader {
 
     /**
      * 需要过滤的行
@@ -41,7 +41,7 @@ public class CZCEExcelReader {
                 .map(item -> {
                     FutureBarEventData data = new FutureBarEventData();
                     data.setDatetime(datetime);
-                    data.setContractCode(convertContractCode(item.getContractCode()));
+                    data.setContractCode(item.getContractCode());
                     data.setProductCode(extractProductCode(item.getContractCode()));
                     data.setSymbol(data.getContractCode());
                     data.setOpen(item.getOpen());
@@ -53,21 +53,6 @@ public class CZCEExcelReader {
                     data.setClose(item.getClose());
                     return data;
                 }).collect(Collectors.toList());
-    }
-
-    private static String convertContractCode(final String original) {
-        // 取年份的倒数第二位作为前缀. 如: 2024，取2。
-        Calendar calendar = Calendar.getInstance();
-        String year = String.valueOf(calendar.get(Calendar.YEAR));
-        StringBuilder sb = new StringBuilder();
-        sb.append(year.charAt(year.length() - 1));
-        for (int i=0; i<original.length(); i++) {
-            if ( sb.charAt(i) >= '0' && sb.charAt(i) <= '9' ) {
-                sb.append(sb.charAt(i));
-            }
-        }
-        sb.append(".").append(Exchange.CZCE.getCode().toUpperCase());
-        return sb.toString();
     }
 
     /**
