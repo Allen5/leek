@@ -4,7 +4,8 @@ import lombok.Getter;
 
 public enum SourceName {
 
-    SINA("新浪财经", "新浪数据源"),
+    SINA("新浪期货", "新浪期货数据源"),
+    CZCE("郑商所", "郑商所官方数据源"),
 
     ;
 

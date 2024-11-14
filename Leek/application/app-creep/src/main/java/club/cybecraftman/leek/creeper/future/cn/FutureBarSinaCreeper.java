@@ -6,6 +6,7 @@ import club.cybecraftman.leek.common.constant.finance.FinanceType;
 import club.cybecraftman.leek.common.constant.finance.Market;
 import club.cybecraftman.leek.common.dto.event.creep.CreepEvent;
 import club.cybecraftman.leek.creeper.BaseCreeper;
+import com.microsoft.playwright.Page;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -22,7 +23,7 @@ public class FutureBarSinaCreeper extends BaseCreeper {
     }
 
     @Override
-    protected void doCreep() {
+    protected void doCreep(final Page page) {
         // TODO: 执行爬取逻辑
     }
 
@@ -37,9 +38,6 @@ public class FutureBarSinaCreeper extends BaseCreeper {
         if ( !DataType.BAR.getType().equals(event.getDataType()) ) {
             return false;
         }
-        if ( !SourceName.SINA.getName().equals(event.getSourceName())) {
-            return false;
-        }
-        return true;
+        return SourceName.SINA.getName().equals(event.getSourceName());
     }
 }

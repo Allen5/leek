@@ -47,4 +47,16 @@ public interface ICalendarRepo extends JpaRepository<Calendar, String> {
                                                              final @Param("startTime") Date startTime,
                                                              final @Param("endTime") Date endTime);
 
+    /**
+     * 查询当前交易日
+     * @param marketCode
+     * @param financeType
+     * @param today
+     * @return
+     */
+    @Query("SELECT max(t.date) from Calendar t where t.date <= :today and t.marketCode = :market and t.financeType = :financeType ")
+    Date findCurrentTradeDate(final @Param("market") String marketCode,
+                              final @Param("financeType") String financeType,
+                              final @Param("today") Date today);
+
 }

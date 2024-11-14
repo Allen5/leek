@@ -1,4 +1,4 @@
-package club.cybecraftman.leek.common.dto.event;
+package club.cybecraftman.leek.common.event;
 
 import lombok.ToString;
 

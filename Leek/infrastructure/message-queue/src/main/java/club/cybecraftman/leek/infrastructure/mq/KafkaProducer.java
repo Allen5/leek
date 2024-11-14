@@ -1,6 +1,6 @@
 package club.cybecraftman.leek.infrastructure.mq;
 
-import club.cybecraftman.leek.common.dto.event.BaseEvent;
+import club.cybecraftman.leek.common.event.BaseEvent;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;

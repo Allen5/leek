@@ -1,14 +1,17 @@
 package club.cybecraftman.leek.common.event.etl;
 
 import club.cybecraftman.leek.common.constant.finance.BarType;
+import club.cybecraftman.leek.common.event.BaseEvent;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 import java.util.List;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
 @ToString
-public class BarEvent<T> {
+public class BarEvent<T>  extends BaseEvent {
 
     /**
      * @see BarType

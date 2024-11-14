@@ -1,6 +1,6 @@
 package club.cybecraftman.leek.infrastructure.mq;
 
-import club.cybecraftman.leek.common.dto.event.BaseEvent;
+import club.cybecraftman.leek.common.event.BaseEvent;
 
 public interface IProducer {
 
