@@ -6,6 +6,7 @@ import club.cybecraftman.leek.domain.monitor.creep.CreepActionMonitor;
 import club.cybecraftman.leek.infrastructure.mq.KafkaProducer;
 import club.cybecraftman.leek.repo.financedata.repository.ICalendarRepo;
 import com.microsoft.playwright.Browser;
+import com.microsoft.playwright.BrowserType;
 import com.microsoft.playwright.Page;
 import com.microsoft.playwright.Playwright;
 import lombok.Getter;
@@ -49,8 +50,10 @@ public abstract class BaseCreeper<T> implements ICreeper {
         // 初始化
         this.before();
         Long logId = creepActionMonitor.init(this.getClass().getName(), this.event);
+        BrowserType.LaunchOptions options = new BrowserType.LaunchOptions();
+        options.setHeadless(true);
         try(Playwright playwright = Playwright.create();
-            Browser browser = playwright.chromium().launch()) {
+            Browser browser = playwright.firefox().launch(options)) {
             Page page = browser.newPage();
             page.navigate(event.getSource());
             log.info("开始爬取地址: {}. event: {}. class: {}", event.getSource(), event, this.getClass().getName());
