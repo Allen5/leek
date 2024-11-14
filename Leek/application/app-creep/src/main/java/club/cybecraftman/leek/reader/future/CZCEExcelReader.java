@@ -3,6 +3,8 @@ package club.cybecraftman.leek.reader.future;
 import club.cybecraftman.leek.common.constant.finance.future.Exchange;
 import club.cybecraftman.leek.common.event.etl.future.FutureBarEventData;
 import com.alibaba.excel.EasyExcel;
+import com.alibaba.excel.context.AnalysisContext;
+import com.alibaba.excel.read.listener.ReadListener;
 
 import java.math.BigDecimal;
 import java.util.*;
@@ -35,18 +37,26 @@ public class CZCEExcelReader {
      * @return
      */
     public static List<FutureBarEventData> readDailyBar(final Date datetime, final String filepath) {
-        List<CZCEBarItem> items = EasyExcel.read(filepath).headRowNumber(HEAD_ROW_NUM).sheet(0).doReadSync();
+        List<CZCEBarItem> items = EasyExcel.read(filepath, CZCEBarItem.class, new ReadListener<CZCEBarItem>() {
+            @Override
+            public void invoke(CZCEBarItem czceBarItem, AnalysisContext analysisContext) {
+            }
+            @Override
+            public void doAfterAllAnalysed(AnalysisContext analysisContext) {
+            }
+        }).headRowNumber(HEAD_ROW_NUM).sheet(0).doReadSync();
         return items.stream().parallel()
                 .filter(item -> !INVALID_CONTRACT_CODE.contains(item.getContractCode()))
                 .map(item -> {
-                    FutureBarEventData data = new FutureBarEventData();
+                    FutureBarEventData data =new FutureBarEventData();
                     data.setDatetime(datetime);
-                    data.setContractCode(convertContractCode(item.getContractCode()));
                     data.setProductCode(extractProductCode(item.getContractCode()));
+                    data.setContractCode(data.getProductCode() + convertContractCode(item.getContractCode()));
                     data.setSymbol(data.getContractCode());
                     data.setOpen(item.getOpen());
                     data.setHigh(item.getHigh());
                     data.setLow(item.getLow());
+                    data.setSettle(item.getSettle());
                     data.setVolume(item.getVolume());
                     data.setOpenInterest(item.getOpenInterest());
                     data.setAmount(item.getAmount().multiply(BigDecimal.valueOf(10000)));
@@ -60,13 +70,13 @@ public class CZCEExcelReader {
         Calendar calendar = Calendar.getInstance();
         String year = String.valueOf(calendar.get(Calendar.YEAR));
         StringBuilder sb = new StringBuilder();
-        sb.append(year.charAt(year.length() - 1));
+        sb.append(year.charAt(year.length() - 2));
         for (int i=0; i<original.length(); i++) {
-            if ( sb.charAt(i) >= '0' && sb.charAt(i) <= '9' ) {
-                sb.append(sb.charAt(i));
+            if ( original.charAt(i) >= '0' && original.charAt(i) <= '9' ) {
+                sb.append(original.charAt(i));
             }
         }
-        sb.append(".").append(Exchange.CZCE.getCode().toUpperCase());
+        sb.append(".").append(Exchange.CZCE.getCode().toUpperCase(), 0, 3);
         return sb.toString();
     }
 
@@ -79,10 +89,10 @@ public class CZCEExcelReader {
         StringBuilder sb = new StringBuilder();
         for(int i=0; i<contractCode.length(); i++) {
             // 遇到第一个数字，则跳出
-            if ( sb.charAt(i) >= '0' && sb.charAt(i) <= '9' ) {
+            if ( contractCode.charAt(i) >= '0' && contractCode.charAt(i) <= '9' ) {
                 break;
             }
-            sb.append(sb.charAt(i));
+            sb.append(contractCode.charAt(i));
         }
         return sb.toString();
     }
