@@ -33,4 +33,17 @@ public class CreepTest {
         creeper.creep();
     }
 
+    @Test
+    public void testDCECreep() {
+        CreepEvent event = new CreepEvent();
+        event.setMarketCode(Market.CN.getCode());
+        event.setFinanceType(FinanceType.FUTURE.getType());
+        event.setDataType(DataType.BAR.getType());
+        event.setSourceName(SourceName.DCE.getName());
+        event.setSource("http://www.dce.com.cn/dalianshangpin/xqsj/tjsj26/rtj/rxq/index.html");
+        BaseCreeper creeper = builder.build(event);
+        creeper.setEvent(event);
+        creeper.creep();
+    }
+
 }

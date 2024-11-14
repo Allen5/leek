@@ -13,9 +13,7 @@ import club.cybecraftman.leek.common.exception.LeekException;
 import club.cybecraftman.leek.common.exception.LeekRuntimeException;
 import club.cybecraftman.leek.creeper.BaseCreeper;
 import club.cybecraftman.leek.reader.future.DCEExcelReader;
-import com.microsoft.playwright.Download;
-import com.microsoft.playwright.ElementHandle;
-import com.microsoft.playwright.Page;
+import com.microsoft.playwright.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -25,6 +23,8 @@ import java.nio.file.Paths;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Component
 @Slf4j
@@ -45,12 +45,15 @@ public class FutureBarDCECreeper extends BaseCreeper {
 
     @Override
     protected void doCreep(final Page page) throws LeekException {
+
+        FrameLocator locator = page.frameLocator("iframe").last();
+
         // step0: 获取当前交易日
         String currentTradeDate = getCurrentTradeDate(sdf);
         // step1: 校验交易日
-        checkTradeDate(page, currentTradeDate);
+        checkTradeDate(locator, currentTradeDate);
         // step2: 下载文件
-        String filename = downloadFile(page, currentTradeDate);
+        String filename = downloadFile(locator, currentTradeDate);
         // step3: 解析excel文件
         List<FutureBarEventData> items;
         try {
@@ -67,10 +70,10 @@ public class FutureBarDCECreeper extends BaseCreeper {
         getKafkaProducer().publish(LeekEvent.ON_BAR_RECEIVED.topic, event);
     }
 
-    private void checkTradeDate(final Page page, final String currentTradeDate) throws LeekException {
+    private void checkTradeDate(final FrameLocator locator, final String currentTradeDate) throws LeekException {
         // step1: 获取页面上的交易日信息
         // meta: div.jysjtop > div.fr > span
-        ElementHandle el = page.querySelector("div.tradeResult02 > p > span");
+        Locator el = locator.locator("div.tradeResult02 > p > span");
         if ( el == null ) {
             log.error("[DCE]获取地址: {} 上的元素[div.tradeResult02 > p > span] 失败. event: {}", getEvent().getSource(), getEvent());
             throw new LeekRuntimeException("元素定位失败: div.tradeResult02 > p > span");
@@ -80,8 +83,14 @@ public class FutureBarDCECreeper extends BaseCreeper {
             log.error("[DCE]地址: {}上的元素[div.tradeResult02 > p > span]内容为空. event: {}", getEvent().getSource(), getEvent());
             throw new LeekRuntimeException("元素内容为空: div.tradeResult02 > p > span");
         }
-        String[] items = content.split(" ");
-        String candidate = items[0].split(":")[1].trim();
+
+        Pattern pattern = Pattern.compile("\\d{4}\\d{2}\\d{2}");
+        Matcher matcher = pattern.matcher(content);
+        if ( !matcher.find() ) {
+            log.error("[DCE]地址: {}上的元素[div.tradeResult02 > p > span]内容不包含日期. event: {}", getEvent().getSource(), getEvent());
+            throw new LeekRuntimeException("元素内容不包含日期: div.tradeResult02 > p > span");
+        }
+        String candidate = matcher.group(0);
         if ( !currentTradeDate.equals(candidate) ) {
             log.error("[DCE]当前的交易日为:{}，官方当前数据所属交易日为: {}。两者不一致，等待官方更新.", currentTradeDate, candidate);
             throw new LeekException("数据所属交易日和当前交易日不匹配");
@@ -90,19 +99,21 @@ public class FutureBarDCECreeper extends BaseCreeper {
 
     /**
      * 下载excel文件
-     * @param page
+     * @param locator
      */
-    private String downloadFile(final Page page, final String currentTradeDate) {
+    private String downloadFile(final FrameLocator locator, final String currentTradeDate) {
         String filepath = DOWNLOAD_FILE_ROOT_DIR + File.separator + "DCE_" + currentTradeDate + ".xls";
-        List<ElementHandle> els = page.querySelectorAll("div.tradeResult02 > ul > li > a");
-        if ( null == els || els.size() != 3) {
-            log.error("[DCE]获取地址: {} 上的元素[div.tradeResult02 > ul > li > a] 失败. event: {}", getEvent().getSource(), getEvent());
-            throw new LeekRuntimeException("元素定位失败: div.tradeResult02 > ul > li > a");
+        Locator el = locator.locator("div.tradeResult02 > ul > li:nth-child(2) > a");
+        if ( null == el) {
+            log.error("[DCE]获取地址: {} 上的元素[div.tradeResult02 > ul > li:nth-child(2) > a] 失败. event: {}", getEvent().getSource(), getEvent());
+            throw new LeekRuntimeException("元素定位失败: div.tradeResult02 > ul > li:nth-child(2) > a");
         }
         log.info("[DCE]开始下载文件");
-        Download download = page.waitForDownload(els.get(1)::click); // 中间那个是下载excel的
-        download.saveAs(Paths.get(filepath));
-        log.info("[DCE]文件下载完成。 保存位置: {}", filepath);
+        try(Page page = locator.owner().page()) {
+            Download download = page.waitForDownload(el::click); // 中间那个是下载excel的
+            download.saveAs(Paths.get(filepath));
+            log.info("[DCE]文件下载完成。 保存位置: {}", filepath);
+        }
         return filepath;
     }
 
