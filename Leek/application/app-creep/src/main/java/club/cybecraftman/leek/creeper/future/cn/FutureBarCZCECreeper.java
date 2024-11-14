@@ -112,7 +112,7 @@ public class FutureBarCZCECreeper extends BaseCreeper {
         return Market.CN.getCode().equals(event.getMarketCode()) &&
                 FinanceType.FUTURE.getType().equals(event.getFinanceType()) &&
                 DataType.BAR.getType().equals(event.getDataType()) &&
-                SourceName.CZCE.getName().equals(event.getSource());
+                SourceName.CZCE.getName().equals(event.getSourceName());
     }
 
 }

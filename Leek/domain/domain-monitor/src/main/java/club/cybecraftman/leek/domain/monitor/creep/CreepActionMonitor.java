@@ -51,8 +51,9 @@ public class CreepActionMonitor {
     }
 
     @Transactional
-    public void fail(final Long logId) {
+    public void fail(final Long logId, final String errMessage) {
         CreepLog creepLog = getById(logId);
+        creepLog.setErrCause(errMessage);
         creepLog.setStatus(CommonExecuteStatus.FAIL.getStatus());
         creepLog.setUpdatedAt(new Date());
         creeperLog.save(creepLog);

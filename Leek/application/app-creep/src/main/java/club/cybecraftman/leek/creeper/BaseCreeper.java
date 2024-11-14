@@ -19,6 +19,7 @@ import java.util.Date;
 @Slf4j
 public abstract class BaseCreeper<T> implements ICreeper {
 
+    // Tips: 后续改为配置
     public static final String DOWNLOAD_FILE_ROOT_DIR = "download";
 
     @Getter
@@ -58,7 +59,7 @@ public abstract class BaseCreeper<T> implements ICreeper {
             creepActionMonitor.success(logId);
         } catch (Exception e){
             log.error("[creeper: {}] 执行事件[{}] 失败", this.getClass().getName(), this.event, e);
-            creepActionMonitor.fail(logId);
+            creepActionMonitor.fail(logId, e.getMessage());
         }
         this.after();
     }

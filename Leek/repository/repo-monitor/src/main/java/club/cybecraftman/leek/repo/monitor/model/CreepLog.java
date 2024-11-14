@@ -36,11 +36,13 @@ public class CreepLog {
     @Column(name = "source_name", nullable = false, length = 20)
     private String sourceName;
 
+    @Column(name = "source", length = 1024)
     private String source;
 
     @Column(name = "status", nullable = false, length = 4)
     private Integer status;
 
+    @Column(name = "err_cause", length = 4096)
     private String errCause;
 
     @Column(name = "created_at", nullable = false)

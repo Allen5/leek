@@ -31,8 +31,10 @@
 
     <!-- 为特定的包设置日志级别 -->
     <logger name="club.cybecraftman.leek" level="INFO" additivity="false">
+        <appender-ref ref="STDOUT" />
         <appender-ref ref="FILE" />
     </logger>
+
 
 
 </configuration>

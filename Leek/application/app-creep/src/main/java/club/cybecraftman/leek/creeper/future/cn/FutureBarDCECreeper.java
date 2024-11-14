@@ -108,11 +108,11 @@ public class FutureBarDCECreeper extends BaseCreeper {
 
     @Override
     public boolean isSupport(CreepEvent event) {
-        // 中国期货市场郑商所官方行情数据
+        // 中国期货市场大商所官方行情数据
         return Market.CN.getCode().equals(event.getMarketCode()) &&
                 FinanceType.FUTURE.getType().equals(event.getFinanceType()) &&
                 DataType.BAR.getType().equals(event.getDataType()) &&
-                SourceName.DCE.getName().equals(event.getSource());
+                SourceName.DCE.getName().equals(event.getSourceName());
     }
 
 }
