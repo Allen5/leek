@@ -2,6 +2,7 @@ package club.cybecraftman.leek.reader.future;
 
 import club.cybecraftman.leek.common.constant.finance.future.Exchange;
 import club.cybecraftman.leek.common.event.etl.future.FutureBarEventData;
+import club.cybecraftman.leek.reader.listener.SimpleReadListener;
 import com.alibaba.excel.EasyExcel;
 
 import java.math.BigDecimal;
@@ -35,18 +36,19 @@ public class DCEExcelReader {
      * @return
      */
     public static List<FutureBarEventData> readDailyBar(final Date datetime, final String filepath) {
-        List<CZCEBarItem> items = EasyExcel.read(filepath).headRowNumber(HEAD_ROW_NUM).sheet(0).doReadSync();
+        List<DCEBarItem> items = EasyExcel.read(filepath, DCEBarItem.class, new SimpleReadListener()).headRowNumber(HEAD_ROW_NUM).sheet(0).doReadSync();
         return items.stream().parallel()
                 .filter(item -> !INVALID_CONTRACT_CODE.contains(item.getContractCode()))
                 .map(item -> {
                     FutureBarEventData data = new FutureBarEventData();
                     data.setDatetime(datetime);
-                    data.setContractCode(item.getContractCode());
+                    data.setContractCode(item.getContractCode() + "." + Exchange.DCE.getCode().substring(0, 3));
                     data.setProductCode(extractProductCode(item.getContractCode()));
                     data.setSymbol(data.getContractCode());
                     data.setOpen(item.getOpen());
                     data.setHigh(item.getHigh());
                     data.setLow(item.getLow());
+                    data.setSettle(item.getSettle());
                     data.setVolume(item.getVolume());
                     data.setOpenInterest(item.getOpenInterest());
                     data.setAmount(item.getAmount().multiply(BigDecimal.valueOf(10000)));
@@ -64,10 +66,10 @@ public class DCEExcelReader {
         StringBuilder sb = new StringBuilder();
         for(int i=0; i<contractCode.length(); i++) {
             // 遇到第一个数字，则跳出
-            if ( sb.charAt(i) >= '0' && sb.charAt(i) <= '9' ) {
+            if ( contractCode.charAt(i) >= '0' && contractCode.charAt(i) <= '9' ) {
                 break;
             }
-            sb.append(sb.charAt(i));
+            sb.append(contractCode.charAt(i));
         }
         return sb.toString();
     }

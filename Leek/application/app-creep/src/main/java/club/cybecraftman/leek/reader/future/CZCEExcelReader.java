@@ -2,6 +2,7 @@ package club.cybecraftman.leek.reader.future;
 
 import club.cybecraftman.leek.common.constant.finance.future.Exchange;
 import club.cybecraftman.leek.common.event.etl.future.FutureBarEventData;
+import club.cybecraftman.leek.reader.listener.SimpleReadListener;
 import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.context.AnalysisContext;
 import com.alibaba.excel.read.listener.ReadListener;
@@ -37,14 +38,7 @@ public class CZCEExcelReader {
      * @return
      */
     public static List<FutureBarEventData> readDailyBar(final Date datetime, final String filepath) {
-        List<CZCEBarItem> items = EasyExcel.read(filepath, CZCEBarItem.class, new ReadListener<CZCEBarItem>() {
-            @Override
-            public void invoke(CZCEBarItem czceBarItem, AnalysisContext analysisContext) {
-            }
-            @Override
-            public void doAfterAllAnalysed(AnalysisContext analysisContext) {
-            }
-        }).headRowNumber(HEAD_ROW_NUM).sheet(0).doReadSync();
+        List<CZCEBarItem> items = EasyExcel.read(filepath, CZCEBarItem.class, new SimpleReadListener()).headRowNumber(HEAD_ROW_NUM).sheet(0).doReadSync();
         return items.stream().parallel()
                 .filter(item -> !INVALID_CONTRACT_CODE.contains(item.getContractCode()))
                 .map(item -> {

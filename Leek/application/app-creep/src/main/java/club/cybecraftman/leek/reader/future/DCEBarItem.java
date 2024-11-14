@@ -1,5 +1,7 @@
 package club.cybecraftman.leek.reader.future;
 
+import club.cybecraftman.leek.reader.converter.ThousandsToBigDecimalConverter;
+import club.cybecraftman.leek.reader.converter.ThousandsToLongConverter;
 import com.alibaba.excel.annotation.ExcelProperty;
 import lombok.Data;
 import lombok.ToString;
@@ -13,28 +15,31 @@ public class DCEBarItem {
     /**
      * 合约代码
      */
-    @ExcelProperty("合约代码")
+    @ExcelProperty(value = "合约名称")
     private String contractCode;
 
-    @ExcelProperty("开盘价")
+    @ExcelProperty(value = "开盘价", converter = ThousandsToBigDecimalConverter.class)
     private BigDecimal open;
 
-    @ExcelProperty("最高价")
+    @ExcelProperty(value = "最高价", converter = ThousandsToBigDecimalConverter.class)
     private BigDecimal high;
 
-    @ExcelProperty("最低价")
+    @ExcelProperty(value = "最低价", converter = ThousandsToBigDecimalConverter.class)
     private BigDecimal low;
 
-    @ExcelProperty("收盘价")
+    @ExcelProperty(value = "收盘价", converter = ThousandsToBigDecimalConverter.class)
     private BigDecimal close;
 
-    @ExcelProperty("成交量")
+    @ExcelProperty(value = "结算价", converter = ThousandsToBigDecimalConverter.class)
+    private BigDecimal settle;
+
+    @ExcelProperty(value = "成交量", converter = ThousandsToLongConverter.class)
     private Long volume;
 
-    @ExcelProperty("持仓量")
+    @ExcelProperty(value = "持仓量", converter = ThousandsToLongConverter.class)
     private Long openInterest;
 
-    @ExcelProperty("成交额")
+    @ExcelProperty(value = "成交额", converter = ThousandsToBigDecimalConverter.class)
     private BigDecimal amount;
 
 }

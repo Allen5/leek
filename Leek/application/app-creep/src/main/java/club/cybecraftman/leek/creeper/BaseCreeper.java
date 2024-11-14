@@ -47,8 +47,6 @@ public abstract class BaseCreeper<T> implements ICreeper {
         if ( !isRightTime() ) {
             return ;
         }
-        // 初始化
-        this.before();
         Long logId = creepActionMonitor.init(this.getClass().getName(), this.event);
         BrowserType.LaunchOptions options = new BrowserType.LaunchOptions();
         options.setHeadless(true);
@@ -64,11 +62,8 @@ public abstract class BaseCreeper<T> implements ICreeper {
             log.error("[creeper: {}] 执行事件[{}] 失败", this.getClass().getName(), this.event, e);
             creepActionMonitor.fail(logId, e.getMessage());
         }
-        this.after();
     }
 
-    protected abstract void before();
-    protected abstract void after();
     protected abstract void doCreep(final Page page) throws LeekException;
 
     /**

@@ -12,19 +12,9 @@ import org.springframework.stereotype.Component;
 @Component
 public class FutureBarSinaCreeper extends BaseCreeper {
 
-    @Override
-    protected void before() {
-
-    }
-
-    @Override
-    protected void after() {
-
-    }
 
     @Override
     protected void doCreep(final Page page) {
-        // TODO: 执行爬取逻辑
     }
 
     @Override

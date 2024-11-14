@@ -33,17 +33,6 @@ public class FutureBarCZCECreeper extends BaseCreeper {
     private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
     @Override
-    protected void before() {
-        // TODO:
-    }
-
-    @Override
-    protected void after() {
-        // TODO:
-
-    }
-
-    @Override
     protected void doCreep(final Page page) throws LeekException {
         // 这里要先进入iframe
         FrameLocator locator = page.frameLocator("iframe[name=\"czcehqWin\"]");
@@ -64,8 +53,8 @@ public class FutureBarCZCECreeper extends BaseCreeper {
         // step4: 发送消息
         BarEvent<FutureBarEventData> event = new BarEvent<>();
         event.setBarType(BarType.DAILY.getType());
-        event.setMarketCode(event.getMarketCode());
-        event.setFinanceType(event.getFinanceType());
+        event.setMarketCode(getEvent().getMarketCode());
+        event.setFinanceType(getEvent().getFinanceType());
         event.setItems(items);
         getKafkaProducer().publish(LeekEvent.ON_BAR_RECEIVED.topic, event);
     }

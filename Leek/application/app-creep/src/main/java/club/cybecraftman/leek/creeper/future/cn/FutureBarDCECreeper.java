@@ -33,17 +33,6 @@ public class FutureBarDCECreeper extends BaseCreeper {
     private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
 
     @Override
-    protected void before() {
-        // TODO:
-    }
-
-    @Override
-    protected void after() {
-        // TODO:
-
-    }
-
-    @Override
     protected void doCreep(final Page page) throws LeekException {
 
         FrameLocator locator = page.frameLocator("iframe").last();
@@ -64,8 +53,8 @@ public class FutureBarDCECreeper extends BaseCreeper {
         // step4: 发送消息
         BarEvent<FutureBarEventData> event = new BarEvent<>();
         event.setBarType(BarType.DAILY.getType());
-        event.setMarketCode(event.getMarketCode());
-        event.setFinanceType(event.getFinanceType());
+        event.setMarketCode(getEvent().getMarketCode());
+        event.setFinanceType(getEvent().getFinanceType());
         event.setItems(items);
         getKafkaProducer().publish(LeekEvent.ON_BAR_RECEIVED.topic, event);
     }
@@ -110,6 +99,7 @@ public class FutureBarDCECreeper extends BaseCreeper {
         }
         log.info("[DCE]开始下载文件");
         try(Page page = locator.owner().page()) {
+            // TODO: 无头浏览器无法下载，待解决
             Download download = page.waitForDownload(el::click); // 中间那个是下载excel的
             download.saveAs(Paths.get(filepath));
             log.info("[DCE]文件下载完成。 保存位置: {}", filepath);
