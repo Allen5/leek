@@ -16,7 +16,6 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @Slf4j
@@ -52,7 +51,6 @@ public class EventConsumer {
             log.error("不支持的行情处理类型[market: {}, financeType: {}, barType: {}]", event.getMarketCode(), event.getFinanceType(), event.getBarType());
             throw new LeekRuntimeException("不支持的行情处理类型");
         }
-        // Tips: 这边类型转换可能会有问题
         service.handleBars(event.getItems());
     }
 

@@ -7,7 +7,6 @@ import club.cybecraftman.leek.common.event.etl.future.FutureBarEventData;
 import club.cybecraftman.leek.domain.financedata.IBarService;
 import club.cybecraftman.leek.repo.financedata.model.future.FutureBar1Day;
 import club.cybecraftman.leek.repo.financedata.repository.future.IFutureBar1DayRepo;
-import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONArray;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,6 +54,7 @@ public class FutureDailyBarService implements IBarService {
     public boolean isSupport(Market market, FinanceType financeType, BarType barType) {
         return Market.CN.equals(market) && FinanceType.FUTURE.equals(financeType) && BarType.DAILY.equals(barType);
     }
+
 
 
 }

@@ -5,12 +5,10 @@ import club.cybecraftman.leek.common.constant.finance.FinanceType;
 import club.cybecraftman.leek.common.constant.finance.Market;
 import com.alibaba.fastjson2.JSONArray;
 
-import java.util.List;
-
 /**
  * 行情处理
  */
-public interface IBarService<T> {
+public interface IBarService {
 
     /**
      * 根据isSupport获取指定的行情数据处理类
@@ -23,7 +21,7 @@ public interface IBarService<T> {
 
 
     /**
-     * 处理bars
+     * 处理增量Bar数据
      * @param bars
      */
     void handleBars(final JSONArray bars);

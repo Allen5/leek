@@ -8,6 +8,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -16,9 +18,10 @@ import java.util.List;
 public class ExcelReaderTest {
 
     @Test
-    public void testCZCEReader() {
+    public void testCZCEReader() throws ParseException {
         final String filepath = "download/CZCE_2024-11-14.xls";
-        List<FutureBarEventData> items = CZCEExcelReader.readDailyBar(new Date(), filepath);
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        List<FutureBarEventData> items = CZCEExcelReader.readDailyBar(simpleDateFormat.parse("2024-11-14"), filepath);
         log.info("load items: {}", items.size());
     }
 
