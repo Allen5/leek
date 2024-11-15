@@ -30,6 +30,11 @@
         </dependency>
 
         <dependency>
+            <groupId>club.cybecraftman.leek</groupId>
+            <artifactId>core</artifactId>
+        </dependency>
+
+        <dependency>
             <groupId>club.cybecraftman.leek.domain</groupId>
             <artifactId>domain-meta</artifactId>
         </dependency>

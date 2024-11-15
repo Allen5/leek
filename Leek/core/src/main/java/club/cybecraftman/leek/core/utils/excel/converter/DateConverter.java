@@ -1,4 +1,4 @@
-package club.cybecraftman.leek.reader.converter;
+package club.cybecraftman.leek.core.utils.excel.converter;
 
 import com.alibaba.excel.converters.Converter;
 import com.alibaba.excel.enums.CellDataTypeEnum;
@@ -7,13 +7,14 @@ import com.alibaba.excel.metadata.data.ReadCellData;
 import com.alibaba.excel.metadata.property.ExcelContentProperty;
 import org.springframework.util.StringUtils;
 
-import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
-public class ThousandsToLongConverter implements Converter<Long> {
+public class DateConverter implements Converter<Date> {
 
     @Override
-    public Class<Long> supportJavaTypeKey() {
-        return Long.class;
+    public Class<Date> supportJavaTypeKey() {
+        return Date.class;
     }
 
     @Override
@@ -22,12 +23,18 @@ public class ThousandsToLongConverter implements Converter<Long> {
     }
 
     @Override
-    public Long convertToJavaData(ReadCellData<?> cellData, ExcelContentProperty contentProperty, GlobalConfiguration globalConfiguration) throws Exception {
+    public Date convertToJavaData(ReadCellData<?> cellData, ExcelContentProperty contentProperty, GlobalConfiguration globalConfiguration) throws Exception {
         String content = cellData.getStringValue();
         content = content.replaceAll(",", "");
         if ( !StringUtils.hasText(content) ) {
             return null;
         }
-        return Long.parseLong(content);
+        SimpleDateFormat sdf;
+        if ( content.contains("/") ) {
+            sdf = new SimpleDateFormat("yyyy/MM/dd");
+        } else {
+            sdf = new SimpleDateFormat("yyyy-MM-dd");
+        }
+        return sdf.parse(content);
     }
 }
