@@ -63,7 +63,7 @@ public class HistoryBarService {
             log.error("目录: {} 下不存在 {} 数据文件", dir, appendix.toUpperCase());
             throw new LeekException("目录: " + dir + "下不存在 " +appendix.toUpperCase()+ " 数据文件");
         }
-        subFiles.stream().parallel().forEach(f -> this.importBigQuantHistoryBars(f.getAbsolutePath()));
+        subFiles.forEach(f -> this.importBigQuantHistoryBars(f.getAbsolutePath()));
     }
 
     /**
@@ -75,7 +75,10 @@ public class HistoryBarService {
         EasyExcel.read(filepath, BigQuantBarItem.class, new PageReadListener<BigQuantBarItem>(items -> {
             // 对于contractCode需要特殊处理。
             List<FutureBarEventData> datas = items.stream().
-                    filter(item -> !item.getContractCode().contains("0000")) // 过滤包含0000的数据
+                    filter(item ->
+                            !item.getContractCode().contains("0000") &&
+                            !item.getContractCode().contains("8888") &&
+                            !item.getContractCode().contains("9999")) // 过滤包含0000、8888、9999的数据
                     .map(item -> {
                         FutureBarEventData data = new FutureBarEventData();
                         data.setDatetime(item.getDatetime());
@@ -92,6 +95,7 @@ public class HistoryBarService {
                         data.setAmount(item.getAmount());
                         return data;
                     }).collect(Collectors.toList());
+            log.info("开始插入日行情数据, 共: {} 条", datas.size());
             barService.handleBars(JSON.parseArray(JSON.toJSONString(datas)));
         }, BATCH_COUNT)).sheet(0).doRead();
     }
