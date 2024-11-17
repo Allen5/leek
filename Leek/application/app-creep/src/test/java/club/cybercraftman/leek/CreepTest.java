@@ -59,4 +59,43 @@ public class CreepTest {
         creeper.creep();
     }
 
+    @Test
+    public void testCFFEXCreep() {
+        CreepEvent event = new CreepEvent();
+        event.setMarketCode(Market.CN.getCode());
+        event.setFinanceType(FinanceType.FUTURE.getType());
+        event.setDataType(DataType.BAR.getType());
+        event.setSourceName(SourceName.CFFEX.getName());
+        event.setSource("http://www.cffex.com.cn/rtj/");
+        BaseCreeper creeper = builder.build(event);
+        creeper.setEvent(event);
+        creeper.creep();
+    }
+
+    @Test
+    public void testSHFECreep() {
+        CreepEvent event = new CreepEvent();
+        event.setMarketCode(Market.CN.getCode());
+        event.setFinanceType(FinanceType.FUTURE.getType());
+        event.setDataType(DataType.BAR.getType());
+        event.setSourceName(SourceName.SHFE.getName());
+        event.setSource("https://www.shfe.com.cn/reports/tradedata/dailyandweeklydata/");
+        BaseCreeper creeper = builder.build(event);
+        creeper.setEvent(event);
+        creeper.creep();
+    }
+
+    @Test
+    public void testINECreep() {
+        CreepEvent event = new CreepEvent();
+        event.setMarketCode(Market.CN.getCode());
+        event.setFinanceType(FinanceType.FUTURE.getType());
+        event.setDataType(DataType.BAR.getType());
+        event.setSourceName(SourceName.INE.getName());
+        event.setSource("https://www.ine.cn/statements/daily/?paramid=kx");
+        BaseCreeper creeper = builder.build(event);
+        creeper.setEvent(event);
+        creeper.creep();
+    }
+
 }

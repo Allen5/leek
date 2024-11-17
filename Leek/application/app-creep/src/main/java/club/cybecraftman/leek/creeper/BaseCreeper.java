@@ -88,8 +88,11 @@ public abstract class BaseCreeper<T> implements ICreeper {
      * @return
      */
     protected String getCurrentTradeDate(final SimpleDateFormat sdf) {
-        Date tradeDate = calendarRepo.findCurrentTradeDate(getEvent().getMarketCode(), getEvent().getFinanceType(), new Date());
-        return sdf.format(tradeDate);
+        return sdf.format(this.getCurrentTradeDate());
+    }
+
+    protected Date getCurrentTradeDate() {
+        return calendarRepo.findCurrentTradeDate(getEvent().getMarketCode(), getEvent().getFinanceType(), new Date());
     }
 
     /**
