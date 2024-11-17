@@ -1,6 +1,8 @@
 package club.cybecraftman.leek.repo.financedata.model.future;
 
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 
 import javax.persistence.*;
@@ -10,8 +12,12 @@ import java.util.Date;
 /**
  * 期货日行情信息
  */
+@Getter
+@Setter
 @Entity
-@Table(name = "future_bar_1day")
+@Table(name = "future_bar_1day", indexes = {
+        @Index(name = "idx_futurebar1day_datetime", columnList = "datetime, symbol")
+})
 @Data
 @ToString
 public class FutureBar1Day {

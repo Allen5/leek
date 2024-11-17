@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import javax.transaction.Transactional;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -45,6 +46,7 @@ public class HistoryBarService {
      * BigQuant的历史行情数据导入处理
      * @param dir
      */
+    @Transactional
     public void importBigQuantHistoryBars(final String dir, final String appendix) throws LeekException {
         if ( !Files.exists(Paths.get(dir)) ) {
             log.error("目录不存在: {}。 请检查", dir);
@@ -63,7 +65,8 @@ public class HistoryBarService {
             log.error("目录: {} 下不存在 {} 数据文件", dir, appendix.toUpperCase());
             throw new LeekException("目录: " + dir + "下不存在 " +appendix.toUpperCase()+ " 数据文件");
         }
-        subFiles.forEach(f -> this.importBigQuantHistoryBars(f.getAbsolutePath()));
+        barService.truncateBars();
+        subFiles.stream().parallel().forEach(f -> this.importBigQuantHistoryBars(f.getAbsolutePath()));
     }
 
     /**
@@ -96,7 +99,7 @@ public class HistoryBarService {
                         return data;
                     }).collect(Collectors.toList());
             log.info("开始插入日行情数据, 共: {} 条", datas.size());
-            barService.handleBars(JSON.parseArray(JSON.toJSONString(datas)));
+            barService.batchInsert(datas);
         }, BATCH_COUNT)).sheet(0).doRead();
     }
 

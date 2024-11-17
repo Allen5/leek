@@ -14,8 +14,6 @@ public class HistoryBarServiceTest {
 
     private static final String DIR = "/Users/allen/Documents/Motionless/QuantLab/data/future/daily";
 
-    private static final String FILEPATH = "/Users/allen/Documents/Motionless/QuantLab/data/future/daily/2005.csv";
-
     @Autowired
     private HistoryBarService historyBarService;
 
@@ -24,9 +22,5 @@ public class HistoryBarServiceTest {
         historyBarService.importBigQuantHistoryBars(DIR, "csv");
     }
 
-    @Test
-    public void testSingleImport() {
-        historyBarService.importBigQuantHistoryBars(FILEPATH);
-    }
 
 }

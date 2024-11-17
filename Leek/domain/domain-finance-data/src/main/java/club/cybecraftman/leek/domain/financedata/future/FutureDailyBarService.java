@@ -49,6 +49,38 @@ public class FutureDailyBarService implements IBarService {
         bar1DayRepo.saveAll(items);
     }
 
+    @Override
+    public void truncateBars() {
+        // 批量删除
+        bar1DayRepo.deleteAllInBatch();
+    }
+
+    @Override
+    public void truncateBarsByYear(String year) {
+        // TODO:
+    }
+
+    @Override
+    public void batchInsert(List<FutureBarEventData> bars) {
+        List<FutureBar1Day> items = bars.stream().map(b -> {
+            FutureBar1Day item = new FutureBar1Day();
+            item.setDatetime(b.getDatetime());
+            item.setProductCode(b.getProductCode());
+            item.setContractCode(b.getContractCode());
+            item.setSymbol(b.getSymbol());
+            item.setOpen(b.getOpen());
+            item.setHigh(b.getHigh());
+            item.setLow(b.getLow());
+            item.setClose(b.getClose());
+            item.setSettle(b.getSettle());
+            item.setOpenInterest(b.getOpenInterest());
+            item.setVolume(b.getVolume());
+            item.setAmount(b.getAmount());
+            return item;
+        }).collect(Collectors.toList());
+        bar1DayRepo.saveAll(items);
+    }
+
 
     @Override
     public boolean isSupport(Market market, FinanceType financeType, BarType barType) {

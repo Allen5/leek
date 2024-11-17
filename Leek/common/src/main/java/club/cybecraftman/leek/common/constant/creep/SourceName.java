@@ -10,6 +10,12 @@ public enum SourceName {
     DCE("大商所", "大商所官方数据源"),
     GFEX("广期所", "广期所官方数据"),
 
+    /**
+     * 缺少收盘价和当日结算价，放弃该数据源
+     */
+    @Deprecated
+    EAST_MONEY("东方财富", "东方财富官方数据"),
+
     ;
 
     SourceName(final String name, final String description) {
