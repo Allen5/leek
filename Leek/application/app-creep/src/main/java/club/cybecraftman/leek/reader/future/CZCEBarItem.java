@@ -1,6 +1,7 @@
 package club.cybecraftman.leek.reader.future;
 
 import club.cybecraftman.leek.core.utils.excel.converter.ThousandsToBigDecimalConverter;
+import club.cybecraftman.leek.core.utils.excel.converter.ThousandsToLongConverter;
 import com.alibaba.excel.annotation.ExcelProperty;
 import lombok.Data;
 import lombok.ToString;

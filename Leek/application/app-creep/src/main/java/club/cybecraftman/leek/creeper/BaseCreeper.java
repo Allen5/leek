@@ -49,7 +49,7 @@ public abstract class BaseCreeper<T> implements ICreeper {
         }
         Long logId = creepActionMonitor.init(this.getClass().getName(), this.event);
         BrowserType.LaunchOptions options = new BrowserType.LaunchOptions();
-        options.setHeadless(true);
+        options.setHeadless(false);
         try(Playwright playwright = Playwright.create();
             Browser browser = playwright.firefox().launch(options)) {
             Page page = browser.newPage();

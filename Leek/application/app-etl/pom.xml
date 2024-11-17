@@ -26,6 +26,11 @@
 
         <dependency>
             <groupId>club.cybecraftman.leek.infrastructure</groupId>
+            <artifactId>massive-compute</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>club.cybecraftman.leek.infrastructure</groupId>
             <artifactId>message-queue</artifactId>
         </dependency>
 
