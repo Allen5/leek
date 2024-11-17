@@ -34,7 +34,7 @@ public class HistoryBarService {
     /**
      * 每次处理1000条
      */
-    private static final Integer BATCH_COUNT = 1000;
+    private static final Integer BATCH_COUNT = 10000;
 
     /**
      * 日行情处理
@@ -80,8 +80,8 @@ public class HistoryBarService {
             List<FutureBarEventData> datas = items.stream().
                     filter(item ->
                             !item.getContractCode().contains("0000") &&
-                            !item.getContractCode().contains("8888") &&
-                            !item.getContractCode().contains("9999")) // 过滤包含0000、8888、9999的数据
+                            !item.getContractCode().contains("9999") &&
+                            !item.getContractCode().contains(item.getProductCode() + "8")) // 过滤包含0000、品种代码8|88|888|888、9999的数据
                     .map(item -> {
                         FutureBarEventData data = new FutureBarEventData();
                         data.setDatetime(item.getDatetime());
