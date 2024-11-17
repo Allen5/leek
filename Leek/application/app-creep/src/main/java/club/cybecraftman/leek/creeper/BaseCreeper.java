@@ -1,10 +1,16 @@
 package club.cybecraftman.leek.creeper;
 
+import club.cybecraftman.leek.common.constant.finance.BarType;
 import club.cybecraftman.leek.common.dto.event.creep.CreepEvent;
+import club.cybecraftman.leek.common.event.LeekEvent;
+import club.cybecraftman.leek.common.event.etl.BarEvent;
+import club.cybecraftman.leek.common.event.etl.future.FutureBarEventData;
 import club.cybecraftman.leek.common.exception.LeekException;
 import club.cybecraftman.leek.domain.monitor.creep.CreepActionMonitor;
 import club.cybecraftman.leek.infrastructure.mq.KafkaProducer;
 import club.cybecraftman.leek.repo.financedata.repository.ICalendarRepo;
+import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.JSONArray;
 import com.microsoft.playwright.Browser;
 import com.microsoft.playwright.BrowserType;
 import com.microsoft.playwright.Page;
@@ -16,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 @Slf4j
 public abstract class BaseCreeper<T> implements ICreeper {
@@ -83,6 +90,20 @@ public abstract class BaseCreeper<T> implements ICreeper {
     protected String getCurrentTradeDate(final SimpleDateFormat sdf) {
         Date tradeDate = calendarRepo.findCurrentTradeDate(getEvent().getMarketCode(), getEvent().getFinanceType(), new Date());
         return sdf.format(tradeDate);
+    }
+
+    /**
+     * 向消息队列推送收到的行情数据
+     * @param barType
+     * @param items
+     */
+    protected void publishBars(final BarType barType, final List<FutureBarEventData> items) {
+        BarEvent pubEvent = new BarEvent();
+        pubEvent.setBarType(barType.getType());
+        pubEvent.setMarketCode(this.event.getMarketCode());
+        pubEvent.setFinanceType(this.event.getFinanceType());
+        pubEvent.setItems(JSONArray.parse(JSON.toJSONString(items)));
+        getKafkaProducer().publish(LeekEvent.ON_BAR_RECEIVED.topic, pubEvent);
     }
 
 

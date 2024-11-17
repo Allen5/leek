@@ -53,12 +53,7 @@ public class FutureBarCZCECreeper extends BaseCreeper {
             throw new LeekRuntimeException("日期解析失败: " + currentTradeDate);
         }
         // step4: 发送消息
-        BarEvent event = new BarEvent();
-        event.setBarType(BarType.DAILY.getType());
-        event.setMarketCode(getEvent().getMarketCode());
-        event.setFinanceType(getEvent().getFinanceType());
-        event.setItems(JSONArray.parse(JSON.toJSONString(items)));
-        getKafkaProducer().publish(LeekEvent.ON_BAR_RECEIVED.topic, event);
+        this.publishBars(BarType.DAILY, items);
     }
 
     private void checkTradeDate(final FrameLocator locator, final String currentTradeDate) throws LeekException {

@@ -46,4 +46,17 @@ public class CreepTest {
         creeper.creep();
     }
 
+    @Test
+    public void testGFEXCreep() {
+        CreepEvent event = new CreepEvent();
+        event.setMarketCode(Market.CN.getCode());
+        event.setFinanceType(FinanceType.FUTURE.getType());
+        event.setDataType(DataType.BAR.getType());
+        event.setSourceName(SourceName.GFEX.getName());
+        event.setSource("http://www.gfex.com.cn/gfex/rihq/hqsj_tjsj.shtml");
+        BaseCreeper creeper = builder.build(event);
+        creeper.setEvent(event);
+        creeper.creep();
+    }
+
 }
