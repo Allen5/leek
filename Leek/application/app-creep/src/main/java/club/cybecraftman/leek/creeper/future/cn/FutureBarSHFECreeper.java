@@ -15,6 +15,7 @@ import com.microsoft.playwright.Page;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
 import java.text.ParseException;
@@ -106,7 +107,13 @@ public class FutureBarSHFECreeper extends BaseCreeper {
             // 获取第一行元素，其为商品名
             ElementHandle head = table.querySelector("tr:nth-child(1)");
             String name = head.querySelector("td:nth-child(1) > div").innerText().trim();
-            name = name.replace("商品名称:", "");
+            if ( name.contains("商品名称") ) {
+                name = name.replace("商品名称:", "");
+            } else {
+                // 多余的table
+                continue;
+            }
+            log.info("[SHFE]开始处理品种: {}", name);
             if ( IGNORE_PRODUCTS.contains(name) ) {
                 log.warn("[SHFE]品种: {} 不属于SHFE。归属于 INE 或不处理[原油TAS] ", name);
                 continue;
@@ -134,11 +141,11 @@ public class FutureBarSHFECreeper extends BaseCreeper {
                 data.setProductCode(productCode);
                 data.setContractCode(productCode + month + "." + Exchange.SHFE.getCode().substring(0, 3));
                 data.setSymbol(data.getContractCode());
-                data.setOpen(new BigDecimal(cells.get(2).innerText().trim()));
-                data.setHigh(new BigDecimal(cells.get(3).innerText().trim()));
-                data.setLow(new BigDecimal(cells.get(4).innerText().trim()));
-                data.setClose(new BigDecimal(cells.get(5).innerText().trim()));
-                data.setSettle(new BigDecimal(cells.get(6).innerText().trim()));
+                data.setOpen(getValue(cells.get(2)));
+                data.setHigh(getValue(cells.get(3)));
+                data.setLow(getValue(cells.get(4)));
+                data.setClose(getValue(cells.get(5)));
+                data.setSettle(getValue(cells.get(6)));
                 data.setVolume(Long.parseLong(cells.get(9).innerText().trim()));
                 data.setAmount(new BigDecimal(cells.get(10).innerText().trim()).multiply(new BigDecimal(10000)));
                 data.setOpenInterest(Long.parseLong(cells.get(11).innerText().trim()));
@@ -146,6 +153,15 @@ public class FutureBarSHFECreeper extends BaseCreeper {
             }
         }
         return items;
+    }
+
+    private BigDecimal getValue(final ElementHandle el) {
+        String value = el.innerText().trim();
+        if ( StringUtils.hasText(value) ) {
+            return new BigDecimal(value);
+        }
+        log.warn("元素获取到的文本为空. el: {}", el);
+        return BigDecimal.ZERO;
     }
 
     private String extractProductCode(final String productName) throws LeekException {
