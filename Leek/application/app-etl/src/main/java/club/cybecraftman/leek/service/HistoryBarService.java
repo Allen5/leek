@@ -8,6 +8,7 @@ import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.read.listener.PageReadListener;
 import com.alibaba.fastjson2.JSON;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.kafka.common.protocol.types.Field;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -41,6 +42,21 @@ public class HistoryBarService {
      */
     @Autowired
     private FutureDailyBarService barService;
+
+
+    /**
+     * 导入指定年份的数据
+     * @param filepath
+     * @param year
+     */
+    @Transactional
+    public void importBigQuantHistoryBars(final String filepath, final Integer year) {
+        log.info("开始导入文件: {}. 并删除{}年份的数据", filepath, year);
+        barService.truncateBarsByYear(year);
+        this.importBigQuantHistoryBars(filepath);
+    }
+
+
 
     /**
      * BigQuant的历史行情数据导入处理

@@ -36,9 +36,9 @@ public interface IBarService {
 
     /**
      * 删除该年份的数据
-     * @param year
+     * @param year yyyy
      */
-    void truncateBarsByYear(final String year);
+    void truncateBarsByYear(final Integer year);
 
     /**
      * 批量插入

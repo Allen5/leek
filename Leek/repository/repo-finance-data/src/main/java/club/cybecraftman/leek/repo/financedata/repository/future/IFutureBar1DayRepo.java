@@ -22,4 +22,9 @@ public interface IFutureBar1DayRepo extends JpaRepository<FutureBar1Day, Long> {
     void deleteByDateTimeAndSymbol(final @Param("datetime") Date datetime,
                                    final @Param("symbol") String symbol);
 
+    @Transactional
+    @Modifying
+    @Query("delete from FutureBar1Day t where t.datetime >= :start and t.datetime <= :end")
+    void deleteAllByDateTime(final @Param("start") Date start, final @Param("end") Date end);
+
 }

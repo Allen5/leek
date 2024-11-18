@@ -12,6 +12,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 @Slf4j
 public class HistoryBarServiceTest {
 
+
+    private static final String FILEPATH = "/Users/allen/Documents/Motionless/QuantLab/data/future/daily/2024.csv";
     private static final String DIR = "/Users/allen/Documents/Motionless/QuantLab/data/future/daily";
 
     @Autowired
@@ -20,6 +22,11 @@ public class HistoryBarServiceTest {
     @Test
     public void testBatchImport() throws LeekException {
         historyBarService.importBigQuantHistoryBars(DIR, "csv");
+    }
+
+    @Test
+    public void testYearImport() {
+        historyBarService.importBigQuantHistoryBars(FILEPATH, 2024);
     }
 
 

@@ -13,6 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -56,8 +58,23 @@ public class FutureDailyBarService implements IBarService {
     }
 
     @Override
-    public void truncateBarsByYear(String year) {
-        // TODO:
+    @Transactional
+    public void truncateBarsByYear(Integer year) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.YEAR, year);
+        calendar.set(Calendar.MONTH, 0); // 1月
+        calendar.set(Calendar.DAY_OF_YEAR, 1); // 1日
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+        Date start = calendar.getTime();
+
+        calendar.add(Calendar.YEAR, 1);
+        calendar.add(Calendar.DAY_OF_YEAR, -1);
+        Date end = calendar.getTime();
+
+        bar1DayRepo.deleteAllByDateTime(start, end);
     }
 
     @Override
