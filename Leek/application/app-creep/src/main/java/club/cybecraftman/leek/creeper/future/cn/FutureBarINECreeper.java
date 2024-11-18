@@ -15,6 +15,7 @@ import com.microsoft.playwright.Page;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
@@ -77,6 +78,7 @@ public class FutureBarINECreeper extends BaseCreeper {
 
     private List<FutureBarEventData> buildItems(final Page page, final Date currentTradeDate) throws LeekException {
         // div.data > table > tbody > table > tbody 拿到所有的tables
+        page.waitForSelector("div.data > table > tbody > table > tbody");
         List<ElementHandle> tables = page.querySelectorAll("div.data > table > tbody > table > tbody");
         if ( CollectionUtils.isEmpty(tables) ) {
             log.error("[INE]地址: {}页面元素[div.data > table > tbody > table > tbody]定位失败", getEvent().getSource());
@@ -113,19 +115,39 @@ public class FutureBarINECreeper extends BaseCreeper {
                 data.setProductCode(productCode);
                 data.setContractCode(productCode + month + "." + Exchange.INE.getCode());
                 data.setSymbol(data.getContractCode());
-                data.setOpen(new BigDecimal(cells.get(2).innerText().trim()));
-                data.setHigh(new BigDecimal(cells.get(3).innerText().trim()));
-                data.setLow(new BigDecimal(cells.get(4).innerText().trim()));
-                data.setClose(new BigDecimal(cells.get(5).innerText().trim()));
-                data.setSettle(new BigDecimal(cells.get(6).innerText().trim()));
-                data.setVolume(Long.parseLong(cells.get(9).innerText().trim()));
-                data.setAmount(new BigDecimal(cells.get(10).innerText().trim()).multiply(new BigDecimal(10000)));
-                data.setOpenInterest(Long.parseLong(cells.get(11).innerText().trim()));
+                data.setOpen(getValue(cells.get(2)));
+                data.setHigh(getValue(cells.get(3)));
+                data.setLow(getValue(cells.get(4)));
+                data.setClose(getValue(cells.get(5)));
+                data.setSettle(getValue(cells.get(6)));
+                if ( data.getProductCode().equals("sc") ) { // 原油有TAS数据，要后移动一行
+                    data.setVolume(Long.parseLong(cells.get(10).innerText().trim()));
+                    data.setAmount(new BigDecimal(cells.get(11).innerText().trim()).multiply(new BigDecimal(10000)));
+                    data.setOpenInterest(Long.parseLong(cells.get(12).innerText().trim()));
+                } else {
+                    data.setVolume(Long.parseLong(cells.get(9).innerText().trim()));
+                    data.setAmount(new BigDecimal(cells.get(10).innerText().trim()).multiply(new BigDecimal(10000)));
+                    data.setOpenInterest(Long.parseLong(cells.get(11).innerText().trim()));
+                }
                 items.add(data);
             }
         }
         return items;
     }
+
+    private BigDecimal getValue(final ElementHandle el) {
+        String value = el.innerText().trim();
+        if ( !StringUtils.hasText(value) ) {
+            log.warn("元素获取到的文本为空. el: {}", el);
+            return BigDecimal.ZERO;
+        }
+        if ( value.equals("--") ) {
+            log.warn("元素获取到的文本为[--]. el: {}", el);
+            return BigDecimal.ZERO;
+        }
+        return new BigDecimal(value);
+    }
+
 
     private String extractProductCode(final String productName) throws LeekException {
         if ( productMaps.containsKey(productName) ) {

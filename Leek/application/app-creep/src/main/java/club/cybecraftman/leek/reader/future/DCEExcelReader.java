@@ -4,6 +4,7 @@ import club.cybecraftman.leek.common.constant.finance.future.Exchange;
 import club.cybecraftman.leek.common.event.etl.future.FutureBarEventData;
 import club.cybecraftman.leek.core.utils.excel.reader.listener.SimpleReadListener;
 import com.alibaba.excel.EasyExcel;
+import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
 import java.util.*;
@@ -15,20 +16,10 @@ import java.util.stream.Collectors;
 public class DCEExcelReader {
 
     /**
-     * 需要过滤的行
-     */
-    private static final Set<String> INVALID_CONTRACT_CODE;
-
-    /**
      * 指定第二行为标题行
      */
     private static final Integer HEAD_ROW_NUM = 2;
 
-    static {
-        INVALID_CONTRACT_CODE = new HashSet<>();
-        INVALID_CONTRACT_CODE.add("小计");
-        INVALID_CONTRACT_CODE.add("总计");
-    }
 
     /**
      * 读取郑商所每日行情文件
@@ -38,7 +29,7 @@ public class DCEExcelReader {
     public static List<FutureBarEventData> readDailyBar(final Date datetime, final String filepath) {
         List<DCEBarItem> items = EasyExcel.read(filepath, DCEBarItem.class, new SimpleReadListener()).headRowNumber(HEAD_ROW_NUM).sheet(0).doReadSync();
         return items.stream().parallel()
-                .filter(item -> !INVALID_CONTRACT_CODE.contains(item.getContractCode()))
+                .filter(item -> StringUtils.hasText(item.getContractCode()))
                 .map(item -> {
                     FutureBarEventData data = new FutureBarEventData();
                     data.setDatetime(datetime);

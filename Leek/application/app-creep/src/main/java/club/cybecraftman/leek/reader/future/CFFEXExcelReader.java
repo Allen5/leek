@@ -23,7 +23,7 @@ public class CFFEXExcelReader {
     /**
      * 指定第二行为标题行
      */
-    private static final Integer HEAD_ROW_NUM = 0;
+    private static final Integer HEAD_ROW_NUM = 1;
 
     static {
         INVALID_CONTRACT_CODE = new HashSet<>();
@@ -37,6 +37,7 @@ public class CFFEXExcelReader {
      * @return
      */
     public static List<FutureBarEventData> readDailyBar(final Date datetime, final String filepath) {
+        // TODO: 这里有问题，应该用CSV读取
         List<CFFEXBarItem> items = EasyExcel.read(filepath, CFFEXBarItem.class, new SimpleReadListener())
                 .headRowNumber(HEAD_ROW_NUM)
                 .sheet(0)

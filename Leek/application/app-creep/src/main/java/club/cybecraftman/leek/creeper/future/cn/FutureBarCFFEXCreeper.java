@@ -52,7 +52,7 @@ public class FutureBarCFFEXCreeper extends BaseCreeper {
             throw new LeekException("页面元素[div.iffj > h1 > a]定位失败");
         }
         String currentTradeDate = getCurrentTradeDate(sdf);
-        String filepath = DOWNLOAD_FILE_ROOT_DIR + File.separator + "CFFEX_" + currentTradeDate + ".xls";
+        String filepath = DOWNLOAD_FILE_ROOT_DIR + File.separator + "CFFEX_" + currentTradeDate + ".csv";
         Download download = page.waitForDownload(el::click);
         download.saveAs(Paths.get(filepath));
         log.info("[CFFEX]文件下载完成。 保存位置: {}", filepath);
