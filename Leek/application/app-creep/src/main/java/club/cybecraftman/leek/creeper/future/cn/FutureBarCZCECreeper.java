@@ -5,6 +5,7 @@ import club.cybecraftman.leek.common.constant.creep.SourceName;
 import club.cybecraftman.leek.common.constant.finance.BarType;
 import club.cybecraftman.leek.common.constant.finance.FinanceType;
 import club.cybecraftman.leek.common.constant.finance.Market;
+import club.cybecraftman.leek.common.constant.finance.future.Exchange;
 import club.cybecraftman.leek.common.dto.event.creep.CreepEvent;
 import club.cybecraftman.leek.common.event.etl.future.FutureBarEventData;
 import club.cybecraftman.leek.common.exception.LeekException;
@@ -72,7 +73,7 @@ public class FutureBarCZCECreeper extends BaseCreeper {
         // table#tab1 > tbody > tr
         List<Locator> lines = locator.locator("table#tab1 > tbody > tr").all();
         List<FutureBarEventData> items = new ArrayList<>();
-        for(int i=0; i<lines.size(); i++) {
+        for(int i=0; i<lines.size()-1; i++) { // 去除最后一行
             List<Locator> cells = lines.get(i).locator("td").all();
             String contractCode = cells.get(0).innerText().trim();
             if ( contractCode.contains("小计") || contractCode.contains("总计") ) {
@@ -82,15 +83,15 @@ public class FutureBarCZCECreeper extends BaseCreeper {
             FutureBarEventData data = new FutureBarEventData();
             data.setDatetime(currentTradeDate);
             data.setProductCode(extractProductCode(contractCode));
-            data.setContractCode(contractCode); // 合约代码
+            data.setContractCode(contractCode + "." + Exchange.CZCE.getCode().substring(0, 3)); // 合约代码
             data.setSymbol(data.getContractCode());
             data.setOpen(getValue(cells.get(2))); // 开盘价
             data.setHigh(getValue(cells.get(3))); // 最高价
             data.setLow(getValue(cells.get(4))); // 最低价
             data.setClose(getValue(cells.get(5))); // 收盘价
             data.setSettle(getValue(cells.get(6))); // 结算价
-            data.setVolume(Long.parseLong(cells.get(9).innerText().trim())); // 成交量
-            data.setOpenInterest(Long.parseLong(cells.get(10).innerText().trim())); // 持仓量
+            data.setVolume(Long.parseLong(cells.get(9).innerText().trim().replaceAll(",", ""))); // 成交量
+            data.setOpenInterest(Long.parseLong(cells.get(10).innerText().trim().replaceAll(",", ""))); // 持仓量
             data.setAmount(getValue(cells.get(12)).multiply(new BigDecimal(10000))); // 成交额
             items.add(data);
         }

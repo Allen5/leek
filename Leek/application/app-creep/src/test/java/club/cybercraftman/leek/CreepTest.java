@@ -48,6 +48,7 @@ public class CreepTest {
 
     @Test
     public void testGFEXCreep() {
+        // TODO: 元素内容为空: div.mainbox > div.remark
         CreepEvent event = new CreepEvent();
         event.setMarketCode(Market.CN.getCode());
         event.setFinanceType(FinanceType.FUTURE.getType());

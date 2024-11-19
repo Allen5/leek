@@ -5,23 +5,18 @@ import club.cybecraftman.leek.common.constant.creep.SourceName;
 import club.cybecraftman.leek.common.constant.finance.BarType;
 import club.cybecraftman.leek.common.constant.finance.FinanceType;
 import club.cybecraftman.leek.common.constant.finance.Market;
+import club.cybecraftman.leek.common.constant.finance.future.Exchange;
 import club.cybecraftman.leek.common.dto.event.creep.CreepEvent;
 import club.cybecraftman.leek.common.event.etl.future.FutureBarEventData;
 import club.cybecraftman.leek.common.exception.LeekException;
-import club.cybecraftman.leek.common.exception.LeekRuntimeException;
 import club.cybecraftman.leek.creeper.BaseCreeper;
-import club.cybecraftman.leek.reader.future.CFFEXExcelReader;
-import com.microsoft.playwright.Download;
 import com.microsoft.playwright.ElementHandle;
 import com.microsoft.playwright.Page;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import java.io.File;
 import java.math.BigDecimal;
-import java.nio.file.Paths;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -56,14 +51,14 @@ public class FutureBarCFFEXCreeper extends BaseCreeper {
         for(int i=0; i<lines.size(); i++) {
             List<ElementHandle> cells = lines.get(i).querySelectorAll("td");
             String contractCode = cells.get(0).innerText().trim();
-            if ( contractCode.contains("小计") || contractCode.contains("总计") ) {
+            if ( contractCode.contains("小计") || contractCode.contains("总计") || contractCode.contains("合计") ) {
                 log.warn("[CFFEX]合约代码包含小计或总计，忽略. code: {}", contractCode);
                 continue;
             }
             FutureBarEventData data = new FutureBarEventData();
             data.setDatetime(currentTradeDate);
             data.setProductCode(extractProductCode(contractCode));
-            data.setContractCode(contractCode);
+            data.setContractCode(contractCode + ".CFE");
             data.setSymbol(data.getContractCode());
             data.setOpen(getValue(cells.get(1)));
             data.setHigh(getValue(cells.get(2)));

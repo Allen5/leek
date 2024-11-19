@@ -5,16 +5,12 @@ import club.cybecraftman.leek.common.constant.creep.SourceName;
 import club.cybecraftman.leek.common.constant.finance.BarType;
 import club.cybecraftman.leek.common.constant.finance.FinanceType;
 import club.cybecraftman.leek.common.constant.finance.Market;
+import club.cybecraftman.leek.common.constant.finance.future.Exchange;
 import club.cybecraftman.leek.common.dto.event.creep.CreepEvent;
-import club.cybecraftman.leek.common.event.LeekEvent;
-import club.cybecraftman.leek.common.event.etl.BarEvent;
 import club.cybecraftman.leek.common.event.etl.future.FutureBarEventData;
 import club.cybecraftman.leek.common.exception.LeekException;
 import club.cybecraftman.leek.common.exception.LeekRuntimeException;
 import club.cybecraftman.leek.creeper.BaseCreeper;
-import club.cybecraftman.leek.reader.future.DCEExcelReader;
-import com.alibaba.fastjson2.JSON;
-import com.alibaba.fastjson2.JSONArray;
 import com.microsoft.playwright.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -23,7 +19,6 @@ import org.springframework.util.StringUtils;
 import java.io.File;
 import java.math.BigDecimal;
 import java.nio.file.Paths;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -88,7 +83,7 @@ public class FutureBarDCECreeper extends BaseCreeper {
             }
             FutureBarEventData data = new FutureBarEventData();
             data.setDatetime(currentTradeDate);
-            data.setContractCode(cells.get(1).innerText().trim()); // 合约代码
+            data.setContractCode(cells.get(1).innerText().trim() + "." + Exchange.DCE.getCode()); // 合约代码
             data.setProductCode(extractProductCode(data.getContractCode()));
             data.setSymbol(data.getContractCode());
             data.setOpen(getValue(cells.get(2))); // 开盘价
@@ -96,8 +91,8 @@ public class FutureBarDCECreeper extends BaseCreeper {
             data.setLow(getValue(cells.get(4))); // 最低价
             data.setClose(getValue(cells.get(5))); // 收盘价
             data.setSettle(getValue(cells.get(7))); // 结算价
-            data.setVolume(Long.parseLong(cells.get(10).innerText().trim())); // 成交量
-            data.setOpenInterest(Long.parseLong(cells.get(11).innerText().trim())); // 持仓量
+            data.setVolume(Long.parseLong(cells.get(10).innerText().trim().replaceAll(",", ""))); // 成交量
+            data.setOpenInterest(Long.parseLong(cells.get(11).innerText().trim().replaceAll(",", ""))); // 持仓量
             data.setAmount(getValue(cells.get(13)).multiply(new BigDecimal(10000))); // 成交额
             items.add(data);
         }
@@ -106,13 +101,13 @@ public class FutureBarDCECreeper extends BaseCreeper {
 
     private BigDecimal getValue(final Locator el) {
         String value = el.innerText().trim();
-        if ( StringUtils.hasText(value) ) {
-            value = value.replaceAll(",", "");
-            return new BigDecimal(value);
-        }
         if ( value.equals("-") ) {
             log.warn("元素获取到的文本为-. el: {}", el);
             return BigDecimal.ZERO;
+        }
+        if ( StringUtils.hasText(value) ) {
+            value = value.replaceAll(",", "");
+            return new BigDecimal(value);
         }
         log.warn("元素获取到的文本为空. el: {}", el);
         return BigDecimal.ZERO;

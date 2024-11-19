@@ -5,6 +5,7 @@ import club.cybecraftman.leek.common.constant.creep.SourceName;
 import club.cybecraftman.leek.common.constant.finance.BarType;
 import club.cybecraftman.leek.common.constant.finance.FinanceType;
 import club.cybecraftman.leek.common.constant.finance.Market;
+import club.cybecraftman.leek.common.constant.finance.future.Exchange;
 import club.cybecraftman.leek.common.dto.event.creep.CreepEvent;
 import club.cybecraftman.leek.common.event.etl.future.FutureBarEventData;
 import club.cybecraftman.leek.common.exception.LeekException;
@@ -55,6 +56,7 @@ public class FutureBarGFEXCreeper extends BaseCreeper {
     private void checkTradeDate(final Page locator, final String currentTradeDate) throws LeekException {
         // step1: 获取页面上的交易日信息
         // meta: div.mainbox > div.remark
+        locator.waitForSelector("div.mainbox > div.remark");
         Locator el = locator.locator("div.mainbox > div.remark");
         if ( el == null ) {
             log.error("[GFEX]获取地址: {} 上的元素[div.mainbox > div.remark] 失败. event: {}", getEvent().getSource(), getEvent());
@@ -97,7 +99,7 @@ public class FutureBarGFEXCreeper extends BaseCreeper {
                 log.error("获取到的名称不在定义范围内。 name: {}. products_map: {}", name, productMaps);
                 continue;
             }
-            data.setContractCode(data.getProductCode() + cells.get(1).innerText().trim());
+            data.setContractCode(data.getProductCode() + cells.get(1).innerText().trim() + "." + Exchange.GFEX.getCode().substring(0, 3));
             data.setSymbol(data.getContractCode());
             data.setOpen(getValue(cells.get(2)));
             data.setHigh(getValue(cells.get(3)));
