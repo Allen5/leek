@@ -35,7 +35,6 @@ public class CreepTest {
 
     @Test
     public void testDCECreep() {
-        // TODO：无头浏览器无法点击下载。失败
         CreepEvent event = new CreepEvent();
         event.setMarketCode(Market.CN.getCode());
         event.setFinanceType(FinanceType.FUTURE.getType());
@@ -49,7 +48,6 @@ public class CreepTest {
 
     @Test
     public void testGFEXCreep() {
-        // TODO： org.apache.poi.poifs.filesystem.OfficeXmlFileException: The supplied data appears to be in the Office 2007+ XML. You are calling the part of POI that deals with OLE2 Office Documents. You need to call a different part of POI to process this data (eg XSSF instead of HSSF)
         CreepEvent event = new CreepEvent();
         event.setMarketCode(Market.CN.getCode());
         event.setFinanceType(FinanceType.FUTURE.getType());
@@ -63,7 +61,6 @@ public class CreepTest {
 
     @Test
     public void testCFFEXCreep() {
-        // TODO: CSV读取问题
         CreepEvent event = new CreepEvent();
         event.setMarketCode(Market.CN.getCode());
         event.setFinanceType(FinanceType.FUTURE.getType());

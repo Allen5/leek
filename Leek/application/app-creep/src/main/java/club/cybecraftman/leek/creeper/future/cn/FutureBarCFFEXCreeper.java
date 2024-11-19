@@ -16,8 +16,10 @@ import com.microsoft.playwright.ElementHandle;
 import com.microsoft.playwright.Page;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import java.io.File;
+import java.math.BigDecimal;
 import java.nio.file.Paths;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -43,30 +45,59 @@ public class FutureBarCFFEXCreeper extends BaseCreeper {
 
     @Override
     protected void doCreep(Page page) throws LeekException {
+        this.publishBars(BarType.DAILY, buildItems(page, getCurrentTradeDate()));
+    }
 
-        // step1: 下载文件
-        // 获取元素: div.iffj > h1 > a
-        ElementHandle el = page.querySelector("div.iffj > h1 > a");
-        if ( el == null ) {
-            log.error("[CFFEX]地址: {} 页面元素[div.iffj > h1 > a] 定位失败.", getEvent().getSource());
-            throw new LeekException("页面元素[div.iffj > h1 > a]定位失败");
+    private List<FutureBarEventData> buildItems(final Page page, final Date currentTradeDate) {
+        // tbody.tbody_tj > tr
+        page.waitForSelector("tbody.tbody_tj > tr");
+        List<ElementHandle> lines = page.querySelectorAll("tbody.tbody_tj > tr");
+        List<FutureBarEventData> items = new ArrayList<>();
+        for(int i=0; i<lines.size(); i++) {
+            List<ElementHandle> cells = lines.get(i).querySelectorAll("td");
+            String contractCode = cells.get(0).innerText().trim();
+            if ( contractCode.contains("小计") || contractCode.contains("总计") ) {
+                log.warn("[CFFEX]合约代码包含小计或总计，忽略. code: {}", contractCode);
+                continue;
+            }
+            FutureBarEventData data = new FutureBarEventData();
+            data.setDatetime(currentTradeDate);
+            data.setProductCode(extractProductCode(contractCode));
+            data.setContractCode(contractCode);
+            data.setSymbol(data.getContractCode());
+            data.setOpen(getValue(cells.get(1)));
+            data.setHigh(getValue(cells.get(2)));
+            data.setLow(getValue(cells.get(3)));
+            data.setVolume(Long.parseLong(cells.get(4).innerText().trim().replaceAll(",", "")));
+            data.setAmount(getValue(cells.get(5)).multiply(new BigDecimal(10000)));
+            data.setOpenInterest(Long.parseLong(cells.get(6).innerText().trim().replaceAll(",", "")));
+            data.setClose(getValue(cells.get(8)));
+            data.setSettle(getValue(cells.get(9)));
+            items.add(data);
         }
-        String currentTradeDate = getCurrentTradeDate(sdf);
-        String filepath = DOWNLOAD_FILE_ROOT_DIR + File.separator + "CFFEX_" + currentTradeDate + ".csv";
-        Download download = page.waitForDownload(el::click);
-        download.saveAs(Paths.get(filepath));
-        log.info("[CFFEX]文件下载完成。 保存位置: {}", filepath);
+        return items;
+    }
 
-        // step2: 读取数据，发送消息
-        List<FutureBarEventData> items;
-        try {
-            items = CFFEXExcelReader.readDailyBar(sdf.parse(currentTradeDate), filepath);
-        } catch (ParseException e) {
-            throw new LeekRuntimeException("日期解析失败: " + currentTradeDate);
+    private static String extractProductCode(final String contractCode) {
+        StringBuilder sb = new StringBuilder();
+        for(int i=0; i<contractCode.length(); i++) {
+            // 遇到第一个数字，则跳出
+            if ( contractCode.charAt(i) >= '0' && contractCode.charAt(i) <= '9' ) {
+                break;
+            }
+            sb.append(contractCode.charAt(i));
         }
-        // step4: 发送消息
-        this.publishBars(BarType.DAILY, items);
+        return sb.toString();
+    }
 
+    private BigDecimal getValue(final ElementHandle el) {
+        String value = el.innerText().trim();
+        if ( StringUtils.hasText(value) ) {
+            value = value.replaceAll(",", "");
+            return new BigDecimal(value);
+        }
+        log.warn("元素获取到的文本为空. el: {}", el);
+        return BigDecimal.ZERO;
     }
 
     @Override

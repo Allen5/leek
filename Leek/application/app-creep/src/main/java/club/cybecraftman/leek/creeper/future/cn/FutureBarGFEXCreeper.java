@@ -10,8 +10,8 @@ import club.cybecraftman.leek.common.event.etl.future.FutureBarEventData;
 import club.cybecraftman.leek.common.exception.LeekException;
 import club.cybecraftman.leek.common.exception.LeekRuntimeException;
 import club.cybecraftman.leek.creeper.BaseCreeper;
-import club.cybecraftman.leek.reader.future.GFEXExcelReader;
 import com.microsoft.playwright.Download;
+import com.microsoft.playwright.ElementHandle;
 import com.microsoft.playwright.Locator;
 import com.microsoft.playwright.Page;
 import lombok.extern.slf4j.Slf4j;
@@ -19,10 +19,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import java.io.File;
+import java.math.BigDecimal;
 import java.nio.file.Paths;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.List;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -32,6 +32,14 @@ public class FutureBarGFEXCreeper extends BaseCreeper {
 
     private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
 
+    private static final Map<String, String> productMaps;
+
+    static {
+        productMaps = new HashMap<>();
+        productMaps.put("工业硅", "si");
+        productMaps.put("碳酸锂", "lc");
+    }
+
 
     @Override
     protected void doCreep(Page page) throws LeekException {
@@ -39,17 +47,8 @@ public class FutureBarGFEXCreeper extends BaseCreeper {
         String currentTradeDate = getCurrentTradeDate(sdf);
         // step1: 校验交易日
         checkTradeDate(page, currentTradeDate);
-        // step2: 下载文件
-        String filename = downloadFile(page, currentTradeDate);
-        // step3: 解析excel文件
-        List<FutureBarEventData> items;
-        try {
-            items = GFEXExcelReader.readDailyBar(sdf.parse(currentTradeDate), filename);
-        } catch (ParseException e) {
-            throw new LeekRuntimeException("日期解析失败: " + currentTradeDate);
-        }
-        // step4: 发送消息
-        this.publishBars(BarType.DAILY, items);
+        // step2: 获取数据并推送
+        this.publishBars(BarType.DAILY, buildItems(page, getCurrentTradeDate()));
 
     }
 
@@ -79,22 +78,48 @@ public class FutureBarGFEXCreeper extends BaseCreeper {
         }
     }
 
-    /**
-     * 下载excel文件
-     * @param locator
-     */
-    private String downloadFile(final Page locator, final String currentTradeDate) {
-        String filepath = DOWNLOAD_FILE_ROOT_DIR + File.separator + "GFEX_" + currentTradeDate + ".xls";
-        Locator el = locator.locator("button#export_excel");
-        if ( null == el ) {
-            log.error("[GFEX]获取地址: {} 上的元素[button#export_excel] 失败. event: {}", getEvent().getSource(), getEvent());
-            throw new LeekRuntimeException("元素定位失败: button#export_excel");
+    private List<FutureBarEventData> buildItems(final Page page, final Date currentTradeDate) {
+        // div.layui-table-body > table > tbody > tr
+        List<ElementHandle> lines = page.querySelectorAll("div.layui-table-body > table > tbody > tr");
+        List<FutureBarEventData> items = new ArrayList<>();
+        for(int i=0; i<lines.size(); i++) {
+            List<ElementHandle> cells = lines.get(i).querySelectorAll("td");
+            String name = cells.get(0).innerText().trim();
+            if ( name.contains("小计") || name.contains("总计") ) {
+                log.warn("[GFEX]商品名称包含小计或总计，忽略。 name: {}", name);
+                continue;
+            }
+            FutureBarEventData data = new FutureBarEventData();
+            data.setDatetime(currentTradeDate);
+            if ( productMaps.containsKey(name) ) {
+                data.setProductCode(productMaps.get(name));
+            } else {
+                log.error("获取到的名称不在定义范围内。 name: {}. products_map: {}", name, productMaps);
+                continue;
+            }
+            data.setContractCode(data.getProductCode() + cells.get(1).innerText().trim());
+            data.setSymbol(data.getContractCode());
+            data.setOpen(getValue(cells.get(2)));
+            data.setHigh(getValue(cells.get(3)));
+            data.setLow(getValue(cells.get(4)));
+            data.setClose(getValue(cells.get(5)));
+            data.setSettle(getValue(cells.get(7)));
+            data.setVolume(Long.parseLong(cells.get(10).innerText().trim().replaceAll(",", "")));
+            data.setOpenInterest(Long.parseLong(cells.get(11).innerText().trim().replaceAll(",", "")));
+            data.setAmount(getValue(cells.get(13)).multiply(new BigDecimal(10000)));
+            items.add(data);
         }
-        log.info("[GFEX]开始下载文件");
-        Download download = locator.waitForDownload(el::click);
-        download.saveAs(Paths.get(filepath));
-        log.info("[GFEX]文件下载完成。 保存位置: {}", filepath);
-        return filepath;
+        return items;
+    }
+
+    private BigDecimal getValue(final ElementHandle el) {
+        String value = el.innerText().trim();
+        if ( StringUtils.hasText(value) ) {
+            value = value.replaceAll(",", "");
+            return new BigDecimal(value);
+        }
+        log.warn("元素获取到的文本为空. el: {}", el);
+        return BigDecimal.ZERO;
     }
 
     @Override

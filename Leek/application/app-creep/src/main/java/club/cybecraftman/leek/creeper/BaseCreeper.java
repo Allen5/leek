@@ -19,6 +19,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.CollectionUtils;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -101,6 +102,10 @@ public abstract class BaseCreeper<T> implements ICreeper {
      * @param items
      */
     protected void publishBars(final BarType barType, final List<FutureBarEventData> items) {
+        if (CollectionUtils.isEmpty(items) ){
+            log.warn("本次推送数据为空，取消. barType: {}", barType);
+            return ;
+        }
         BarEvent pubEvent = new BarEvent();
         pubEvent.setBarType(barType.getType());
         pubEvent.setMarketCode(this.event.getMarketCode());

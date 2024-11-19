@@ -10,16 +10,15 @@ import club.cybecraftman.leek.common.event.etl.future.FutureBarEventData;
 import club.cybecraftman.leek.common.exception.LeekException;
 import club.cybecraftman.leek.common.exception.LeekRuntimeException;
 import club.cybecraftman.leek.creeper.BaseCreeper;
-import club.cybecraftman.leek.reader.future.CZCEExcelReader;
 import com.microsoft.playwright.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import java.io.File;
-import java.nio.file.Paths;
-import java.text.ParseException;
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -39,17 +38,8 @@ public class FutureBarCZCECreeper extends BaseCreeper {
         String currentTradeDate = getCurrentTradeDate(sdf);
         // step1: 校验交易日
         checkTradeDate(locator, currentTradeDate);
-        // step2: 下载文件
-        String filename = downloadFile(locator, currentTradeDate);
-        // step3: 解析excel文件
-        List<FutureBarEventData> items;
-        try {
-            items = CZCEExcelReader.readDailyBar(sdf.parse(currentTradeDate), filename);
-        } catch (ParseException e) {
-            throw new LeekRuntimeException("日期解析失败: " + currentTradeDate);
-        }
-        // step4: 发送消息
-        this.publishBars(BarType.DAILY, items);
+        // step2: 发送数据
+        this.publishBars(BarType.DAILY, buildItems(locator, getCurrentTradeDate()));
     }
 
     private void checkTradeDate(final FrameLocator locator, final String currentTradeDate) throws LeekException {
@@ -78,25 +68,57 @@ public class FutureBarCZCECreeper extends BaseCreeper {
         }
     }
 
-    /**
-     * 下载excel文件
-     * @param locator
-     */
-    private String downloadFile(final FrameLocator locator, final String currentTradeDate) {
-        String filepath = DOWNLOAD_FILE_ROOT_DIR + File.separator + "CZCE_" + currentTradeDate + ".xls";
-        Locator el = locator.locator("div.jysjtop > div.fl > span.excle > a");
-        if ( null == el ) {
-            log.error("[CZCE]获取地址: {} 上的元素[div.jysjtop > div.fl > span.excle > a] 失败. event: {}", getEvent().getSource(), getEvent());
-            throw new LeekRuntimeException("元素定位失败: div.jysjtop > div.fl > span.excle > a");
+    private List<FutureBarEventData> buildItems(final FrameLocator locator, final Date currentTradeDate) {
+        // table#tab1 > tbody > tr
+        List<Locator> lines = locator.locator("table#tab1 > tbody > tr").all();
+        List<FutureBarEventData> items = new ArrayList<>();
+        for(int i=0; i<lines.size(); i++) {
+            List<Locator> cells = lines.get(i).locator("td").all();
+            String contractCode = cells.get(0).innerText().trim();
+            if ( contractCode.contains("小计") || contractCode.contains("总计") ) {
+                log.warn("[CZCE]该行包含小计或总计，忽略. code: {}. line: {}", contractCode, lines.get(i));
+                continue;
+            }
+            FutureBarEventData data = new FutureBarEventData();
+            data.setDatetime(currentTradeDate);
+            data.setProductCode(extractProductCode(contractCode));
+            data.setContractCode(contractCode); // 合约代码
+            data.setSymbol(data.getContractCode());
+            data.setOpen(getValue(cells.get(2))); // 开盘价
+            data.setHigh(getValue(cells.get(3))); // 最高价
+            data.setLow(getValue(cells.get(4))); // 最低价
+            data.setClose(getValue(cells.get(5))); // 收盘价
+            data.setSettle(getValue(cells.get(6))); // 结算价
+            data.setVolume(Long.parseLong(cells.get(9).innerText().trim())); // 成交量
+            data.setOpenInterest(Long.parseLong(cells.get(10).innerText().trim())); // 持仓量
+            data.setAmount(getValue(cells.get(12)).multiply(new BigDecimal(10000))); // 成交额
+            items.add(data);
         }
-        log.info("[CZCE]开始下载文件");
-        try(Page page = locator.owner().page()) {
-            Download download = page.waitForDownload(el::click);
-            download.saveAs(Paths.get(filepath));
-            log.info("[CZCE]文件下载完成。 保存位置: {}", filepath);
-        }
-        return filepath;
+        return items;
     }
+
+    private static String extractProductCode(final String contractCode) {
+        StringBuilder sb = new StringBuilder();
+        for(int i=0; i<contractCode.length(); i++) {
+            // 遇到第一个数字，则跳出
+            if ( contractCode.charAt(i) >= '0' && contractCode.charAt(i) <= '9' ) {
+                break;
+            }
+            sb.append(contractCode.charAt(i));
+        }
+        return sb.toString();
+    }
+
+    private BigDecimal getValue(final Locator el) {
+        String value = el.innerText().trim();
+        if ( StringUtils.hasText(value) ) {
+            value = value.replaceAll(",", "");
+            return new BigDecimal(value);
+        }
+        log.warn("元素获取到的文本为空. el: {}", el);
+        return BigDecimal.ZERO;
+    }
+
 
     @Override
     public boolean isSupport(CreepEvent event) {

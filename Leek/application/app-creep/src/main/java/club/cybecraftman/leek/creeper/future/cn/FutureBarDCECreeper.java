@@ -21,9 +21,12 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import java.io.File;
+import java.math.BigDecimal;
 import java.nio.file.Paths;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -36,29 +39,13 @@ public class FutureBarDCECreeper extends BaseCreeper {
 
     @Override
     protected void doCreep(final Page page) throws LeekException {
-
         FrameLocator locator = page.frameLocator("iframe").last();
-
         // step0: 获取当前交易日
         String currentTradeDate = getCurrentTradeDate(sdf);
         // step1: 校验交易日
         checkTradeDate(locator, currentTradeDate);
-        // step2: 下载文件
-        String filename = downloadFile(locator, currentTradeDate);
-        // step3: 解析excel文件
-        List<FutureBarEventData> items;
-        try {
-            items = DCEExcelReader.readDailyBar(sdf.parse(currentTradeDate), filename);
-        } catch (ParseException e) {
-            throw new LeekRuntimeException("日期解析失败: " + currentTradeDate);
-        }
-        // step4: 发送消息
-        BarEvent event = new BarEvent();
-        event.setBarType(BarType.DAILY.getType());
-        event.setMarketCode(getEvent().getMarketCode());
-        event.setFinanceType(getEvent().getFinanceType());
-        event.setItems(JSONArray.parse(JSON.toJSONString(items)));
-        getKafkaProducer().publish(LeekEvent.ON_BAR_RECEIVED.topic, event);
+        // step2: 解析页面内容，抓取数据
+        this.publishBars(BarType.DAILY, buildItems(locator, getCurrentTradeDate()));
     }
 
     private void checkTradeDate(final FrameLocator locator, final String currentTradeDate) throws LeekException {
@@ -86,6 +73,66 @@ public class FutureBarDCECreeper extends BaseCreeper {
             log.error("[DCE]当前的交易日为:{}，官方当前数据所属交易日为: {}。两者不一致，等待官方更新.", currentTradeDate, candidate);
             throw new LeekException("数据所属交易日和当前交易日不匹配");
         }
+    }
+
+    private List<FutureBarEventData> buildItems(final FrameLocator locator, final Date currentTradeDate) {
+        // div.dataWrapper > div.dataArea > table > tbody > tr
+        List<Locator> lines = locator.locator("div.dataWrapper > div.dataArea > table > tbody > tr").all();
+        List<FutureBarEventData> items = new ArrayList<>();
+        for(int i=1; i<lines.size(); i++) {
+            List<Locator> cells = lines.get(i).locator("td").all();
+            String name = cells.get(0).innerText().trim();
+            if ( name.contains("小计") || name.contains("总计") ) {
+                log.warn("[DCE]该行包含小计或总计，忽略. name: {}. line: {}", name, lines.get(i));
+                continue;
+            }
+            FutureBarEventData data = new FutureBarEventData();
+            data.setDatetime(currentTradeDate);
+            data.setContractCode(cells.get(1).innerText().trim()); // 合约代码
+            data.setProductCode(extractProductCode(data.getContractCode()));
+            data.setSymbol(data.getContractCode());
+            data.setOpen(getValue(cells.get(2))); // 开盘价
+            data.setHigh(getValue(cells.get(3))); // 最高价
+            data.setLow(getValue(cells.get(4))); // 最低价
+            data.setClose(getValue(cells.get(5))); // 收盘价
+            data.setSettle(getValue(cells.get(7))); // 结算价
+            data.setVolume(Long.parseLong(cells.get(10).innerText().trim())); // 成交量
+            data.setOpenInterest(Long.parseLong(cells.get(11).innerText().trim())); // 持仓量
+            data.setAmount(getValue(cells.get(13)).multiply(new BigDecimal(10000))); // 成交额
+            items.add(data);
+        }
+        return items;
+    }
+
+    private BigDecimal getValue(final Locator el) {
+        String value = el.innerText().trim();
+        if ( StringUtils.hasText(value) ) {
+            value = value.replaceAll(",", "");
+            return new BigDecimal(value);
+        }
+        if ( value.equals("-") ) {
+            log.warn("元素获取到的文本为-. el: {}", el);
+            return BigDecimal.ZERO;
+        }
+        log.warn("元素获取到的文本为空. el: {}", el);
+        return BigDecimal.ZERO;
+    }
+
+    /**
+     * 提取品种代码
+     * @param contractCode
+     * @return
+     */
+    private static String extractProductCode(final String contractCode) {
+        StringBuilder sb = new StringBuilder();
+        for(int i=0; i<contractCode.length(); i++) {
+            // 遇到第一个数字，则跳出
+            if ( contractCode.charAt(i) >= '0' && contractCode.charAt(i) <= '9' ) {
+                break;
+            }
+            sb.append(contractCode.charAt(i));
+        }
+        return sb.toString();
     }
 
     /**
