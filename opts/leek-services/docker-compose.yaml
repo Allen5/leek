@@ -1,0 +1,97 @@
+version: "2.0"
+services:
+  leek-admin-service:
+    image: cyber-craftman/leek-admin-service:1.0.0-SNAPSHOT
+    ports:
+      - "18080:8080"
+    environment:
+      - NACOS_NAMESPACE=7f28b715-45ac-4b38-95e3-53bd6d1c4aaa
+      - NACOS_IP=172.17.0.1
+      - NACOS_PORT=8848
+      - NACOS_USERNAME=nacos
+      - NACOS_PASSWORD=nacos
+    depends_on:
+      - leek-creeper-service
+      - leek-monitor-service
+    external_links:
+      - nacos:nacos
+      - mysql:mysql
+      - kafka:kafka
+      - minio:minio
+  leek-creeper-service:
+    image: cyber-craftman/leek-creep-service:1.0.0-SNAPSHOT
+    ports:
+      - "18081:8080"
+    environment:
+      - NACOS_NAMESPACE=7f28b715-45ac-4b38-95e3-53bd6d1c4aaa
+      - NACOS_IP=172.17.0.1
+      - NACOS_PORT=8848
+      - NACOS_USERNAME=nacos
+      - NACOS_PASSWORD=nacos
+    external_links:
+      - nacos:nacos
+      - mysql:mysql
+      - kafka:kafka
+      - minio:minio
+  leek-monitor-service:
+    image: cyber-craftman/leek-monitor-service:1.0.0-SNAPSHOT
+    ports:
+      - "18082:8080"
+    environment:
+      - NACOS_NAMESPACE=7f28b715-45ac-4b38-95e3-53bd6d1c4aaa
+      - NACOS_IP=172.17.0.1
+      - NACOS_PORT=8848
+      - NACOS_USERNAME=nacos
+      - NACOS_PASSWORD=nacos
+    external_links:
+      - nacos:nacos
+      - mysql:mysql
+      - kafka:kafka
+      - minio:minio
+  leek-gateway-service:
+    image: cyber-craftman/leek-gateway-service:1.0.0-SNAPSHOT
+    ports:
+      - "18083:8080"
+    environment:
+      - NACOS_NAMESPACE=7f28b715-45ac-4b38-95e3-53bd6d1c4aaa
+      - NACOS_IP=172.17.0.1
+      - NACOS_PORT=8848
+      - NACOS_USERNAME=nacos
+      - NACOS_PASSWORD=nacos
+    depends_on:
+      - leek-trade-service
+    external_links:
+      - nacos:nacos
+      - mysql:mysql
+      - kafka:kafka
+      - minio:minio
+  leek-trade-service:
+    image: cyber-craftman/leek-trade-service:1.0.0-SNAPSHOT
+    ports:
+      - "18084:8080"
+    environment:
+      - NACOS_NAMESPACE=7f28b715-45ac-4b38-95e3-53bd6d1c4aaa
+      - NACOS_IP=172.17.0.1
+      - NACOS_PORT=8848
+      - NACOS_USERNAME=nacos
+      - NACOS_PASSWORD=nacos
+    external_links:
+      - nacos:nacos
+      - mysql:mysql
+      - kafka:kafka
+      - minio:minio
+  leek-backtest-service:
+    image: cyber-craftman/leek-backtest-service:1.0.0-SNAPSHOT
+    ports:
+      - "18085:8080"
+    environment:
+      - NACOS_NAMESPACE=7f28b715-45ac-4b38-95e3-53bd6d1c4aaa
+      - NACOS_IP=172.17.0.1
+      - NACOS_PORT=8848
+      - NACOS_USERNAME=nacos
+      - NACOS_PASSWORD=nacos
+    external_links:
+      - nacos:nacos
+      - mysql:mysql
+      - kafka:kafka
+      - minio:minio

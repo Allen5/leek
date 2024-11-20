@@ -1,0 +1,39 @@
+version: "4.35"
+services:
+  minio:
+    image: minio/minio:latest
+    ports:
+      - "9000:9000"
+      - "9091:9091"
+    environment:
+      - MINIO_ROOT_USER=minio
+      - MINIO_ROOT_PASSWORD=minio@1234
+    volumes:
+      - "/Users/allen/Documents/Docker/minio/data:/data"
+    command: server /data --console-address ":9091"
+    restart: always
+  kafka:
+    image: apache/kafka:latest
+    ports:
+      - "9092:9092"
+    restart: always
+  nacos:
+    image: nacos/nacos-server:latest
+    ports:
+      - "8848:8848"
+      - "9848:9848"
+      - "9849:9849"
+    environment:
+      - MODE=standalone
+    volumes:
+      - "/Users/allen/Documents/Docker/nacos/conf:/home/nacos/conf"
+      - "/Users/allen/Documents/Docker/nacos/data:/home/nacos/data"
+      - "/Users/allen/Documents/Docker/nacos/logs:/home/nacos/logs"
+  mysql:
+    image: mysql:latest
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=123456
+    volumes:
+      - "/Users/allen/Documents/Docker/mysql/data:/var/lib/mysql"
