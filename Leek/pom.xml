@@ -11,7 +11,7 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>club.cybecraftman.leek</groupId>
+    <groupId>club.cybercraftman.leek</groupId>
     <artifactId>Leek</artifactId>
     <version>1.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
@@ -26,8 +26,8 @@
     </modules>
 
     <properties>
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <leek.version>${project.version}</leek.version>
@@ -75,109 +75,109 @@
             </dependency>
 
             <dependency>
-                <groupId>club.cybecraftman.leek</groupId>
+                <groupId>club.cybercraftman.leek</groupId>
                 <artifactId>common</artifactId>
                 <version>${leek.version}</version>
             </dependency>
 
             <dependency>
-                <groupId>club.cybecraftman.leek</groupId>
+                <groupId>club.cybercraftman.leek</groupId>
                 <artifactId>core</artifactId>
                 <version>${leek.version}</version>
             </dependency>
 
             <dependency>
-                <groupId>club.cybecraftman.leek.repo</groupId>
+                <groupId>club.cybercraftman.leek.repo</groupId>
                 <artifactId>repo-meta</artifactId>
                 <version>${leek.repository.version}</version>
             </dependency>
 
             <dependency>
-                <groupId>club.cybecraftman.leek.repo</groupId>
+                <groupId>club.cybercraftman.leek.repo</groupId>
                 <artifactId>repo-admin</artifactId>
                 <version>${leek.repository.version}</version>
             </dependency>
 
             <dependency>
-                <groupId>club.cybecraftman.leek.repo</groupId>
+                <groupId>club.cybercraftman.leek.repo</groupId>
                 <artifactId>repo-trade</artifactId>
                 <version>${leek.repository.version}</version>
             </dependency>
 
             <dependency>
-                <groupId>club.cybecraftman.leek.repo</groupId>
+                <groupId>club.cybercraftman.leek.repo</groupId>
                 <artifactId>repo-monitor</artifactId>
                 <version>${leek.repository.version}</version>
             </dependency>
 
             <dependency>
-                <groupId>club.cybecraftman.leek.repo</groupId>
+                <groupId>club.cybercraftman.leek.repo</groupId>
                 <artifactId>repo-finance-data</artifactId>
                 <version>${leek.repository.version}</version>
             </dependency>
 
             <dependency>
-                <groupId>club.cybecraftman.leek.domain</groupId>
+                <groupId>club.cybercraftman.leek.domain</groupId>
                 <artifactId>domain-admin</artifactId>
                 <version>${leek.domain.version}</version>
             </dependency>
 
             <dependency>
-                <groupId>club.cybecraftman.leek.domain</groupId>
+                <groupId>club.cybercraftman.leek.domain</groupId>
                 <artifactId>domain-finance-data</artifactId>
                 <version>${leek.domain.version}</version>
             </dependency>
 
             <dependency>
-                <groupId>club.cybecraftman.leek.domain</groupId>
+                <groupId>club.cybercraftman.leek.domain</groupId>
                 <artifactId>domain-backtest</artifactId>
                 <version>${leek.domain.version}</version>
             </dependency>
 
             <dependency>
-                <groupId>club.cybecraftman.leek.domain</groupId>
+                <groupId>club.cybercraftman.leek.domain</groupId>
                 <artifactId>domain-trade</artifactId>
                 <version>${leek.domain.version}</version>
             </dependency>
 
             <dependency>
-                <groupId>club.cybecraftman.leek.domain</groupId>
+                <groupId>club.cybercraftman.leek.domain</groupId>
                 <artifactId>domain-monitor</artifactId>
                 <version>${leek.domain.version}</version>
             </dependency>
 
             <dependency>
-                <groupId>club.cybecraftman.leek.domain</groupId>
+                <groupId>club.cybercraftman.leek.domain</groupId>
                 <artifactId>domain-meta</artifactId>
                 <version>${leek.domain.version}</version>
             </dependency>
 
             <dependency>
-                <groupId>club.cybecraftman.leek.infrastructure</groupId>
+                <groupId>club.cybercraftman.leek.infrastructure</groupId>
                 <artifactId>config-center</artifactId>
                 <version>${leek.infrastructure.version}</version>
             </dependency>
 
             <dependency>
-                <groupId>club.cybecraftman.leek.infrastructure</groupId>
+                <groupId>club.cybercraftman.leek.infrastructure</groupId>
                 <artifactId>database</artifactId>
                 <version>${leek.infrastructure.version}</version>
             </dependency>
 
             <dependency>
-                <groupId>club.cybecraftman.leek.infrastructure</groupId>
+                <groupId>club.cybercraftman.leek.infrastructure</groupId>
                 <artifactId>cache</artifactId>
                 <version>${leek.infrastructure.version}</version>
             </dependency>
 
             <dependency>
-                <groupId>club.cybecraftman.leek.infrastructure</groupId>
+                <groupId>club.cybercraftman.leek.infrastructure</groupId>
                 <artifactId>message-queue</artifactId>
                 <version>${leek.infrastructure.version}</version>
             </dependency>
 
             <dependency>
-                <groupId>club.cybecraftman.leek.infrastructure</groupId>
+                <groupId>club.cybercraftman.leek.infrastructure</groupId>
                 <artifactId>massive-compute</artifactId>
                 <version>${leek.infrastructure.version}</version>
             </dependency>
@@ -187,22 +187,6 @@
     </dependencyManagement>
 
     <dependencies>
-
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-dependencies</artifactId>
-            <version>${spring.cloud.version}</version>
-            <type>pom</type>
-            <scope>import</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>com.alibaba.cloud</groupId>
-            <artifactId>spring-cloud-alibaba-dependencies</artifactId>
-            <version>${spring.cloud.alibaba.version}</version>
-            <type>pom</type>
-            <scope>import</scope>
-        </dependency>
 
         <dependency>
             <groupId>org.springframework.cloud</groupId>

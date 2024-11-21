@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>club.cybecraftman.leek.application</groupId>
+        <groupId>club.cybercraftman.leek.application</groupId>
         <artifactId>application</artifactId>
         <version>1.0.0-SNAPSHOT</version>
     </parent>
@@ -12,8 +12,8 @@
     <artifactId>app-creep</artifactId>
 
     <properties>
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <playwright.version>1.45.1</playwright.version>
@@ -27,12 +27,12 @@
         </dependency>
 
         <dependency>
-            <groupId>club.cybecraftman.leek</groupId>
+            <groupId>club.cybercraftman.leek</groupId>
             <artifactId>core</artifactId>
         </dependency>
 
         <dependency>
-            <groupId>club.cybecraftman.leek.infrastructure</groupId>
+            <groupId>club.cybercraftman.leek.infrastructure</groupId>
             <artifactId>message-queue</artifactId>
         </dependency>
 
@@ -43,12 +43,12 @@
         </dependency>
 
         <dependency>
-            <groupId>club.cybecraftman.leek.domain</groupId>
+            <groupId>club.cybercraftman.leek.domain</groupId>
             <artifactId>domain-finance-data</artifactId>
         </dependency>
 
         <dependency>
-            <groupId>club.cybecraftman.leek.domain</groupId>
+            <groupId>club.cybercraftman.leek.domain</groupId>
             <artifactId>domain-monitor</artifactId>
         </dependency>
 

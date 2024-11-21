@@ -1,12 +1,11 @@
-version: "2.0"
 services:
   leek-admin-service:
     image: cyber-craftman/leek-admin-service:1.0.0-SNAPSHOT
     ports:
       - "18080:8080"
     environment:
-      - NACOS_NAMESPACE=7f28b715-45ac-4b38-95e3-53bd6d1c4aaa
-      - NACOS_IP=172.17.0.1
+      - NACOS_GROUP=prod
+      - NACOS_IP=host.docker.internal
       - NACOS_PORT=8848
       - NACOS_USERNAME=nacos
       - NACOS_PASSWORD=nacos
@@ -23,8 +22,8 @@ services:
     ports:
       - "18081:8080"
     environment:
-      - NACOS_NAMESPACE=7f28b715-45ac-4b38-95e3-53bd6d1c4aaa
-      - NACOS_IP=172.17.0.1
+      - NACOS_GROUP=prod
+      - NACOS_IP=host.docker.internal
       - NACOS_PORT=8848
       - NACOS_USERNAME=nacos
       - NACOS_PASSWORD=nacos
@@ -38,8 +37,8 @@ services:
     ports:
       - "18082:8080"
     environment:
-      - NACOS_NAMESPACE=7f28b715-45ac-4b38-95e3-53bd6d1c4aaa
-      - NACOS_IP=172.17.0.1
+      - NACOS_GROUP=prod
+      - NACOS_IP=host.docker.internal
       - NACOS_PORT=8848
       - NACOS_USERNAME=nacos
       - NACOS_PASSWORD=nacos
@@ -53,8 +52,8 @@ services:
     ports:
       - "18083:8080"
     environment:
-      - NACOS_NAMESPACE=7f28b715-45ac-4b38-95e3-53bd6d1c4aaa
-      - NACOS_IP=172.17.0.1
+      - NACOS_GROUP=prod
+      - NACOS_IP=host.docker.internal
       - NACOS_PORT=8848
       - NACOS_USERNAME=nacos
       - NACOS_PASSWORD=nacos
@@ -70,8 +69,8 @@ services:
     ports:
       - "18084:8080"
     environment:
-      - NACOS_NAMESPACE=7f28b715-45ac-4b38-95e3-53bd6d1c4aaa
-      - NACOS_IP=172.17.0.1
+      - NACOS_GROUP=prod
+      - NACOS_IP=host.docker.internal
       - NACOS_PORT=8848
       - NACOS_USERNAME=nacos
       - NACOS_PASSWORD=nacos
@@ -85,8 +84,23 @@ services:
     ports:
       - "18085:8080"
     environment:
-      - NACOS_NAMESPACE=7f28b715-45ac-4b38-95e3-53bd6d1c4aaa
-      - NACOS_IP=172.17.0.1
+      - NACOS_GROUP=prod
+      - NACOS_IP=host.docker.internal
+      - NACOS_PORT=8848
+      - NACOS_USERNAME=nacos
+      - NACOS_PASSWORD=nacos
+    external_links:
+      - nacos:nacos
+      - mysql:mysql
+      - kafka:kafka
+      - minio:minio
+  leek-etl-service:
+    image: cyber-craftman/leek-etl-service:1.0.0-SNAPSHOT
+    ports:
+      - "18086:8080"
+    environment:
+      - NACOS_GROUP=prod
+      - NACOS_IP=host.docker.internal
       - NACOS_PORT=8848
       - NACOS_USERNAME=nacos
       - NACOS_PASSWORD=nacos

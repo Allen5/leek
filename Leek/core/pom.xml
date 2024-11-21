@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>club.cybecraftman.leek</groupId>
+        <groupId>club.cybercraftman.leek</groupId>
         <artifactId>Leek</artifactId>
         <version>1.0.0-SNAPSHOT</version>
     </parent>
@@ -12,25 +12,18 @@
     <artifactId>core</artifactId>
 
     <properties>
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <ta-lib.version>0.4.0</ta-lib.version>
-        <easyexcel.version>4.0.3</easyexcel.version>
     </properties>
 
     <dependencies>
 
         <dependency>
-            <groupId>club.cybecraftman.leek</groupId>
+            <groupId>club.cybercraftman.leek</groupId>
             <artifactId>common</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>com.alibaba</groupId>
-            <artifactId>easyexcel</artifactId>
-            <version>${easyexcel.version}</version>
         </dependency>
 
         <dependency>

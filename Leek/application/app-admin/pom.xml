@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>club.cybecraftman.leek.application</groupId>
+        <groupId>club.cybercraftman.leek.application</groupId>
         <artifactId>application</artifactId>
         <version>1.0.0-SNAPSHOT</version>
     </parent>
@@ -12,8 +12,8 @@
     <artifactId>app-admin</artifactId>
 
     <properties>
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
@@ -25,27 +25,27 @@
         </dependency>
 
         <dependency>
-            <groupId>club.cybecraftman.leek.domain</groupId>
+            <groupId>club.cybercraftman.leek.domain</groupId>
             <artifactId>domain-admin</artifactId>
         </dependency>
 
         <dependency>
-            <groupId>club.cybecraftman.leek.domain</groupId>
+            <groupId>club.cybercraftman.leek.domain</groupId>
             <artifactId>domain-finance-data</artifactId>
         </dependency>
 
         <dependency>
-            <groupId>club.cybecraftman.leek.domain</groupId>
+            <groupId>club.cybercraftman.leek.domain</groupId>
             <artifactId>domain-monitor</artifactId>
         </dependency>
 
         <dependency>
-            <groupId>club.cybecraftman.leek.domain</groupId>
+            <groupId>club.cybercraftman.leek.domain</groupId>
             <artifactId>domain-trade</artifactId>
         </dependency>
 
         <dependency>
-            <groupId>club.cybecraftman.leek.domain</groupId>
+            <groupId>club.cybercraftman.leek.domain</groupId>
             <artifactId>domain-backtest</artifactId>
         </dependency>
 
@@ -59,34 +59,52 @@
 
     <build>
         <finalName>leek-admin-service</finalName>
+        <!-- 指定依赖资源 -->
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>static/</include>
+                    <include>bootstrap.yaml</include>
+                    <include>logback.xml</include>
+                </includes>
+            </resource>
+        </resources>
+
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-clean-plugin</artifactId>
-                <version>3.3.2</version>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.4.2</version>
                 <configuration>
-                    <filesets>
-                        <fileset>
-                            <directory>${project.parent.parent.basedir}/dist/${project.build.finalName}</directory>
-                        </fileset>
-                    </filesets>
+                    <archive>
+                        <manifest>
+                            <addClasspath>true</addClasspath>
+                            <mainClass>club.cybercraftman.leek.AdminApplication</mainClass>
+                            <classpathPrefix>applib/</classpathPrefix>
+                        </manifest>
+                    </archive>
                 </configuration>
             </plugin>
             <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-                <version>${spring.boot.version}</version>
-                <configuration>
-                    <mainClass>club.cybecraftman.leek.AdminApplication</mainClass>
-                </configuration>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>3.7.1</version>
                 <executions>
                     <execution>
+                        <id>copy</id>
+                        <phase>package</phase>
                         <goals>
-                            <goal>repackage</goal>
+                            <goal>copy-dependencies</goal>
                         </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/applib</outputDirectory>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
+
+            <!-- docker 构建 -->
             <plugin>
                 <groupId>io.fabric8</groupId>
                 <artifactId>docker-maven-plugin</artifactId>

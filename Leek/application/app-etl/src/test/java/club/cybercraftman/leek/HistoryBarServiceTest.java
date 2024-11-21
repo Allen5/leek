@@ -1,8 +1,7 @@
 package club.cybercraftman.leek;
 
-import club.cybecraftman.leek.EtlApplication;
-import club.cybecraftman.leek.common.exception.LeekException;
-import club.cybecraftman.leek.service.HistoryBarService;
+import club.cybercraftman.leek.common.exception.LeekException;
+import club.cybercraftman.leek.service.HistoryBarService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

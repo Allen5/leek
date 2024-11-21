@@ -4,15 +4,24 @@ spring:
   cloud:
     nacos:
       config:
-        namespace: ${NACOS_NAMESPACE:aa4d95a3-be7a-47b8-a2f3-049ef8665853}
+        namespace: leek
+        data-id: ${spring.application.name}.yaml
+        group: ${NACOS_GROUP:dev}
         server-addr: ${NACOS_IP:localhost}:${NACOS_PORT:8848}
         username: ${NACOS_USERNAME:nacos}
         password: ${NACOS_PASSWORD:nacos}
         file-extension: yaml
         config-retry-time: 300000
-        shared-configs: common.yaml,kafka.yaml
+        shared-configs:
+          - data-id: common.yaml
+            group: ${NACOS_GROUP:dev}
+          - data-id: database.yaml
+            group: ${NACOS_GROUP:dev}
+          - data-id: kafka.yaml
+            group: ${NACOS_GROUP:dev}
       discovery:
-        namespace: ${NACOS_NAMESPACE:aa4d95a3-be7a-47b8-a2f3-049ef8665853}
+        namespace: leek
+        group: ${NACOS_GROUP:dev}
         server-addr: ${NACOS_IP:localhost}:${NACOS_PORT:8848}
         username: ${NACOS_USERNAME:nacos}
         password: ${NACOS_PASSWORD:nacos}

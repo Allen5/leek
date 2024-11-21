@@ -1,4 +1,4 @@
-FROM ghcr.io/graalvm/jdk:ol8-java17-22.3.3
+FROM adoptopenjdk/openjdk11
 
 COPY target/leek-backtest-service.jar /application.jar
 
