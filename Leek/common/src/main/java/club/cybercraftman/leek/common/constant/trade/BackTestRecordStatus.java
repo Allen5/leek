@@ -3,6 +3,7 @@ package club.cybercraftman.leek.common.constant.trade;
 
 import lombok.Getter;
 
+@Getter
 public enum BackTestRecordStatus {
 
     NOT_START(0, "开始"),
@@ -16,9 +17,7 @@ public enum BackTestRecordStatus {
         this.description = description;
     }
 
-    @Getter
-    private Integer status;
+    private final Integer status;
 
-    @Getter
-    private String description;
+    private final String description;
 }

@@ -5,6 +5,7 @@ import lombok.Getter;
 /**
  * 方向
  */
+@Getter
 public enum TradeType {
 
     OPEN(0, "开仓"),
@@ -17,10 +18,8 @@ public enum TradeType {
         this.description = description;
     }
 
-    @Getter
-    private Integer type;
+    private final Integer type;
 
-    @Getter
-    private String description;
+    private final String description;
 
 }

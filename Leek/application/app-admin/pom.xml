@@ -65,8 +65,6 @@
                 <directory>src/main/resources</directory>
                 <includes>
                     <include>static/</include>
-                    <include>bootstrap.yaml</include>
-                    <include>logback.xml</include>
                 </includes>
             </resource>
         </resources>

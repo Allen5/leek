@@ -2,6 +2,7 @@ package club.cybercraftman.leek.common.constant.creep;
 
 import lombok.Getter;
 
+@Getter
 public enum DataType {
 
     FUTURE_PRODUCT("product", "品种信息"),
@@ -18,9 +19,7 @@ public enum DataType {
         this.description = description;
     }
 
-    @Getter
-    private String type;
+    private final String type;
 
-    @Getter
-    private String description;
+    private final String description;
 }

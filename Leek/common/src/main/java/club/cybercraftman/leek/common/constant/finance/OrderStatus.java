@@ -5,6 +5,7 @@ import lombok.Getter;
 /**
  * 订单状态
  */
+@Getter
 public enum OrderStatus {
 
     ORDER(0, "下单"),
@@ -18,9 +19,7 @@ public enum OrderStatus {
         this.description = description;
     }
 
-    @Getter
-    private Integer status;
+    private final Integer status;
 
-    @Getter
-    private String description;
+    private final String description;
 }

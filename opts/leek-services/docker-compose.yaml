@@ -4,7 +4,7 @@ services:
     ports:
       - "18080:8080"
     environment:
-      - NACOS_GROUP=prod
+      - NACOS_NAMESPACE=leek-prod
       - NACOS_IP=host.docker.internal
       - NACOS_PORT=8848
       - NACOS_USERNAME=nacos
@@ -22,7 +22,7 @@ services:
     ports:
       - "18081:8080"
     environment:
-      - NACOS_GROUP=prod
+      - NACOS_NAMESPACE=leek-prod
       - NACOS_IP=host.docker.internal
       - NACOS_PORT=8848
       - NACOS_USERNAME=nacos
@@ -37,7 +37,7 @@ services:
     ports:
       - "18082:8080"
     environment:
-      - NACOS_GROUP=prod
+      - NACOS_NAMESPACE=leek-prod
       - NACOS_IP=host.docker.internal
       - NACOS_PORT=8848
       - NACOS_USERNAME=nacos
@@ -52,7 +52,7 @@ services:
     ports:
       - "18083:8080"
     environment:
-      - NACOS_GROUP=prod
+      - NACOS_NAMESPACE=leek-prod
       - NACOS_IP=host.docker.internal
       - NACOS_PORT=8848
       - NACOS_USERNAME=nacos
@@ -69,7 +69,7 @@ services:
     ports:
       - "18084:8080"
     environment:
-      - NACOS_GROUP=prod
+      - NACOS_NAMESPACE=leek-prod
       - NACOS_IP=host.docker.internal
       - NACOS_PORT=8848
       - NACOS_USERNAME=nacos
@@ -84,7 +84,7 @@ services:
     ports:
       - "18085:8080"
     environment:
-      - NACOS_GROUP=prod
+      - NACOS_NAMESPACE=leek-prod
       - NACOS_IP=host.docker.internal
       - NACOS_PORT=8848
       - NACOS_USERNAME=nacos
@@ -99,7 +99,7 @@ services:
     ports:
       - "18086:8080"
     environment:
-      - NACOS_GROUP=prod
+      - NACOS_NAMESPACE=leek-prod
       - NACOS_IP=host.docker.internal
       - NACOS_PORT=8848
       - NACOS_USERNAME=nacos

@@ -1,12 +1,13 @@
+
 spring:
   application:
     name: leek-trade-service
   cloud:
     nacos:
       config:
-        namespace: leek
+        namespace: ${NACOS_NAMESPACE:leek-dev}
         data-id: ${spring.application.name}.yaml
-        group: ${NACOS_GROUP:dev}
+        group: service
         server-addr: ${NACOS_IP:localhost}:${NACOS_PORT:8848}
         username: ${NACOS_USERNAME:nacos}
         password: ${NACOS_PASSWORD:nacos}
@@ -14,14 +15,14 @@ spring:
         config-retry-time: 300000
         shared-configs:
           - data-id: common.yaml
-            group: ${NACOS_GROUP:dev}
+            group: basic
           - data-id: database.yaml
-            group: ${NACOS_GROUP:dev}
+            group: middleware
           - data-id: kafka.yaml
-            group: ${NACOS_GROUP:dev}
+            group: middleware
       discovery:
-        namespace: leek
-        group: ${NACOS_GROUP:dev}
+        namespace: ${NACOS_NAMESPACE:leek-dev}
+        group: service
         server-addr: ${NACOS_IP:localhost}:${NACOS_PORT:8848}
         username: ${NACOS_USERNAME:nacos}
         password: ${NACOS_PASSWORD:nacos}

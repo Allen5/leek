@@ -26,7 +26,7 @@ import java.util.Date;
 import java.util.List;
 
 @Slf4j
-public abstract class BaseCreeper<T> implements ICreeper {
+public abstract class BaseCreeper implements ICreeper {
 
     // Tips: 后续改为配置
     public static final String DOWNLOAD_FILE_ROOT_DIR = "download";
@@ -45,10 +45,6 @@ public abstract class BaseCreeper<T> implements ICreeper {
     @Getter
     @Setter
     private CreepEvent event;
-
-    @Getter
-    @Setter
-    private T data;
 
     @Override
     public void creep() {

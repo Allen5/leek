@@ -2,6 +2,7 @@ package club.cybercraftman.leek.common.constant;
 
 import lombok.Getter;
 
+@Getter
 public enum ValidStatus {
 
     VALID(0, "有效"),
@@ -14,10 +15,8 @@ public enum ValidStatus {
         this.description = description;
     }
 
-    @Getter
-    private Integer status;
+    private final Integer status;
 
-    @Getter
-    private String description;
+    private final String description;
 
 }
