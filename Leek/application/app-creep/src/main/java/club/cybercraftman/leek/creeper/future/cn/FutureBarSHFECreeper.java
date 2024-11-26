@@ -6,7 +6,7 @@ import club.cybercraftman.leek.common.constant.finance.BarType;
 import club.cybercraftman.leek.common.constant.finance.FinanceType;
 import club.cybercraftman.leek.common.constant.finance.Market;
 import club.cybercraftman.leek.common.constant.finance.future.Exchange;
-import club.cybercraftman.leek.common.dto.event.creep.CreepEvent;
+import club.cybercraftman.leek.common.event.creep.CreepEvent;
 import club.cybercraftman.leek.common.event.etl.future.FutureBarEventData;
 import club.cybercraftman.leek.common.exception.LeekException;
 import club.cybercraftman.leek.creeper.BaseCreeper;

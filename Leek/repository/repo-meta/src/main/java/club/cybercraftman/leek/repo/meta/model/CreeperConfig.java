@@ -65,24 +65,24 @@ public class CreeperConfig {
      * 开始工作时间
      */
     @Column(name = "work_start_time")
-    private Date workStartTime;
+    private LocalTime workStartTime;
 
     /**
      * 结束工作时间
      */
     @Column(name = "work_end_time")
-    private Date workEndTime;
+    private LocalTime workEndTime;
 
     /**
      * 创建时间
      */
     @Column(name = "created_at", nullable = false)
-    private LocalTime createdAt;
+    private Date createdAt;
 
     /**
      * 更新时间
      */
     @Column(name = "updated_at")
-    private LocalTime updatedAt;
+    private Date updatedAt;
 
 }

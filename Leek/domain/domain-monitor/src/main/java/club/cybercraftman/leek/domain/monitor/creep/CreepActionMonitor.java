@@ -1,7 +1,11 @@
 package club.cybercraftman.leek.domain.monitor.creep;
 
 import club.cybercraftman.leek.common.constant.CommonExecuteStatus;
-import club.cybercraftman.leek.common.dto.event.creep.CreepEvent;
+import club.cybercraftman.leek.common.constant.creep.DataType;
+import club.cybercraftman.leek.common.constant.finance.FinanceType;
+import club.cybercraftman.leek.common.constant.finance.Market;
+import club.cybercraftman.leek.common.event.creep.CreepEvent;
+import club.cybercraftman.leek.common.exception.LeekException;
 import club.cybercraftman.leek.common.exception.LeekRuntimeException;
 import club.cybercraftman.leek.repo.monitor.model.CreepLog;
 import club.cybercraftman.leek.repo.monitor.repository.ICreeperLog;
@@ -10,8 +14,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * 记录爬虫的执行记录
@@ -30,6 +39,34 @@ public class CreepActionMonitor {
             throw new LeekRuntimeException("数据库执行异常，creep log 不存在. id: " + id);
         }
         return op.get();
+    }
+
+    /**
+     * 获取在指定时间范围内未失败的记录
+     * @param market
+     * @param financeType
+     * @param dataType
+     * @param start
+     * @param end
+     * @return
+     */
+    public List<CreepLog> findUnFailedLogs(final Market market,
+                                           final FinanceType financeType,
+                                           final DataType dataType,
+                                           final LocalDateTime start,
+                                           final LocalDateTime end) throws LeekException {
+        if ( null == market || null == financeType || null == dataType ) {
+            throw new LeekException("[参数错误]market, financeType, dataType均不可为空");
+        }
+        return creeperLog.findAllByMarketCodeAndFinanceTypeAndDataTypeAndStatusAndUpdatedAt(market.getCode(),
+                financeType.getType(),
+                dataType.getType(),
+                Arrays.stream(CommonExecuteStatus.values())
+                        .filter(e -> e != CommonExecuteStatus.FAIL)
+                        .map(CommonExecuteStatus::getStatus)
+                        .collect(Collectors.toList()),
+                Date.from(start.atZone(ZoneId.systemDefault()).toInstant()),
+                Date.from(end.atZone(ZoneId.systemDefault()).toInstant()));
     }
 
     /**

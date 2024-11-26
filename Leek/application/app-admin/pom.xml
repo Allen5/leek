@@ -26,6 +26,11 @@
 
         <dependency>
             <groupId>club.cybercraftman.leek.domain</groupId>
+            <artifactId>domain-meta</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>club.cybercraftman.leek.domain</groupId>
             <artifactId>domain-admin</artifactId>
         </dependency>
 
@@ -55,6 +60,11 @@
             <scope>test</scope>
         </dependency>
 
+        <dependency>
+            <groupId>club.cybercraftman.leek.infrastructure</groupId>
+            <artifactId>message-queue</artifactId>
+        </dependency>
+
     </dependencies>
 
     <build>
@@ -65,6 +75,7 @@
                 <directory>src/main/resources</directory>
                 <includes>
                     <include>static/</include>
+                    <include>bootstrap.yaml</include>
                 </includes>
             </resource>
         </resources>

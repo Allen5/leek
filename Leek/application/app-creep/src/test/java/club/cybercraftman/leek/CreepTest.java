@@ -4,7 +4,7 @@ import club.cybercraftman.leek.common.constant.creep.DataType;
 import club.cybercraftman.leek.common.constant.creep.SourceName;
 import club.cybercraftman.leek.common.constant.finance.FinanceType;
 import club.cybercraftman.leek.common.constant.finance.Market;
-import club.cybercraftman.leek.common.dto.event.creep.CreepEvent;
+import club.cybercraftman.leek.common.event.creep.CreepEvent;
 import club.cybercraftman.leek.creeper.BaseCreeper;
 import club.cybercraftman.leek.creeper.CreeperBuilder;
 import lombok.extern.slf4j.Slf4j;

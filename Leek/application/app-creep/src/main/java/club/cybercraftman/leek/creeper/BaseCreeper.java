@@ -1,7 +1,7 @@
 package club.cybercraftman.leek.creeper;
 
 import club.cybercraftman.leek.common.constant.finance.BarType;
-import club.cybercraftman.leek.common.dto.event.creep.CreepEvent;
+import club.cybercraftman.leek.common.event.creep.CreepEvent;
 import club.cybercraftman.leek.common.event.LeekEvent;
 import club.cybercraftman.leek.common.event.etl.BarEvent;
 import club.cybercraftman.leek.common.event.etl.future.FutureBarEventData;

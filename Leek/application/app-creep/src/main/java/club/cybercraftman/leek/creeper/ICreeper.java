@@ -1,6 +1,6 @@
 package club.cybercraftman.leek.creeper;
 
-import club.cybercraftman.leek.common.dto.event.creep.CreepEvent;
+import club.cybercraftman.leek.common.event.creep.CreepEvent;
 
 public interface ICreeper {
 

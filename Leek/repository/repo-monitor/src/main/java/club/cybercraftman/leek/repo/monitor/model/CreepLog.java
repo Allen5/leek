@@ -39,6 +39,10 @@ public class CreepLog {
     @Column(name = "source", length = 1024)
     private String source;
 
+    /**
+     * 执行状态
+     * @see club.cybercraftman.leek.common.constant.CommonExecuteStatus
+     */
     @Column(name = "status", nullable = false, length = 4)
     private Integer status;
 

@@ -1,6 +1,6 @@
 package club.cybercraftman.leek.event;
 
-import club.cybercraftman.leek.common.dto.event.creep.CreepEvent;
+import club.cybercraftman.leek.common.event.creep.CreepEvent;
 import club.cybercraftman.leek.common.event.LeekEvent;
 import club.cybercraftman.leek.creeper.BaseCreeper;
 import club.cybercraftman.leek.creeper.CreeperBuilder;

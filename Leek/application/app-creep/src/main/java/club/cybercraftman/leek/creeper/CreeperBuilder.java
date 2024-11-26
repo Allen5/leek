@@ -1,6 +1,6 @@
 package club.cybercraftman.leek.creeper;
 
-import club.cybercraftman.leek.common.dto.event.creep.CreepEvent;
+import club.cybercraftman.leek.common.event.creep.CreepEvent;
 import club.cybercraftman.leek.common.exception.LeekRuntimeException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
