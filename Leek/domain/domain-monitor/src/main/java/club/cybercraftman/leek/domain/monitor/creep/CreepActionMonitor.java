@@ -50,21 +50,18 @@ public class CreepActionMonitor {
      * @param end
      * @return
      */
-    public List<CreepLog> findUnFailedLogs(final Market market,
-                                           final FinanceType financeType,
-                                           final DataType dataType,
-                                           final LocalDateTime start,
-                                           final LocalDateTime end) throws LeekException {
+    public List<CreepLog> findFailedLogs(final Market market,
+                                         final FinanceType financeType,
+                                         final DataType dataType,
+                                         final LocalDateTime start,
+                                         final LocalDateTime end) throws LeekException {
         if ( null == market || null == financeType || null == dataType ) {
             throw new LeekException("[参数错误]market, financeType, dataType均不可为空");
         }
         return creeperLog.findAllByMarketCodeAndFinanceTypeAndDataTypeAndStatusAndUpdatedAt(market.getCode(),
                 financeType.getType(),
                 dataType.getType(),
-                Arrays.stream(CommonExecuteStatus.values())
-                        .filter(e -> e != CommonExecuteStatus.FAIL)
-                        .map(CommonExecuteStatus::getStatus)
-                        .collect(Collectors.toList()),
+                CommonExecuteStatus.FAIL.getStatus(),
                 Date.from(start.atZone(ZoneId.systemDefault()).toInstant()),
                 Date.from(end.atZone(ZoneId.systemDefault()).toInstant()));
     }

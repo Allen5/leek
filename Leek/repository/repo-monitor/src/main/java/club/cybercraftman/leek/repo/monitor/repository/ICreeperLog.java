@@ -19,13 +19,13 @@ public interface ICreeperLog extends JpaRepository<CreepLog, Long> {
 
     @Query("select t from CreepLog t where t.marketCode = :market" +
             " and t.financeType = :financeType" +
-            " and t.status in (:status)" +
+            " and t.status = :status" +
             " and t.dataType = :dataType" +
             " and t.updatedAt >= :start and t.updatedAt <= :end")
     List<CreepLog> findAllByMarketCodeAndFinanceTypeAndDataTypeAndStatusAndUpdatedAt(final @Param("market") String marketCode,
                                                                                      final @Param("financeType") String financeType,
                                                                                      final @Param("dataType") String dataType,
-                                                                                     final @Param("status") List<Integer> status,
+                                                                                     final @Param("status") Integer status,
                                                                                      final @Param("start") Date start,
                                                                                      final @Param("end") Date end);
 
