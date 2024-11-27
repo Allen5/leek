@@ -32,6 +32,8 @@ services:
       - mysql:mysql
       - kafka:kafka
       - minio:minio
+    depends_on:
+      - leek-etl-service
   leek-monitor-service:
     image: cyber-craftman/leek-monitor-service:1.0.0-SNAPSHOT
     ports:
@@ -59,6 +61,7 @@ services:
       - NACOS_PASSWORD=nacos
     depends_on:
       - leek-trade-service
+      - leek-etl-service
     external_links:
       - nacos:nacos
       - mysql:mysql

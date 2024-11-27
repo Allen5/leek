@@ -25,7 +25,7 @@ public class KafkaProducer implements IProducer {
         future.addCallback(new ListenableFutureCallback<>() {
             @Override
             public void onSuccess(SendResult<String, Object> sendResult) {
-                log.info("生产者成功发送消息到" + topicName + "-> " + sendResult.getProducerRecord().value().toString());
+                log.info("生产者成功发送消息到{}-> {}", topicName, sendResult.getProducerRecord().value().toString());
             }
             @Override
             public void onFailure(Throwable throwable) {

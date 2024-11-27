@@ -1,4 +1,6 @@
-FROM adoptopenjdk/openjdk11
+FROM mcr.microsoft.com/playwright/java:v1.48.0-noble
+
+ENV TZ=Asia/Shanghai
 
 ADD target/applib /applib
 COPY target/leek-creep-service.jar /application.jar

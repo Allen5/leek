@@ -27,7 +27,7 @@ public class EventConsumer {
     @KafkaListener(topics = {LeekEvent.ON_BAR_RECEIVED.topic}, groupId = LeekEvent.ON_BAR_RECEIVED.group)
     public void onReceive(ConsumerRecord<String, String> bookConsumerRecord) {
         BarEvent event = JSON.parseObject(bookConsumerRecord.value(), BarEvent.class);
-        log.debug("消费者消费topic:{} partition:{}的消息 -> {}", bookConsumerRecord.topic(), bookConsumerRecord.partition(), event);
+        log.info("消费者消费topic:{} partition:{}的消息 -> {}", bookConsumerRecord.topic(), bookConsumerRecord.partition(), event);
         try {
             dispatch(event);
         } catch (LeekException | LeekRuntimeException e) {
