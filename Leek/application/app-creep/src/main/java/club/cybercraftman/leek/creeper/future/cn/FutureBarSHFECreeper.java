@@ -31,20 +31,9 @@ public class FutureBarSHFECreeper extends BaseCreeper {
 
     private static final Map<String, String> productMaps = new HashMap<>();
 
-    private static final Set<String> IGNORE_PRODUCTS = new HashSet<>();
-
     static {
 
         INVALID_MONTH.add("小计");
-
-        // 这些是上期能源的品种
-        IGNORE_PRODUCTS.add("铜(BC)");
-        IGNORE_PRODUCTS.add("原油");
-        IGNORE_PRODUCTS.add("低硫燃料油");
-        IGNORE_PRODUCTS.add("20号胶");
-        IGNORE_PRODUCTS.add("SCFIS欧线");
-        IGNORE_PRODUCTS.add("原油TAS"); // 这个是要忽略的
-
 
         productMaps.put("铜", "cu");
         productMaps.put("铝", "al");
@@ -113,8 +102,8 @@ public class FutureBarSHFECreeper extends BaseCreeper {
                 continue;
             }
             log.info("[SHFE]开始处理品种: {}", name);
-            if ( IGNORE_PRODUCTS.contains(name) ) {
-                log.warn("[SHFE]品种: {} 不属于SHFE。归属于 INE 或不处理[原油TAS] ", name);
+            if ( !productMaps.containsKey(name) ) {
+                log.warn("[SHFE]品种: {} 不属于SHFE。归属于 INE 或不处理 ", name);
                 continue;
             }
             // 转换为品种名称

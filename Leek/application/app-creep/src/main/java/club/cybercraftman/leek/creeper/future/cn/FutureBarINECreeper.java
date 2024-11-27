@@ -29,8 +29,6 @@ public class FutureBarINECreeper extends BaseCreeper {
 
     private static final Set<String> INVALID_MONTH = new HashSet<>();
 
-    private static final Set<String> IGNORE_PRODUCTS = new HashSet<>();
-
     private static final Map<String, String> productMaps = new HashMap<>();
 
 
@@ -38,8 +36,6 @@ public class FutureBarINECreeper extends BaseCreeper {
 
         INVALID_MONTH.add("小计");
         INVALID_MONTH.add("总计");
-
-        IGNORE_PRODUCTS.add("原油TAS"); // 这个是要忽略的
 
         productMaps.put("铜(BC)", "bc");
         productMaps.put("原油", "sc");
@@ -93,8 +89,8 @@ public class FutureBarINECreeper extends BaseCreeper {
             }
             String name = nameEl.innerText().trim();
             name = name.replace("商品名称:", "");
-            if ( IGNORE_PRODUCTS.contains(name) ) {
-                log.warn("[INE]品种: {}不处理[原油TAS] ", name);
+            if ( !productMaps.containsKey(name) ) {
+                log.warn("[INE]品种: {}不处理 ", name);
                 continue;
             }
             String productCode =  extractProductCode(name);
