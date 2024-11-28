@@ -57,11 +57,11 @@ public class RunCreeper {
         // 查询今日有多少个creepers已经运行成功或正在运行中
         LocalDateTime start = LocalDateTime.now().toLocalDate().atStartOfDay();
         LocalDateTime end = LocalDateTime.now();
-        List<CreepLog> logs = creepActionMonitor.findFailedLogs(Market.CN, FinanceType.FUTURE, DataType.BAR, start, end);
+        List<CreepLog> logs = creepActionMonitor.findUnFailedLogs(Market.CN, FinanceType.FUTURE, DataType.BAR, start, end);
         Set<String> sourceNames = logs.stream().map(CreepLog::getSourceName).collect(Collectors.toSet());
-        log.info("=====> 共查询到[{}]个creeper失败的执行记录", logs.size());
+        log.info("=====> 共查询到[{}]个creeper正在执行或已执行完成的执行记录", sourceNames.size());
         // 进行过滤
-        creepers = creepers.stream().filter(creeper -> sourceNames.contains(creeper.getSourceName()))
+        creepers = creepers.stream().filter(creeper -> !sourceNames.contains(creeper.getSourceName()))
                 .collect(Collectors.toList());
         log.info("=====> 根据sourceName过滤后，剩余[{}]个creeper配置待执行", creepers.size());
         // 生成event
