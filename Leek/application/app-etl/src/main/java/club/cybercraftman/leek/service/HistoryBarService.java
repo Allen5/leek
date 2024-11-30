@@ -1,7 +1,11 @@
 package club.cybercraftman.leek.service;
 
+import club.cybercraftman.leek.common.event.etl.future.FutureBarEventData;
 import club.cybercraftman.leek.common.exception.LeekException;
 import club.cybercraftman.leek.domain.financedata.future.FutureDailyBarService;
+import club.cybercraftman.leek.dto.BigQuantBarItem;
+import com.alibaba.excel.EasyExcel;
+import com.alibaba.excel.read.listener.PageReadListener;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -85,32 +89,32 @@ public class HistoryBarService {
      */
     public void importBigQuantHistoryBars(final String filepath) {
         log.info("开始导入文件: {}", filepath);
-//        EasyExcel.read(filepath, BigQuantBarItem.class, new PageReadListener<BigQuantBarItem>(items -> {
-//            // 对于contractCode需要特殊处理。
-//            List<FutureBarEventData> datas = items.stream().
-//                    filter(item ->
-//                            !item.getContractCode().contains("0000") &&
-//                            !item.getContractCode().contains("9999") &&
-//                            !item.getContractCode().contains(item.getProductCode() + "8")) // 过滤包含0000、品种代码8|88|888|888、9999的数据
-//                    .map(item -> {
-//                        FutureBarEventData data = new FutureBarEventData();
-//                        data.setDatetime(item.getDatetime());
-//                        data.setProductCode(item.getProductCode());
-//                        data.setContractCode(convertContractCode(item.getDatetime(), item.getContractCode(), item.getProductCode()));
-//                        data.setSymbol(data.getContractCode());
-//                        data.setOpen(item.getOpen());
-//                        data.setHigh(item.getHigh());
-//                        data.setLow(item.getLow());
-//                        data.setClose(item.getClose());
-//                        data.setSettle(item.getSettle());
-//                        data.setVolume(item.getVolume());
-//                        data.setOpenInterest(item.getOpenInterest());
-//                        data.setAmount(item.getAmount());
-//                        return data;
-//                    }).collect(Collectors.toList());
-//            log.info("开始插入日行情数据, 共: {} 条", datas.size());
-//            barService.batchInsert(datas);
-//        }, BATCH_COUNT)).sheet(0).doRead();
+        EasyExcel.read(filepath, BigQuantBarItem.class, new PageReadListener<BigQuantBarItem>(items -> {
+            // 对于contractCode需要特殊处理。
+            List<FutureBarEventData> datas = items.stream().
+                    filter(item ->
+                            !item.getContractCode().contains("0000") &&
+                            !item.getContractCode().contains("9999") &&
+                            !item.getContractCode().contains(item.getProductCode() + "8")) // 过滤包含0000、品种代码8|88|888|888、9999的数据
+                    .map(item -> {
+                        FutureBarEventData data = new FutureBarEventData();
+                        data.setDatetime(item.getDatetime());
+                        data.setProductCode(item.getProductCode());
+                        data.setContractCode(convertContractCode(item.getDatetime(), item.getContractCode(), item.getProductCode()));
+                        data.setSymbol(data.getContractCode());
+                        data.setOpen(item.getOpen());
+                        data.setHigh(item.getHigh());
+                        data.setLow(item.getLow());
+                        data.setClose(item.getClose());
+                        data.setSettle(item.getSettle());
+                        data.setVolume(item.getVolume());
+                        data.setOpenInterest(item.getOpenInterest());
+                        data.setAmount(item.getAmount());
+                        return data;
+                    }).collect(Collectors.toList());
+            log.info("开始插入日行情数据, 共: {} 条", datas.size());
+            barService.batchInsert(datas);
+        }, BATCH_COUNT)).sheet(0).doRead();
     }
 
     /**
