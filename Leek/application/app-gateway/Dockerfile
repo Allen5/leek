@@ -7,4 +7,6 @@ COPY target/leek-gateway-service.jar /application.jar
 
 EXPOSE 8080
 
-ENTRYPOINT ["java", "-jar", "/application.jar"]
+ENV JVM_OPTS="-xms256M -xmx512M"
+
+ENTRYPOINT ["java", "-jar", "/application.jar", "${JVM_OPTS}"]

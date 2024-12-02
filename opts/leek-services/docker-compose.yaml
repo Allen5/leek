@@ -9,6 +9,7 @@ services:
       - NACOS_PORT=8848
       - NACOS_USERNAME=nacos
       - NACOS_PASSWORD=nacos
+      - JVM_OPTS="-xms256M -xmx512M"
     depends_on:
       - leek-creeper-service
       - leek-monitor-service
@@ -27,6 +28,7 @@ services:
       - NACOS_PORT=8848
       - NACOS_USERNAME=nacos
       - NACOS_PASSWORD=nacos
+      - JVM_OPTS="-xms256M -xmx512M"
     external_links:
       - nacos:nacos
       - mysql:mysql
@@ -44,6 +46,7 @@ services:
       - NACOS_PORT=8848
       - NACOS_USERNAME=nacos
       - NACOS_PASSWORD=nacos
+      - JVM_OPTS="-xms256M -xmx512M"
     external_links:
       - nacos:nacos
       - mysql:mysql
@@ -59,6 +62,7 @@ services:
       - NACOS_PORT=8848
       - NACOS_USERNAME=nacos
       - NACOS_PASSWORD=nacos
+      - JVM_OPTS="-xms256M -xmx512M"
     depends_on:
       - leek-trade-service
       - leek-etl-service
@@ -77,6 +81,7 @@ services:
       - NACOS_PORT=8848
       - NACOS_USERNAME=nacos
       - NACOS_PASSWORD=nacos
+      - JVM_OPTS="-xms256M -xmx512M"
     external_links:
       - nacos:nacos
       - mysql:mysql
@@ -92,6 +97,7 @@ services:
       - NACOS_PORT=8848
       - NACOS_USERNAME=nacos
       - NACOS_PASSWORD=nacos
+      - JVM_OPTS="-xms256M -xmx512M"
     external_links:
       - nacos:nacos
       - mysql:mysql
@@ -107,6 +113,7 @@ services:
       - NACOS_PORT=8848
       - NACOS_USERNAME=nacos
       - NACOS_PASSWORD=nacos
+      - JVM_OPTS="-xms256M -xmx512M"
     external_links:
       - nacos:nacos
       - mysql:mysql
