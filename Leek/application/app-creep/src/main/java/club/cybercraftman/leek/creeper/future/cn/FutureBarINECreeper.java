@@ -74,18 +74,23 @@ public class FutureBarINECreeper extends BaseCreeper {
 
     private List<FutureBarEventData> buildItems(final Page page, final Date currentTradeDate) throws LeekException {
         // div.data > table > tbody > table > tbody 拿到所有的tables
-        page.waitForSelector("div.data > table > tbody > table > tbody");
-        List<ElementHandle> tables = page.querySelectorAll("div.data > table > tbody > table > tbody");
+        page.waitForSelector("div > table.el-table__body > tbody");
+        List<ElementHandle> tables = page.querySelectorAll("div > table.el-table__body > tbody");
         if ( CollectionUtils.isEmpty(tables) ) {
             log.error("[INE]地址: {}页面元素[div.data > table > tbody > table > tbody]定位失败", getEvent().getSource());
             throw new LeekException("[INE]页面元素[div.data > table > tbody > table > tbody]定位失败");
         }
         List<FutureBarEventData> items = new ArrayList<>();
+        int index = 1;
         for (ElementHandle table: tables) {
-            ElementHandle nameEl = table.querySelector("tr.data_tab_tr_pinz");
+            if ( index == tables.size() ) {
+                continue;
+            }
+            index++;
+            ElementHandle nameEl = table.querySelector("tr.special_row_type");
             if ( null == nameEl ) {
-                log.error("[INE]页面元素[tr.data_tab_tr_pinz]定位失败");
-                throw new LeekException("[INE]页面元素[tr.data_tab_tr_pinz]定位失败");
+                log.error("[INE]页面元素[tr.special_row_type]定位失败");
+                throw new LeekException("[INE]页面元素[tr.special_row_type]定位失败");
             }
             String name = nameEl.innerText().trim();
             name = name.replace("商品名称:", "");
@@ -95,7 +100,7 @@ public class FutureBarINECreeper extends BaseCreeper {
             }
             String productCode =  extractProductCode(name);
             List<ElementHandle> lines = table.querySelectorAll("tr");
-            for(int i=2; i<lines.size(); i++) { // 忽略前两行
+            for(int i=1; i<lines.size(); i++) { // 忽略前1行
                 List<ElementHandle> cells = lines.get(i).querySelectorAll("td");
                 if ( CollectionUtils.isEmpty(cells) ) {
                     log.error("[INE]品种: {} 下不存在数据", name);

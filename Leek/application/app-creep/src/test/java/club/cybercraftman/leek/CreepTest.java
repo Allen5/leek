@@ -92,7 +92,7 @@ public class CreepTest {
         event.setFinanceType(FinanceType.FUTURE.getType());
         event.setDataType(DataType.BAR.getType());
         event.setSourceName(SourceName.INE.getName());
-        event.setSource("https://www.ine.cn/statements/daily/?paramid=kx");
+        event.setSource("https://www.ine.cn/reports/tradedata/dailyandweeklydata");
         BaseCreeper creeper = builder.build(event);
         creeper.setEvent(event);
         creeper.creep();
