@@ -1,6 +1,8 @@
 package club.cybercraftman.leek.repo.financedata.model.future;
 
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 
 import javax.persistence.*;
@@ -10,7 +12,12 @@ import java.util.Date;
 /**
  * 合约信息
  */
+@Getter
+@Setter
 @Entity(name = "future_contract")
+@Table(indexes = {
+        @Index(name = "idx_futurecontract_code", columnList = "code")
+})
 @Data
 @ToString
 public class FutureContract {
@@ -61,7 +68,17 @@ public class FutureContract {
     @Column(name = "last_deliver_date", nullable = false)
     private Date lastDeliverDate;
 
-    // TODO: 保证金比例因人而已，单独建个表维护
+    /**
+     * 散户可交易的最后一个自然日
+     */
+    @Column(name = "last_nature_date", nullable = false)
+    private Date lastNatureDate;
+
+    /**
+     * 散户可交易的最后一个交易日
+     */
+    @Column(name = "last_trade_date", nullable = false)
+    private Date lastTradeDate;
 
     /**
      * 最小报价单位
@@ -74,12 +91,6 @@ public class FutureContract {
      */
     @Column(name = "multiplier", precision = 18, scale = 2)
     private BigDecimal multiplier;
-
-    /**
-     * 合约状态： TODO: 待补充
-     */
-    @Column(name = "status", nullable = false, length = 4)
-    private Integer status;
 
     /**
      * 创建时间
