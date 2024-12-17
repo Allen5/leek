@@ -24,6 +24,11 @@
             <artifactId>repo-finance-data</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>club.cybercraftman.leek.infrastructure</groupId>
+            <artifactId>massive-compute</artifactId>
+        </dependency>
+
     </dependencies>
 
 </project>

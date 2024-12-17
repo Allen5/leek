@@ -1,12 +1,11 @@
-package club.cybercraftman.leek.jobs;
+package club.cybercraftman.leek.domain.financedata.jobs;
 
+import club.cybercraftman.leek.common.context.SpringContextUtil;
 import club.cybercraftman.leek.common.exception.LeekException;
 import club.cybercraftman.leek.infrastructure.compute.job.BaseSparkJob;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.spark.sql.AnalysisException;
-import org.apache.spark.sql.Dataset;
-import org.apache.spark.sql.Row;
-import org.apache.spark.sql.SparkSession;
+import org.apache.spark.sql.*;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -18,7 +17,6 @@ public class FutureContractEtlJob extends BaseSparkJob {
 
     @Override
     protected void execute(SparkSession session) throws LeekException {
-        // TODO: 获取datasource的配置信息
         // step1: 读取future_contract和calendar数据，生成temp表
         try {
             this.load(session, "future_contract", FUTURE_CONTRACT_VIEW);
@@ -44,20 +42,21 @@ public class FutureContractEtlJob extends BaseSparkJob {
     }
 
     private void load(SparkSession session, String oriTableName, String tmpTableName) throws AnalysisException {
+        DataSourceProperties props = SpringContextUtil.getBean("financeDataDataSourceProperties");
         Dataset<Row> data = session.read().format("jdbc")
-                .option("driver", "com.mysql.cj.jdbc.Driver")
-                .option("url", "jdbc:mysql://localhost:3306/leek_finance_data?useCursorFetch=true")
-                .option("user", "leek_dev")
-                .option("password", "leek_dev")
+                .option("driver", props.getDriverClassName())
+                .option("url", decorateJdbcUrl(props.getUrl()))
+                .option("user", props.getUsername())
+                .option("password", props.getPassword())
                 .option("dbtable", oriTableName)
-                .option("fetchsize", 10000)
+                .option("fetchsize", FETCH_SIZE)
                 .load();
         data.createTempView(tmpTableName);
     }
 
     private Dataset<Row> transform(SparkSession session) {
-        return session.sql("SELECT   " +
-                " (select max(date) from temp_calendar where market_code = 'CN' and date <= t.last_nature_date) as last_trade_date, " +
+        String sql = "SELECT   " +
+                " (select max(date) from #calendarView# where market_code = 'CN' and date <= t.last_nature_date) as last_trade_date, " +
                 " t.last_nature_date, " +
                 " t.product_code, " +
                 " t.name, " +
@@ -79,16 +78,21 @@ public class FutureContractEtlJob extends BaseSparkJob {
                 "  price_tick, " +
                 "  exchange_code " +
                 " FROM " +
-                "  temp_future_contract) t;");
+                "  #futureContractView#) t";
+        sql = sql.replaceAll("#calendarView#", FUTURE_CALENDAR_VIEW)
+                .replaceAll("#futureContractView#", FUTURE_CONTRACT_VIEW);
+        return session.sql(sql);
     }
 
     private void sink(Dataset<Row> dataset) {
+        DataSourceProperties props = SpringContextUtil.getBean("financeDataDataSourceProperties");
         dataset.write()
+                .mode(SaveMode.Overwrite)
                 .format("jdbc")
-                .option("driver", "com.mysql.cj.jdbc.Driver")
-                .option("url", "jdbc:mysql://localhost:3306/leek_finance_data?useCursorFetch=true")
-                .option("user", "leek_dev")
-                .option("password", "leek_dev")
+                .option("driver", props.getDriverClassName())
+                .option("url", decorateJdbcUrl(props.getUrl()))
+                .option("user", props.getUsername())
+                .option("password", props.getPassword())
                 .option("dbtable", "ods_future_contract")
                 .save();
     }

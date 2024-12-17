@@ -10,6 +10,8 @@ import org.apache.spark.sql.SparkSession;
 @Slf4j
 public abstract class BaseSparkJob extends AbstractEtlJob {
 
+    protected static final Integer FETCH_SIZE = 10000;
+
     @Override
     public void action() {
         SessionParam params = this.buildParams();
@@ -30,6 +32,21 @@ public abstract class BaseSparkJob extends AbstractEtlJob {
      */
     protected SessionParam buildParams() {
         return SessionParam.builder().build();
+    }
+
+    /**
+     * 对原始的JDBC url进行一些修正。对于mysql，增加useFetchCursor=true
+     * @param url
+     * @return
+     */
+    protected String decorateJdbcUrl(String url) {
+        String splitter = url.contains("?") ? "&" : "?";
+        if ( url.startsWith("jdbc:mysql") && !url.contains("useCursorFetch") ) {
+            url = url + splitter + "useCursorFetch=true";
+        } else if ( url.contains("useCursorFetch=false") ) {
+            url = url.replace("useCursorFetch=false", "useCursorFetch=true");
+        }
+        return url;
     }
 
 }
