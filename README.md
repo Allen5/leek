@@ -1,2 +1,2 @@
 # leek
-flink based quant lab system
+spark based quant lab system
