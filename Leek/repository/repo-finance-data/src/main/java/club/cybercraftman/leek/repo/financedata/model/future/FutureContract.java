@@ -71,13 +71,13 @@ public class FutureContract {
     /**
      * 散户可交易的最后一个自然日
      */
-    @Column(name = "last_nature_date", nullable = false)
+    @Column(name = "last_nature_date")
     private Date lastNatureDate;
 
     /**
      * 散户可交易的最后一个交易日
      */
-    @Column(name = "last_trade_date", nullable = false)
+    @Column(name = "last_trade_date")
     private Date lastTradeDate;
 
     /**

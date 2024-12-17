@@ -83,6 +83,4 @@ public class FutureBackTest {
     @Column(name = "is_main_contract", nullable = false, length = 4)
     private Integer isMainContract;
 
-    // TODO: 补充信息
-
 }

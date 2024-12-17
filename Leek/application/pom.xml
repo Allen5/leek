@@ -21,8 +21,6 @@
         <module>app-monitor</module>
         <module>app-trade</module>
         <module>app-gateway</module>
-        <module>app-etl-batch</module>
-        <module>app-etl-stream</module>
     </modules>
 
     <properties>
