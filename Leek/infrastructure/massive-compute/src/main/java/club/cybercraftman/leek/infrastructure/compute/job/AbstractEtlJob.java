@@ -6,13 +6,13 @@ import lombok.Setter;
 /**
  * 定义基础任务执行抽象类
  */
+@Setter
+@Getter
 public abstract class AbstractEtlJob {
 
     /**
      * 执行任务的master地址
      */
-    @Setter
-    @Getter
     private String masterUrl;
 
 
@@ -23,13 +23,13 @@ public abstract class AbstractEtlJob {
 
     /**
      * 获取功能号ID
-     * @return
+     * @return String 获取Job Id
      */
     protected abstract String getId();
 
     /**
      * 获取功能号名称
-     * @return
+     * @return String 获取功能名称
      */
     protected abstract String getName();
 

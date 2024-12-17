@@ -15,12 +15,15 @@ public abstract class BaseSparkJob extends AbstractEtlJob {
     @Override
     public void action() {
         SessionParam params = this.buildParams();
-        try (SparkSession session = SessionUtil.getInstance().init(getId(), getMasterUrl(), params)) {
+        SparkSession session = SessionUtil.getInstance().init(getId(), getMasterUrl(), params);
+        try {
             log.info("开始执行任务[id: {}, name: {}. master: {}, params: {}]", getId(), getName(), getMasterUrl(), params);
             this.execute(session);
             log.info("任务执行结束[id: {}, name: {}. master: {}, params: {}]", getId(), getName(), getMasterUrl(), params);
         } catch (LeekException | LeekRuntimeException e) {
             log.error("执行Spark任务失败. 任务ID: {}, 任务名称: {} 异常信息: {}", getId(), getName(), e.getMessage(), e);
+        } finally {
+            SessionUtil.getInstance().release();
         }
     }
 

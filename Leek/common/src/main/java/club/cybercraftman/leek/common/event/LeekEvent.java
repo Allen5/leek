@@ -38,4 +38,10 @@ public interface LeekEvent {
         String group = "etl";
     }
 
+    // 触发ETL事件
+    interface ON_ETL_TRIGGERED {
+        String topic = "on_etl_triggered";
+        String group = "etl";
+    }
+
 }

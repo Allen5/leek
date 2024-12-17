@@ -45,5 +45,13 @@ public class SessionUtil {
         return this.session;
     }
 
+    public void release() {
+        if ( null == this.session ) {
+            return ;
+        }
+        this.session.close();
+        this.session = null;
+    }
+
 
 }
