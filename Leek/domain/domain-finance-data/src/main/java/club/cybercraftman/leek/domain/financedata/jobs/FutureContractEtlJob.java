@@ -55,7 +55,7 @@ public class FutureContractEtlJob extends BaseSparkJob {
     }
 
     private Dataset<Row> transform(SparkSession session) {
-        String sql = "SELECT   " +
+        String sql = "SELECT t.code," +
                 " (select max(date) from #calendarView# where market_code = 'CN' and date <= t.last_nature_date) as last_trade_date, " +
                 " t.last_nature_date, " +
                 " t.product_code, " +
@@ -67,7 +67,7 @@ public class FutureContractEtlJob extends BaseSparkJob {
                 " t.price_tick, " +
                 " t.exchange_code " +
                 " FROM " +
-                " (SELECT " +
+                " (SELECT code," +
                 "  product_code, " +
                 "  name, " +
                 "  list_date, " +
