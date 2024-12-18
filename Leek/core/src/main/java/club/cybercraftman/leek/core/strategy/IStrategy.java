@@ -7,6 +7,8 @@ import java.util.Map;
 
 public interface IStrategy {
 
+    String getName();
+
     /**
      * 下一个bar数据到达，触发事件
      */

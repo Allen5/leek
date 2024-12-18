@@ -20,7 +20,7 @@ public class CommonThreadPool {
      * TODO: 将线程池的size设置配置化
      * @param abstractTasks 执行任务
      */
-    public void execute(List<AbstractTask> abstractTasks) {
+    public <T extends AbstractTask> void execute(List<T> abstractTasks) {
         CountDownLatch latch = new CountDownLatch(abstractTasks.size());
         for (AbstractTask task: abstractTasks) {
             task.setLatch(latch);

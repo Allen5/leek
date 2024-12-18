@@ -11,7 +11,7 @@ import java.util.Date;
  * 期货回测数据集. 通过ETL得到
  */
 @Entity
-@Table(name = "future_backtest")
+@Table(name = "ods_future_backtest")
 @Data
 @ToString
 public class FutureBackTest {
@@ -80,7 +80,7 @@ public class FutureBackTest {
     /**
      * 在当前的交易中，该合约是否为主力合约
      */
-    @Column(name = "is_main_contract", nullable = false, length = 4)
+    @Column(name = "main_contract", nullable = false, length = 4)
     private Integer isMainContract;
 
 }
