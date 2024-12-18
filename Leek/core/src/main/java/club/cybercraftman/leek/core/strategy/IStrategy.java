@@ -2,28 +2,35 @@ package club.cybercraftman.leek.core.strategy;
 
 import club.cybercraftman.leek.core.strategy.dto.Bar;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 public interface IStrategy {
 
+    /**
+     * 初始化策略
+     */
+    void init(final StrategyContext context);
+
+    /**
+     * 下一个Bar的时间
+     */
+    Signal next(Date datetime);
+
+    /**
+     * 处理挂单
+     * @param datetime
+     */
+    void onOrder(final Date datetime);
+
+    /**
+     * 触发交易事件
+     */
+    void onTrade(Signal signal);
+
+    String getId();
+
     String getName();
-
-    /**
-     * 下一个bar数据到达，触发事件
-     */
-    default void onNextBar(Bar bar) {}
-
-    /**
-     * 多交易代码触发
-     * @param bars
-     */
-    default void onNextBar(List<Bar> bars) {}
-
-    /**
-     * 多交易代码触发
-     * @param bars
-     */
-    default void onNextBar(Map<String, List<Bar>> bars) {}
 
 }

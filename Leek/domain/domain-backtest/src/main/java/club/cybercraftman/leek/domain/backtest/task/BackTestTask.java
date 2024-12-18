@@ -2,7 +2,7 @@ package club.cybercraftman.leek.domain.backtest.task;
 
 import club.cybercraftman.leek.common.thread.AbstractTask;
 import club.cybercraftman.leek.core.strategy.IStrategy;
-import club.cybercraftman.leek.core.strategy.dto.Bar;
+import club.cybercraftman.leek.core.strategy.Signal;
 import club.cybercraftman.leek.domain.backtest.BackTestParam;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -58,8 +58,8 @@ public abstract class BackTestTask extends AbstractTask {
             }
             log.info("[回测:{}]交易日:{}, 交易标的: {}, 数据日期范围:[{}-{}], 持仓:[], 订单:[]. 策略: {}", this.recordId, curDay, this.code, dateRange.getStart(), dateRange.getEnd(), this.strategy.getName());
             // this.strategy.onOrder(curDay); // TODO: 处理上一日的订单
-            this.strategy.onNextBar(new Bar()); // TODO: 执行判断交易信号
-            // this.strategy.onTrade(curDay, single); // TODO: 执行交易
+            Signal signal = this.strategy.next(curDay);
+            // TODO: 执行交易
         }
         // step3: 对策略结果进行评估
         this.evaluate();

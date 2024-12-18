@@ -1,6 +1,10 @@
 package club.cybercraftman.leek.domain.backtest.executor;
 
+import club.cybercraftman.leek.common.exception.LeekRuntimeException;
 import lombok.Getter;
+
+import java.util.Arrays;
+import java.util.Optional;
 
 @Getter
 public enum BackTestRunningMode {
@@ -19,5 +23,13 @@ public enum BackTestRunningMode {
     private final String mode;
 
     private final String description;
+
+    public static BackTestRunningMode parse(final String mode) {
+        Optional<BackTestRunningMode> op = Arrays.stream(BackTestRunningMode.values()).filter(b -> b.getMode().equalsIgnoreCase(mode)).findAny();
+        if ( op.isEmpty() ) {
+            throw new LeekRuntimeException("不支持的回测运行模式: " + mode);
+        }
+        return op.get();
+    }
 
 }
