@@ -12,7 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 @Slf4j
 public class EtlEventTest {
 
-    private static final String SPARK_MASTER = "spark://0.0.0.0:7070";
+    private static final String SPARK_MASTER = "spark://localhost:7070";
 
 
     @Autowired

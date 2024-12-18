@@ -19,12 +19,13 @@ public class FutureContractEtlJob extends BaseSparkJob {
     protected void execute(SparkSession session) throws LeekException {
         // step1: 读取future_contract和calendar数据，生成temp表
         try {
-            this.load(session, "future_contract", FUTURE_CONTRACT_VIEW);
-            this.load(session, "calendar", FUTURE_CALENDAR_VIEW);
+            DataSourceProperties properties = SpringContextUtil.getBean("financeDataDataSourceProperties");
+            this.loadWithJdbcToView(session, "future_contract", FUTURE_CONTRACT_VIEW, properties);
+            this.loadWithJdbcToView(session, "calendar", FUTURE_CALENDAR_VIEW, properties);
             // step2: 执行清洗逻辑
             Dataset<Row> data = this.transform(session);
             // step3: 写入目标
-            this.sink(data);
+            this.sinkWithJdbc(data, "ods_future_contract", SaveMode.Overwrite, properties);
         } catch (Exception e) {
             log.error("期货合约清洗失败. ", e);
             throw new LeekException(e.getMessage());
@@ -39,19 +40,6 @@ public class FutureContractEtlJob extends BaseSparkJob {
     @Override
     protected String getName() {
         return "期货合约清洗任务";
-    }
-
-    private void load(SparkSession session, String oriTableName, String tmpTableName) throws AnalysisException {
-        DataSourceProperties props = SpringContextUtil.getBean("financeDataDataSourceProperties");
-        Dataset<Row> data = session.read().format("jdbc")
-                .option("driver", props.getDriverClassName())
-                .option("url", decorateJdbcUrl(props.getUrl()))
-                .option("user", props.getUsername())
-                .option("password", props.getPassword())
-                .option("dbtable", oriTableName)
-                .option("fetchsize", FETCH_SIZE)
-                .load();
-        data.createTempView(tmpTableName);
     }
 
     private Dataset<Row> transform(SparkSession session) {
@@ -82,19 +70,6 @@ public class FutureContractEtlJob extends BaseSparkJob {
         sql = sql.replaceAll("#calendarView#", FUTURE_CALENDAR_VIEW)
                 .replaceAll("#futureContractView#", FUTURE_CONTRACT_VIEW);
         return session.sql(sql);
-    }
-
-    private void sink(Dataset<Row> dataset) {
-        DataSourceProperties props = SpringContextUtil.getBean("financeDataDataSourceProperties");
-        dataset.write()
-                .mode(SaveMode.Overwrite)
-                .format("jdbc")
-                .option("driver", props.getDriverClassName())
-                .option("url", decorateJdbcUrl(props.getUrl()))
-                .option("user", props.getUsername())
-                .option("password", props.getPassword())
-                .option("dbtable", "ods_future_contract")
-                .save();
     }
 
 }
