@@ -15,20 +15,19 @@ import javax.transaction.Transactional;
 import java.util.Date;
 import java.util.Map;
 
+@Setter
 @Slf4j
 public abstract class BaseStrategy {
 
     /**
      * 回测记录
      */
-    @Setter
     @Getter
     private Long recordId;
 
     /**
      * 交易标的
      */
-    @Setter
     @Getter
     private String code;
 
@@ -36,25 +35,22 @@ public abstract class BaseStrategy {
      * 经纪人
      */
     @Getter
-    @Setter
     private Broker broker;
 
     /**
      * 当前的交易时间
      */
-    @Setter
     @Getter
     private Date current;
 
     /**
      * 策略参数
      */
-    @Setter
     private Map<String, Object> params;
 
     /**
      * 序列化参数
-     * @return
+     * @return 返回序列化后的参数
      */
     public String serializeParams() {
         if ( CollectionUtils.isEmpty(params) ) {

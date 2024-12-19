@@ -145,10 +145,10 @@ public abstract class BackTestTask extends AbstractTask {
 
     /**
      * 计算日期范围内交易标的的回测数据数量
-     * @param code
-     * @param start
-     * @param end
-     * @return
+     * @param code 交易标的
+     * @param start 日期范围开始时间
+     * @param end   日期范围结束时间
+     * @return  数量
      */
     protected abstract Integer countBars(final String code, final Date start, final Date end);
 
