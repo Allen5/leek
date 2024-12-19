@@ -1,10 +1,12 @@
 package club.cybercraftman.leek.core.broker;
 
+import club.cybercraftman.leek.common.constant.trade.CommissionCategory;
 import lombok.Builder;
 import lombok.Data;
 import lombok.ToString;
 
 import java.math.BigDecimal;
+import java.util.Map;
 
 /**
  * 经纪人
@@ -35,8 +37,8 @@ public class Broker {
     private BigDecimal net;
 
     /**
-     * 手续费，服务费
+     * 手续费、服务费等
      */
-    private BigDecimal commission;
+    private Map<CommissionCategory, Commission> commissionMap;
 
 }

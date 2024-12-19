@@ -53,13 +53,13 @@ public class BackTestRecord {
     /**
      * 期初金额
      */
-    @Column(name = "init_capital", nullable = false)
+    @Column(name = "init_capital", nullable = false, precision = 18, scale = 3)
     private BigDecimal initCapital;
 
     /**
      * 期末金额
      */
-    @Column(name = "final_capital", nullable = false)
+    @Column(name = "final_capital", nullable = false, precision = 18, scale = 3)
     private BigDecimal finalCapital;
 
     /**
@@ -74,6 +74,12 @@ public class BackTestRecord {
      */
     @Column(name = "status", nullable = false, length = 4)
     private Integer status;
+
+    /**
+     * 回测失败信息
+     */
+    @Column(name = "err_message", length = 1024)
+    private String errMessage;
 
     /**
      * 创建时间
@@ -93,5 +99,59 @@ public class BackTestRecord {
     @Column(name = "cost")
     private Long cost;
 
+    /**
+     * 收益
+     */
+    @Column(name = "profit", precision = 18, scale = 3)
+    private BigDecimal profit;
+
+    /**
+     * 净收益
+     */
+    @Column(name = "net", precision = 18, scale = 3)
+    private BigDecimal net;
+
+    /**
+     * 年化收益
+     */
+    @Column(name = "annualized_returns", precision = 18, scale = 4)
+    private BigDecimal annualizedReturns;
+
+    /**
+     * 最大回撤
+     */
+    @Column(name = "max_drawdown", precision = 18, scale = 4)
+    private BigDecimal maxDrawDown;
+
+    /**
+     * 最大回撤周期
+     */
+    @Column(name = "max_drawdown_period")
+    private Integer maxDrawDownPeriod;
+
+    /**
+     * 胜率
+     */
+    @Column(name = "win_ratio", precision = 18, scale = 4)
+    private BigDecimal winRatio;
+
+    /**
+     * 夏普比率
+     */
+    @Column(name = "sharp_ratio", precision = 18, scale = 4)
+    private BigDecimal sharp_ratio;
+
+
+    /**
+     * 信息比率
+     */
+    @Column(name = "information_ratio", precision = 18, scale = 4)
+    private BigDecimal informationRatio;
+
+    /**
+     * 索诺提比率
+     */
+    @Column(name = "sonotti_ratio", precision = 18, scale = 4)
+    private BigDecimal sonottiRatio;
 
 }

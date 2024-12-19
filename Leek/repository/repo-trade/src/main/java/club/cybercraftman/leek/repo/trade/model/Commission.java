@@ -7,7 +7,6 @@ import javax.persistence.*;
 import java.math.BigDecimal;
 import java.util.Date;
 
-// TODO: 思考是否要加入user_id?以及broker_id?
 @Entity
 @Table(name = "commission")
 @Data
@@ -27,17 +26,39 @@ public class Commission {
 
     /**
      * 生效环境: 回测、模拟、实盘
+     * @see club.cybercraftman.leek.common.constant.trade.Environment
      */
+    @Column(name = "environment", nullable = false)
     private Integer environment;
 
     /**
+     * 补充字段，可根据用户设定
+     */
+    @Column(name = "user_id")
+    private Long userId;
+
+    /**
+     * 补充字段，可根据经纪人设定
+     */
+    @Column(name = "broker_id")
+    private Long brokerId;
+
+    /**
+     * 补充字段，针对可按交易代码设置手续费的场景
+     */
+    @Column(name = "symbol")
+    private String symbol;
+
+    /**
      * 计费种类: 印花、双边等等
+     * @see club.cybercraftman.leek.common.constant.trade.CommissionCategory
      */
     @Column(name = "category", nullable = false, length = 4)
     private Integer category;
 
     /**
      * 计费类型：0比例 1固定
+     * @see club.cybercraftman.leek.common.constant.trade.CommissionValueType
      */
     @Column(name = "type", nullable = false, length = 4)
     private Integer type;

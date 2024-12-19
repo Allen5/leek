@@ -44,6 +44,8 @@ public class CnFutureBackTestExecutor extends BaseBackTestExecutor {
     protected BackTestTask createTask(String code, int startPercent, int endPercent, BackTestParam param) {
         List<Date> days = getCalendars().stream().map(Calendar::getDate).collect(Collectors.toList());
         FutureBackTestTask task = FutureBackTestTask.builder().build();
+        task.setMarket(getMarket());
+        task.setFinanceType(getFinanceType());
         task.setStrategyClassName(param.getStrategyClassName());
         task.setTradeDays(days);
         task.setParams(param.getStrategyParams());

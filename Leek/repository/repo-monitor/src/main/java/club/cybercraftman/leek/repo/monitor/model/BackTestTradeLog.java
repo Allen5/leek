@@ -12,7 +12,8 @@ import java.util.Date;
 /**
  * 回测成交记录
  */
-@Entity(name = "backtest_trade_log")
+@Entity
+@Table(name = "backtest_trade_log")
 @Data
 @ToString
 public class BackTestTradeLog {
@@ -58,6 +59,12 @@ public class BackTestTradeLog {
      */
     @Column(name = "price", nullable = false, precision = 18, scale = 3)
     private BigDecimal price;
+
+    /**
+     * 手续费
+     */
+    @Column(name = "total_commission", precision = 18, scale = 3)
+    private BigDecimal totalCommission;
 
     /**
      * 交易时间

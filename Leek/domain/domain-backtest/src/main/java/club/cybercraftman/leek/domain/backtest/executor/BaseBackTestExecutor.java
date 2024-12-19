@@ -19,9 +19,11 @@ import java.util.stream.Collectors;
 public abstract class BaseBackTestExecutor implements IBackTestExecutor {
 
     @Setter
+    @Getter
     private Market market;
 
     @Setter
+    @Getter
     private FinanceType financeType;
     /**
      * 交易日期

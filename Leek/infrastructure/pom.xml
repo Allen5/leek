@@ -19,6 +19,7 @@
         <module>cache</module>
         <module>massive-compute</module>
         <module>config-center</module>
+        <module>notifier</module>
     </modules>
 
     <properties>

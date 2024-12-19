@@ -1,30 +1,43 @@
 package club.cybercraftman.leek.domain.backtest.task;
 
 import club.cybercraftman.leek.common.bean.DateRange;
+import club.cybercraftman.leek.common.constant.ValidStatus;
+import club.cybercraftman.leek.common.constant.finance.FinanceType;
+import club.cybercraftman.leek.common.constant.finance.Market;
 import club.cybercraftman.leek.common.constant.trade.BackTestRecordStatus;
+import club.cybercraftman.leek.common.constant.trade.CommissionCategory;
+import club.cybercraftman.leek.common.constant.trade.CommissionValueType;
 import club.cybercraftman.leek.common.context.SpringContextUtil;
 import club.cybercraftman.leek.common.exception.LeekException;
 import club.cybercraftman.leek.common.thread.AbstractTask;
 import club.cybercraftman.leek.core.broker.Broker;
+import club.cybercraftman.leek.core.broker.Commission;
 import club.cybercraftman.leek.core.strategy.BaseStrategy;
 import club.cybercraftman.leek.core.strategy.Signal;
 import club.cybercraftman.leek.core.strategy.StrategyBuilder;
-import club.cybercraftman.leek.domain.backtest.BackTestParam;
 import club.cybercraftman.leek.repo.trade.model.backtest.BackTestRecord;
+import club.cybercraftman.leek.repo.trade.repository.ICommissionRepo;
 import club.cybercraftman.leek.repo.trade.repository.backtest.IBackTestRecordRepo;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.CollectionUtils;
 
-import javax.transaction.Transactional;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @NoArgsConstructor
 @Slf4j
 public abstract class BackTestTask extends AbstractTask {
+
+    @Setter
+    private Market market;
+
+    @Setter
+    private FinanceType financeType;
 
     /**
      * 策略实现类名
@@ -91,8 +104,29 @@ public abstract class BackTestTask extends AbstractTask {
             Signal signal = this.strategy.getSignal(); // 计算当日信号
             this.strategy.order(signal);               // 生成订单
         }
-        // step4: 对策略结果进行评估
+
+    }
+
+    @Override
+    protected void onFail(String message) {
+        this.record.setStatus(BackTestRecordStatus.FAIL.getStatus());
+        this.record.setErrMessage( message.length() > 1024 ? message.substring(0, 1024) : message);
+        this.record.setUpdatedAt(new Date());
+        this.record.setCost(this.record.getUpdatedAt().getTime() - this.record.getCreatedAt().getTime());
+        IBackTestRecordRepo repo = SpringContextUtil.getBean(IBackTestRecordRepo.class);
+        repo.save(record);
+    }
+
+    @Override
+    protected void onSuccess() {
+        // step4: 对策略结果进行评估计算
         this.evaluate();
+
+        this.record.setStatus(BackTestRecordStatus.SUCCESS.getStatus());
+        this.record.setUpdatedAt(new Date());
+        this.record.setCost(this.record.getUpdatedAt().getTime() - this.record.getCreatedAt().getTime());
+        IBackTestRecordRepo repo = SpringContextUtil.getBean(IBackTestRecordRepo.class);
+        repo.save(record);
     }
 
     /**
@@ -123,23 +157,39 @@ public abstract class BackTestTask extends AbstractTask {
         this.strategy = builder.find(this.strategyClassName);
         this.strategy.setCode(this.code);
         this.strategy.setParams(this.params);
-        this.strategy.setBroker(Broker.builder().initCapital(this.initCapital).build());
+        this.strategy.setBroker(Broker.builder()
+                .initCapital(this.initCapital)
+                .commissionMap(getCommissions())
+                .build());
+    }
+
+    /**
+     * 获取交易手续费
+     * @return
+     */
+    private Map<CommissionCategory, Commission> getCommissions() {
+        ICommissionRepo repo = SpringContextUtil.getBean(ICommissionRepo.class);
+        List<club.cybercraftman.leek.repo.trade.model.Commission> commissions = repo.findAllByStatus(market.getCode(), financeType.getType(), ValidStatus.VALID.getStatus());
+        if ( CollectionUtils.isEmpty(commissions) ) {
+            return null;
+        }
+        return commissions.stream().map(c -> {
+            Commission commission = new Commission();
+            commission.setCategory(CommissionCategory.parse(c.getCategory()));
+            commission.setValueType(CommissionValueType.parse(c.getType()));
+            commission.setValue(c.getCommission());
+            return commission;
+        }).collect(Collectors.toMap(Commission::getCategory, c -> c));
     }
 
     /**
      * 策略评价计算
      * TODO: 待梳理计算指标
      */
-    @Transactional
     private void evaluate() {
-
-        this.record.setStatus(BackTestRecordStatus.SUCCESS.getStatus());
-        this.record.setUpdatedAt(new Date());
-        this.record.setCost(this.record.getUpdatedAt().getTime() - this.record.getCreatedAt().getTime());
-
-        IBackTestRecordRepo repo = SpringContextUtil.getBean(IBackTestRecordRepo.class);
-        repo.save(record);
+        // TODO: 净收益 = 期末实际资产 - 期初实际资产 + 持仓资产价值（期货按当日结算价计算，股票按当日收盘价计算）
     }
+
 
     protected abstract DateRange calcDateRange(final String code, final Integer startPercent, final Integer endPercent);
 
