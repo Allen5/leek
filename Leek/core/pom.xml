@@ -27,6 +27,11 @@
         </dependency>
 
         <dependency>
+            <groupId>club.cybercraftman.leek.repo</groupId>
+            <artifactId>repo-trade</artifactId>
+        </dependency>
+
+        <dependency>
             <groupId>com.tictactec</groupId>
             <artifactId>ta-lib</artifactId>
             <version>${ta-lib.version}</version>

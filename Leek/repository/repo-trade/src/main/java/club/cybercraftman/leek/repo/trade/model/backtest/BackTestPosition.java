@@ -14,7 +14,8 @@ import java.util.Date;
  * 回测的持仓数据
  * 每个策略 + 参数 一个持仓
  */
-@Entity(name = "backtest_position")
+@Entity
+@Table(name = "backtest_position")
 @Data
 @ToString
 public class BackTestPosition {

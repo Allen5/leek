@@ -1,5 +1,6 @@
 package club.cybercraftman.leek.event;
 
+import club.cybercraftman.leek.common.bean.DateRange;
 import club.cybercraftman.leek.common.constant.finance.FinanceType;
 import club.cybercraftman.leek.common.constant.finance.Market;
 import club.cybercraftman.leek.common.event.LeekEvent;
@@ -46,11 +47,9 @@ public class EventConsumer {
                 .mode(BackTestRunningMode.parse(event.getRunningMode()))
                 .minBars(event.getMinBars())
                 .capital(new BigDecimal(event.getCapital()))
-                .strategy(strategyBuilder.find(event.getStrategyId()))
-                .dateRange(BackTestParam.DateRange.builder()
-                        .start(event.getStartDate())
-                        .end(event.getEndDate())
-                        .build())
+                .strategyClassName(event.getStrategyClassName())
+                .strategyParams(event.getStrategyParams())
+                .dateRange(new DateRange(event.getStartDate(), event.getEndDate()))
                 .build();
         builder.find(Market.parse(event.getMarketCode()), FinanceType.parse(event.getFinanceType()))
                 .execute(params);

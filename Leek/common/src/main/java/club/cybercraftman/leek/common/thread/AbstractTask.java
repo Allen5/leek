@@ -1,5 +1,6 @@
 package club.cybercraftman.leek.common.thread;
 
+import club.cybercraftman.leek.common.exception.LeekException;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -41,5 +42,5 @@ public abstract class AbstractTask implements Runnable {
     /**
      * 子类实现execute完成业务逻辑
      */
-    protected abstract void execute();
+    protected abstract void execute() throws LeekException;
 }

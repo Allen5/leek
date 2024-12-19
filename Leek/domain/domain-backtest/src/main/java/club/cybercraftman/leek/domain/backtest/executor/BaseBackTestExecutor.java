@@ -1,5 +1,6 @@
 package club.cybercraftman.leek.domain.backtest.executor;
 
+import club.cybercraftman.leek.common.bean.DateRange;
 import club.cybercraftman.leek.common.constant.finance.FinanceType;
 import club.cybercraftman.leek.common.constant.finance.Market;
 import club.cybercraftman.leek.common.thread.CommonThreadPool;
@@ -44,7 +45,7 @@ public abstract class BaseBackTestExecutor implements IBackTestExecutor {
         commonThreadPool.execute(tasks);
     }
 
-    protected void initCalendars(BackTestParam.DateRange dateRange) {
+    protected void initCalendars(DateRange dateRange) {
         if ( ObjectUtils.isEmpty(dateRange) ) {
             this.calendars = calendarRepo.findAllByMarketAndFinanceType(this.market.getCode(), this.financeType.getType());
         } else {

@@ -1,24 +1,38 @@
 package club.cybercraftman.leek.core.strategy;
 
 import club.cybercraftman.leek.common.exception.LeekRuntimeException;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
-import java.util.Optional;
+import javax.annotation.PostConstruct;
+import java.lang.reflect.InvocationTargetException;
+import java.util.HashMap;
+import java.util.Map;
 
 @Component
+@Slf4j
 public class StrategyBuilder {
 
-    @Autowired
-    private List<IStrategy> strategies;
+    private Map<String, BaseStrategy> cache;
 
-    public IStrategy find(final String strategyId) {
-        Optional<IStrategy> op = strategies.stream().filter(s -> s.getId().equals(strategyId)).findAny();
-        if ( op.isEmpty() ) {
-            throw new LeekRuntimeException("不支持的策略id: " + strategyId);
+    @PostConstruct
+    public void init() {
+        this.cache = new HashMap<>();
+    }
+
+    public BaseStrategy find(final String strategyClassName) {
+        if ( cache.containsKey(strategyClassName) ) {
+            return cache.get(strategyClassName);
         }
-        return op.get();
+        try {
+            BaseStrategy strategy = (BaseStrategy) Class.forName(strategyClassName).getDeclaredConstructor().newInstance();
+            cache.put(strategyClassName, strategy);
+            return strategy;
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException |
+                 ClassNotFoundException e) {
+            log.info("实例化策略失败. className: {}", strategyClassName, e);
+            throw new LeekRuntimeException("不支持的策略id: " + strategyClassName);
+        }
     }
 
 }

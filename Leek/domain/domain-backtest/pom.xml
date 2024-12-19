@@ -34,6 +34,11 @@
             <artifactId>repo-finance-data</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>club.cybercraftman.leek.repo</groupId>
+            <artifactId>repo-trade</artifactId>
+        </dependency>
+
     </dependencies>
 
 </project>

@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.persistence.Tuple;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -35,13 +36,22 @@ public class CnFutureBackTestExecutor extends BaseBackTestExecutor {
 
     @Override
     protected List<String> loadCodes(Integer minBars) {
-        return backTestRepo.findProductCodesLargeThan(minBars);
+        List<Tuple> tuples = backTestRepo.findProductCodesLargeThan(minBars);
+        return tuples.stream().map(t -> t.get("productCode", String.class)).collect(Collectors.toList());
     }
 
     @Override
     protected BackTestTask createTask(String code, int startPercent, int endPercent, BackTestParam param) {
         List<Date> days = getCalendars().stream().map(Calendar::getDate).collect(Collectors.toList());
-        return new FutureBackTestTask(days, param.getStrategy(), code, startPercent, endPercent);
+        FutureBackTestTask task = FutureBackTestTask.builder().build();
+        task.setStrategyClassName(param.getStrategyClassName());
+        task.setTradeDays(days);
+        task.setParams(param.getStrategyParams());
+        task.setCode(code);
+        task.setStartPercent(startPercent);
+        task.setEndPercent(endPercent);
+        task.setInitCapital(param.getCapital());
+        return task;
     }
 
 

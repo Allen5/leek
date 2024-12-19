@@ -21,10 +21,34 @@ public class BackTestRecord {
      * 策略Id
      */
     @Column(name = "strategy_id", nullable = false)
-    private Long strategyId;
+    private String strategyId;
+
+    @Column(name = "strategy_name", nullable = false)
+    private String strategyName;
 
     @Column(name = "strategy_class_name", nullable = false)
     private String strategyClassName;
+
+    /**
+     * 交易标的
+     */
+    @Column(name = "code", nullable = false)
+    private String code;
+
+    /**
+     * 回测时间范围
+     */
+    @Column(name = "start_datetime", nullable = false)
+    private Date startDateTime;
+
+    @Column(name = "end_datetime", nullable = false)
+    private Date endDateTime;
+
+    /**
+     * 回测bar记录数
+     */
+    @Column(name = "bars", nullable = false)
+    private Integer bars;
 
     /**
      * 期初金额
@@ -62,6 +86,12 @@ public class BackTestRecord {
      */
     @Column(name = "updated_at")
     private Date updatedAt;
+
+    /**
+     * 回测耗时
+     */
+    @Column(name = "cost")
+    private Long cost;
 
 
 }

@@ -8,13 +8,41 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import javax.persistence.Tuple;
+import java.util.Date;
 import java.util.List;
 
 @Repository
 @ConditionalOnBean(FinanceDataDataSourceConfig.class)
 public interface IFutureBackTestRepo extends JpaRepository<FutureBackTest, Long> {
 
-    @Query("select count(1) as bars, a.productCode from FutureBackTest a group by productCode having bars >= :minBars")
-    List<String> findProductCodesLargeThan(final @Param("minBars") int minBars);
+    @Query(value = "select count(1) as bars, product_code as productCode from ods_future_backtest group by product_code having bars >= :minBars",
+            nativeQuery = true)
+    List<Tuple> findProductCodesLargeThan(final @Param("minBars") int minBars);
+
+    /**
+     * 计算数量
+     * @param code
+     * @return
+     */
+    @Query("select count(a) from FutureBackTest a where a.productCode = :productCode")
+    Long countByCode(final @Param("productCode") String code);
+
+    /**
+     * 计算数量
+     * @param code
+     * @return
+     */
+    @Query("select count(a) from FutureBackTest a where a.productCode = :productCode and datetime >= :start and datetime <= :end")
+    Integer countByCodeAndDateTimeRange(final @Param("productCode") String code,
+                                     final @Param("start") Date start,
+                                     final @Param("end") Date end);
+
+    @Query(value = "select min(datetime) as start, max(datetime) as end from " +
+            " (select * from ods_future_backtest " +
+            "   where product_code = :productCode order by datetime limit :offset, :size) t", nativeQuery = true)
+    Tuple findDateRangeByCode(final @Param("productCode") String code,
+                              final @Param("offset") Integer offset,
+                              final @Param("size") Integer size);
 
 }

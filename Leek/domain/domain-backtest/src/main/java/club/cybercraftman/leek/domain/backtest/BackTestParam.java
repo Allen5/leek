@@ -1,13 +1,13 @@
 package club.cybercraftman.leek.domain.backtest;
 
-import club.cybercraftman.leek.core.strategy.IStrategy;
+import club.cybercraftman.leek.common.bean.DateRange;
 import club.cybercraftman.leek.domain.backtest.executor.BackTestRunningMode;
 import lombok.Builder;
 import lombok.Data;
 import lombok.ToString;
 
 import java.math.BigDecimal;
-import java.util.Date;
+import java.util.Map;
 
 @Builder
 @Data
@@ -29,23 +29,17 @@ public class BackTestParam {
     /**
      * 指定回测执行的策略
      */
-    private IStrategy strategy;
+    private String strategyClassName;
+
+    /**
+     * 策略参数
+     */
+    private Map<String, Object> strategyParams;
 
     /**
      * 初始资金
      */
     private BigDecimal capital;
 
-
-    @Builder
-    @Data
-    @ToString
-    public static class DateRange {
-
-        private Date start;
-
-        private Date end;
-
-    }
 
 }

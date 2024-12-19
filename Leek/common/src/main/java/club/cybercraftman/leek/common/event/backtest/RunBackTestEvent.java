@@ -6,6 +6,7 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 import java.util.Date;
+import java.util.Map;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
@@ -16,7 +17,9 @@ public class RunBackTestEvent extends BaseEvent {
 
     private String financeType;
 
-    private String strategyId;
+    private String strategyClassName;
+
+    private Map<String, Object> strategyParams;
 
     private String runningMode;
 
