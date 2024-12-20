@@ -41,5 +41,14 @@ public class Signal {
      */
     private Integer volume;
 
+    /**
+     * 乘数
+     */
+    private BigDecimal multiplier;
+
+    /**
+     * 最小变动价位
+     */
+    private BigDecimal priceTick;
 
 }

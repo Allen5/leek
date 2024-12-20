@@ -24,6 +24,12 @@ public class BackTestRecord {
     private Long id;
 
     /**
+     * 执行环境
+     */
+    @Column(name = "running_mode", nullable = false, length = 16)
+    private String runningMode;
+
+    /**
      * 策略Id
      */
     @Column(name = "strategy_id", nullable = false)

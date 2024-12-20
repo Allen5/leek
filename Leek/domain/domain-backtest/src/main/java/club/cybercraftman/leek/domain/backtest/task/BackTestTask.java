@@ -7,6 +7,7 @@ import club.cybercraftman.leek.common.constant.finance.Market;
 import club.cybercraftman.leek.common.constant.trade.BackTestRecordStatus;
 import club.cybercraftman.leek.common.constant.trade.CommissionCategory;
 import club.cybercraftman.leek.common.constant.trade.CommissionValueType;
+import club.cybercraftman.leek.common.constant.trade.Environment;
 import club.cybercraftman.leek.common.context.SpringContextUtil;
 import club.cybercraftman.leek.common.exception.LeekException;
 import club.cybercraftman.leek.common.thread.AbstractTask;
@@ -15,9 +16,11 @@ import club.cybercraftman.leek.core.broker.Commission;
 import club.cybercraftman.leek.core.strategy.common.BaseStrategy;
 import club.cybercraftman.leek.core.strategy.common.Signal;
 import club.cybercraftman.leek.core.strategy.common.StrategyBuilder;
+import club.cybercraftman.leek.domain.backtest.executor.BackTestRunningMode;
 import club.cybercraftman.leek.repo.trade.model.backtest.BackTestRecord;
 import club.cybercraftman.leek.repo.trade.repository.ICommissionRepo;
 import club.cybercraftman.leek.repo.trade.repository.backtest.IBackTestRecordRepo;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -32,6 +35,10 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 @Slf4j
 public abstract class BackTestTask extends AbstractTask {
+
+    @Setter
+    @Getter
+    private BackTestRunningMode mode;
 
     @Setter
     private Market market;
@@ -141,6 +148,7 @@ public abstract class BackTestTask extends AbstractTask {
     private void initRecord(DateRange dateRange) {
         // 生成一条回测记录
         this.record = new BackTestRecord();
+        record.setRunningMode(getMode().getMode());
         record.setStrategyId(this.strategy.getId());
         record.setStrategyClassName(this.strategy.getClass().getName());
         record.setStrategyName(this.strategy.getName());

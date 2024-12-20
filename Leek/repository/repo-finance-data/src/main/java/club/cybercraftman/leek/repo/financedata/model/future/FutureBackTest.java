@@ -86,6 +86,18 @@ public class FutureBackTest {
     @Column(name = "main_contract", nullable = false, length = 4)
     private Integer isMainContract;
 
+    /**
+     * 合约乘数
+     */
+    @Column(name = "multiplier", nullable = false, precision = 18, scale = 3)
+    private BigDecimal multiplier;
+
+    /**
+     * 最小变动价位
+     */
+    @Column(name = "price_tick", nullable = false, precision = 18, scale = 3)
+    private BigDecimal priceTick;
+
     @Override
     public final boolean equals(Object o) {
         if (this == o) return true;

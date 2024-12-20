@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -27,8 +28,22 @@ public interface IBackTestPositionRepo extends JpaRepository<BackTestPosition, L
                                               final @Param("status") Integer status);
 
 
-    @Query("select a from BackTestPosition a where a.recordId = :recordId and symbol = :symbol ")
+    @Query("select a from BackTestPosition a where a.recordId = :recordId and a.symbol = :symbol ")
     Optional<BackTestPosition> findOneByRecordIdAndSymbol(final @Param("recordId") Long recordId,
                                                           final @Param("symbol") String symbol);
+
+    /**
+     * 获取对应方向的未平仓持仓列表
+     * 根据更新时间倒序
+     * @param recordId
+     * @param symbol
+     * @param direction
+     * @return
+     */
+    @Query("select a from BackTestPosition a where a.recordId = :recordId and a.symbol = :symbol and a.direction = :direction and a.status = :status order by a.updatedAt desc")
+    List<BackTestPosition> findAllByRecordIdAndSymbolAndDirectionAndStatus(final @Param("recordId") Long recordId,
+                                                                           final @Param("symbol") String symbol,
+                                                                           final @Param("direction") Integer direction,
+                                                                           final @Param("status") Integer status);
 
 }

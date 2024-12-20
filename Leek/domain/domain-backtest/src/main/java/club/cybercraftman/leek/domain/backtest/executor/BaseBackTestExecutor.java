@@ -90,7 +90,11 @@ public abstract class BaseBackTestExecutor implements IBackTestExecutor {
             endPercent = 100;
             startPercent = 80;
         }
-        return codes.stream().map(code -> this.createTask(code, startPercent, endPercent, param)).collect(Collectors.toList());
+        return codes.stream().map(code -> {
+            BackTestTask task = this.createTask(code, startPercent, endPercent, param);
+            task.setMode(param.getMode());
+            return task;
+        }).collect(Collectors.toList());
     }
 
 }

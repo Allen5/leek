@@ -78,46 +78,16 @@ public class BackTestPosition {
     private BigDecimal openPrice;
 
     /**
-     * 开仓费用
+     * 已开仓份额
      */
-    @Column(name = "open_commission", nullable = false, precision = 18, scale = 3)
-    private BigDecimal openCommission;
+    @Column(name = "open_volume", nullable = false)
+    private Integer openVolume;
 
     /**
-     * 平仓价格
+     * 可用份额
      */
-    @Column(name = "close_price", nullable = false, precision = 18, scale = 3)
-    private BigDecimal closePrice;
-
-    /**
-     * 平仓费用
-     */
-    @Column(name = "close_commission", nullable = false, precision = 18, scale = 3)
-    private BigDecimal closeCommission;
-
-    /**
-     * 其余费用
-     */
-    @Column(name = "other_commission", nullable = false, precision = 18, scale = 3)
-    private BigDecimal otherCommission;
-
-    /**
-     * 收益
-     */
-    @Column(name = "profit", nullable = false, precision = 18, scale = 3)
-    private BigDecimal profit;
-
-    /**
-     * 净收益
-     */
-    @Column(name = "net", nullable = false, precision = 18, scale = 3)
-    private BigDecimal net;
-
-    /**
-     * 持仓数量
-     */
-    @Column(name = "volume")
-    private Integer volume;
+    @Column(name = "available_volume", nullable = false)
+    private Integer availableVolume;
 
     /**
      * 持仓形式

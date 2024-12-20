@@ -37,23 +37,41 @@ public class Broker {
     /**
      * 判断是否有足够的资金开单
      */
-    public boolean hasEnoughCapital(final BigDecimal price, final Integer volume) {
-        BigDecimal netCost = getNetCost(price, volume);
-        BigDecimal totalCost = netCost.add(getFee(CommissionCategory.TRADE_FEE, netCost));
+    public boolean hasEnoughCapital(final BigDecimal price, final Integer volume, final BigDecimal multiplier) {
+        BigDecimal netCost = getDepositValue(price, volume, multiplier);
+        BigDecimal totalCost = netCost.add(getCommissionValue(CommissionCategory.TRADE_FEE, getNet(price, volume, multiplier)));
         return capital.compareTo(totalCost) > 0;
     }
 
-    public BigDecimal getNetCost(final BigDecimal price, final Integer volume) {
-        return price.multiply(new BigDecimal(volume)).multiply(depositRatio);
+    /**
+     * 计算保证金（100%即为资产价值）
+     * @param price
+     * @param volume
+     * @param multiplier
+     * @return
+     */
+    public BigDecimal getDepositValue(final BigDecimal price, final Integer volume, final BigDecimal multiplier) {
+        return price.multiply(new BigDecimal(volume)).multiply(multiplier).multiply(depositRatio);
+    }
+
+    /**
+     * 获取资产净值
+     * @param price
+     * @param volume
+     * @param multiplier
+     * @return
+     */
+    public BigDecimal getNet(final BigDecimal price, final Integer volume, final BigDecimal multiplier) {
+        return price.multiply(new BigDecimal(volume)).multiply(multiplier);
     }
 
     /**
      * 计算费用
      * @param category
-     * @param cost
+     * @param net
      * @return
      */
-    public BigDecimal getFee(final CommissionCategory category, final BigDecimal cost) {
+    public BigDecimal getCommissionValue(final CommissionCategory category, final BigDecimal net) {
         if ( CollectionUtils.isEmpty(this.commissionMap) ) {
             return BigDecimal.ZERO;
         }
@@ -61,45 +79,64 @@ public class Broker {
         if ( null == commission ) {
             return BigDecimal.ZERO;
         }
-        if ( null == cost ) {
+        if ( null == net ) {
             return BigDecimal.ZERO;
         }
         BigDecimal tax = BigDecimal.ZERO;
         if (CommissionValueType.FIXED.equals(commission.getValueType())) {
             tax = tax.add(commission.getValue());
         } else if ( CommissionValueType.RATIO.equals(commission.getValueType()) ){
-            tax = tax.add(cost.multiply(commission.getValue()));
+            tax = tax.add(net.multiply(commission.getValue()));
         }
         return tax;
     }
 
     /**
-     * 扣减金额
+     * 扣减保证金
      * @param price
      * @param volume
      */
-    public void subNetCost(final BigDecimal price, final Integer volume) {
-        BigDecimal cost = getNetCost(price, volume);
+    public void subDepositValue(final BigDecimal price, final Integer volume, final BigDecimal multiplier) {
+        BigDecimal cost = getDepositValue(price, volume, multiplier);
         this.capital = this.capital.subtract(cost);
     }
 
     /**
-     * 增加金额
+     * 退回保证金
      * @param price
      * @param volume
      */
-    public void addNetCost(final BigDecimal price, final Integer volume) {
-        BigDecimal cost = getNetCost(price, volume);
+    public void addDepositValue(final BigDecimal price, final Integer volume, final BigDecimal multiplier) {
+        BigDecimal cost = getDepositValue(price, volume, multiplier);
         this.capital = this.capital.add(cost);
+    }
+
+    /**
+     * 计算手续费
+     * @param price
+     * @param volume
+     * @param multiplier
+     * @return
+     */
+    public BigDecimal getCommission(final BigDecimal price, final Integer volume, final BigDecimal multiplier) {
+        BigDecimal net = getNet(price, volume, multiplier);
+        return getCommissionValue(CommissionCategory.TRADE_FEE, net);
     }
 
     /**
      * 扣除手续费
      */
-    public void subCommission(final BigDecimal commission) {
-        this.capital = this.capital.subtract(commission);
+    public void subCommission(final BigDecimal price, final Integer volume, final BigDecimal multiplier) {
+        this.capital = this.capital.subtract(getCommission(price, volume, multiplier));
     }
 
-
+    /**
+     * 增加收益
+     *
+     * @param net
+     */
+    public void addNet(final BigDecimal net) {
+        this.capital = this.capital.add(net);
+    }
 
 }
