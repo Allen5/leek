@@ -1,4 +1,4 @@
-package club.cybercraftman.leek.core.strategy;
+package club.cybercraftman.leek.core.strategy.common;
 
 import club.cybercraftman.leek.common.exception.LeekRuntimeException;
 import lombok.extern.slf4j.Slf4j;

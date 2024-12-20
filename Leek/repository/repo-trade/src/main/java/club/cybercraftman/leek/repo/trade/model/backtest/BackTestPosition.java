@@ -3,20 +3,22 @@ package club.cybercraftman.leek.repo.trade.model.backtest;
 import club.cybercraftman.leek.common.constant.finance.Direction;
 import club.cybercraftman.leek.common.constant.finance.FinanceType;
 import club.cybercraftman.leek.common.constant.finance.Market;
-import lombok.Data;
-import lombok.ToString;
+import lombok.*;
+import org.hibernate.proxy.HibernateProxy;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.Objects;
 
 /**
  * 回测的持仓数据
- * 每个策略 + 参数 一个持仓
  */
 @Entity
 @Table(name = "backtest_position")
-@Data
+@Getter
+@Setter
+@RequiredArgsConstructor
 @ToString
 public class BackTestPosition {
 
@@ -58,16 +60,64 @@ public class BackTestPosition {
     private String symbol;
 
     /**
+     * 关联订单ID
+     */
+    @Column(name = "order_id", nullable = false)
+    private Long orderId;
+
+    /**
+     * 保证金比率
+     */
+    @Column(name = "deposit_ratio", nullable = false, precision = 18, scale = 4)
+    private BigDecimal depositRatio;
+
+    /**
+     * 开仓价格
+     */
+    @Column(name = "open_price", nullable = false, precision = 18, scale = 3)
+    private BigDecimal openPrice;
+
+    /**
+     * 开仓费用
+     */
+    @Column(name = "open_commission", nullable = false, precision = 18, scale = 3)
+    private BigDecimal openCommission;
+
+    /**
+     * 平仓价格
+     */
+    @Column(name = "close_price", nullable = false, precision = 18, scale = 3)
+    private BigDecimal closePrice;
+
+    /**
+     * 平仓费用
+     */
+    @Column(name = "close_commission", nullable = false, precision = 18, scale = 3)
+    private BigDecimal closeCommission;
+
+    /**
+     * 其余费用
+     */
+    @Column(name = "other_commission", nullable = false, precision = 18, scale = 3)
+    private BigDecimal otherCommission;
+
+    /**
+     * 收益
+     */
+    @Column(name = "profit", nullable = false, precision = 18, scale = 3)
+    private BigDecimal profit;
+
+    /**
+     * 净收益
+     */
+    @Column(name = "net", nullable = false, precision = 18, scale = 3)
+    private BigDecimal net;
+
+    /**
      * 持仓数量
      */
     @Column(name = "volume")
     private Integer volume;
-
-    /**
-     * 持仓均价
-     */
-    @Column(name = "avg_price", precision = 18, scale = 3)
-    private BigDecimal avgPrice;
 
     /**
      * 持仓形式
@@ -75,6 +125,13 @@ public class BackTestPosition {
      */
     @Column(name = "direction", nullable = false, length = 4)
     private Integer direction;
+
+    /**
+     * 仓位状态：open，close
+     * @see club.cybercraftman.leek.common.constant.trade.PositionStatus
+     */
+    @Column(name = "status", nullable = false, length = 4)
+    private Integer status;
 
     /**
      * 创建时间
@@ -88,4 +145,19 @@ public class BackTestPosition {
     @Column(name = "updated_at", nullable = false)
     private Date updatedAt;
 
+    @Override
+    public final boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null) return false;
+        Class<?> oEffectiveClass = o instanceof HibernateProxy ? ((HibernateProxy) o).getHibernateLazyInitializer().getPersistentClass() : o.getClass();
+        Class<?> thisEffectiveClass = this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass() : this.getClass();
+        if (thisEffectiveClass != oEffectiveClass) return false;
+        BackTestPosition that = (BackTestPosition) o;
+        return getId() != null && Objects.equals(getId(), that.getId());
+    }
+
+    @Override
+    public final int hashCode() {
+        return this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass().hashCode() : getClass().hashCode();
+    }
 }

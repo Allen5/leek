@@ -7,7 +7,7 @@ import club.cybercraftman.leek.common.event.LeekEvent;
 import club.cybercraftman.leek.common.event.backtest.RunBackTestEvent;
 import club.cybercraftman.leek.common.exception.LeekException;
 import club.cybercraftman.leek.common.exception.LeekRuntimeException;
-import club.cybercraftman.leek.core.strategy.StrategyBuilder;
+import club.cybercraftman.leek.core.strategy.common.StrategyBuilder;
 import club.cybercraftman.leek.domain.backtest.BackTestParam;
 import club.cybercraftman.leek.domain.backtest.executor.BackTestExecutorBuilder;
 import club.cybercraftman.leek.domain.backtest.executor.BackTestRunningMode;

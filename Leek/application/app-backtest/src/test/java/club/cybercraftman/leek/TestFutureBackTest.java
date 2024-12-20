@@ -7,7 +7,7 @@ import club.cybercraftman.leek.domain.backtest.BackTestParam;
 import club.cybercraftman.leek.domain.backtest.executor.BackTestExecutorBuilder;
 import club.cybercraftman.leek.domain.backtest.executor.BackTestRunningMode;
 import club.cybercraftman.leek.domain.backtest.executor.IBackTestExecutor;
-import club.cybercraftman.leek.domain.backtest.task.future.HaiGuiStrategy;
+import club.cybercraftman.leek.core.strategy.HaiGuiStrategy;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

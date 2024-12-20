@@ -12,9 +12,9 @@ import club.cybercraftman.leek.common.exception.LeekException;
 import club.cybercraftman.leek.common.thread.AbstractTask;
 import club.cybercraftman.leek.core.broker.Broker;
 import club.cybercraftman.leek.core.broker.Commission;
-import club.cybercraftman.leek.core.strategy.BaseStrategy;
-import club.cybercraftman.leek.core.strategy.Signal;
-import club.cybercraftman.leek.core.strategy.StrategyBuilder;
+import club.cybercraftman.leek.core.strategy.common.BaseStrategy;
+import club.cybercraftman.leek.core.strategy.common.Signal;
+import club.cybercraftman.leek.core.strategy.common.StrategyBuilder;
 import club.cybercraftman.leek.repo.trade.model.backtest.BackTestRecord;
 import club.cybercraftman.leek.repo.trade.repository.ICommissionRepo;
 import club.cybercraftman.leek.repo.trade.repository.backtest.IBackTestRecordRepo;
@@ -110,7 +110,7 @@ public abstract class BackTestTask extends AbstractTask {
     @Override
     protected void onFail(String message) {
         this.record.setStatus(BackTestRecordStatus.FAIL.getStatus());
-        this.record.setErrMessage( message.length() > 1024 ? message.substring(0, 1024) : message);
+        this.record.setErrMessage( message.length() > BackTestRecord.MAX_MSG_LEN ? message.substring(0, BackTestRecord.MAX_MSG_LEN) : message);
         this.record.setUpdatedAt(new Date());
         this.record.setCost(this.record.getUpdatedAt().getTime() - this.record.getCreatedAt().getTime());
         IBackTestRecordRepo repo = SpringContextUtil.getBean(IBackTestRecordRepo.class);
@@ -141,8 +141,8 @@ public abstract class BackTestTask extends AbstractTask {
         record.setCode(this.code);
         record.setStartDateTime(dateRange.getStart());
         record.setEndDateTime(dateRange.getEnd());
-        record.setInitCapital(this.strategy.getBroker().getInitCapital());
-        record.setFinalCapital(this.strategy.getBroker().getInitCapital());
+        record.setInitCapital(this.strategy.getBroker().getCapital());
+        record.setFinalCapital(this.strategy.getBroker().getCapital());
         record.setParams(this.strategy.serializeParams());
         record.setStatus(BackTestRecordStatus.EXECUTING.getStatus());
         record.setCreatedAt(new Date());
@@ -158,7 +158,7 @@ public abstract class BackTestTask extends AbstractTask {
         this.strategy.setCode(this.code);
         this.strategy.setParams(this.params);
         this.strategy.setBroker(Broker.builder()
-                .initCapital(this.initCapital)
+                .capital(this.initCapital)
                 .commissionMap(getCommissions())
                 .build());
     }

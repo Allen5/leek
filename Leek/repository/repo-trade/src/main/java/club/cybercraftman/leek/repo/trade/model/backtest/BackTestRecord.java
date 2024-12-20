@@ -1,17 +1,23 @@
 package club.cybercraftman.leek.repo.trade.model.backtest;
 
 import club.cybercraftman.leek.common.constant.trade.BackTestRecordStatus;
-import lombok.Data;
-import lombok.ToString;
+import lombok.*;
+import org.hibernate.proxy.HibernateProxy;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.Objects;
 
+@Table
 @Entity(name = "backtest_record")
-@Data
+@Getter
+@Setter
+@RequiredArgsConstructor
 @ToString
 public class BackTestRecord {
+
+    public static final Integer MAX_MSG_LEN = 1024;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -154,4 +160,19 @@ public class BackTestRecord {
     @Column(name = "sonotti_ratio", precision = 18, scale = 4)
     private BigDecimal sonottiRatio;
 
+    @Override
+    public final boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null) return false;
+        Class<?> oEffectiveClass = o instanceof HibernateProxy ? ((HibernateProxy) o).getHibernateLazyInitializer().getPersistentClass() : o.getClass();
+        Class<?> thisEffectiveClass = this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass() : this.getClass();
+        if (thisEffectiveClass != oEffectiveClass) return false;
+        BackTestRecord record = (BackTestRecord) o;
+        return getId() != null && Objects.equals(getId(), record.getId());
+    }
+
+    @Override
+    public final int hashCode() {
+        return this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass().hashCode() : getClass().hashCode();
+    }
 }

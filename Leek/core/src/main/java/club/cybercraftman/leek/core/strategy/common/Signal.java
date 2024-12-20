@@ -1,4 +1,4 @@
-package club.cybercraftman.leek.core.strategy;
+package club.cybercraftman.leek.core.strategy.common;
 
 import club.cybercraftman.leek.common.constant.finance.Direction;
 import club.cybercraftman.leek.common.constant.finance.TradeType;
