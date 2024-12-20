@@ -1,18 +1,21 @@
 package club.cybercraftman.leek.repo.financedata.model.future;
 
-import lombok.Data;
-import lombok.ToString;
+import lombok.*;
+import org.hibernate.proxy.HibernateProxy;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.Objects;
 
 /**
  * 期货回测数据集. 通过ETL得到
  */
 @Entity
 @Table(name = "ods_future_backtest")
-@Data
+@Getter
+@Setter
+@RequiredArgsConstructor
 @ToString
 public class FutureBackTest {
 
@@ -83,4 +86,19 @@ public class FutureBackTest {
     @Column(name = "main_contract", nullable = false, length = 4)
     private Integer isMainContract;
 
+    @Override
+    public final boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null) return false;
+        Class<?> oEffectiveClass = o instanceof HibernateProxy ? ((HibernateProxy) o).getHibernateLazyInitializer().getPersistentClass() : o.getClass();
+        Class<?> thisEffectiveClass = this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass() : this.getClass();
+        if (thisEffectiveClass != oEffectiveClass) return false;
+        FutureBackTest that = (FutureBackTest) o;
+        return getId() != null && Objects.equals(getId(), that.getId());
+    }
+
+    @Override
+    public final int hashCode() {
+        return this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass().hashCode() : getClass().hashCode();
+    }
 }

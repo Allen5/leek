@@ -99,7 +99,13 @@ public abstract class BackTestTask extends AbstractTask {
                 break;
             }
             this.strategy.setCurrent(curDay);
-            log.info("[回测:{}]交易日:{}, 交易标的: {}, 数据日期范围:[{}-{}], 持仓:[], 订单:[]. 策略: {}", this.record.getId(), this.strategy.getCurrent(), this.code, dateRange.getStart(), dateRange.getEnd(), this.strategy.getName());
+            log.info("[回测:{}]交易日:{}, 交易标的: {}, 数据日期范围:[{}-{}], 当前金额: {}, 持仓:[], 订单:[]. 策略: {}",
+                    this.record.getId(),
+                    this.strategy.getCurrent(),
+                    this.code,
+                    dateRange.getStart(), dateRange.getEnd(),
+                    this.strategy.getBroker().getCapital(),
+                    this.strategy.getName());
             this.strategy.deal();                      // 处理前日挂单
             Signal signal = this.strategy.getSignal(); // 计算当日信号
             this.strategy.order(signal);               // 生成订单
@@ -155,6 +161,8 @@ public abstract class BackTestTask extends AbstractTask {
     private void initStrategy() {
         StrategyBuilder builder = SpringContextUtil.getBean(StrategyBuilder.class);
         this.strategy = builder.find(this.strategyClassName);
+        this.strategy.setMarket(market);
+        this.strategy.setFinanceType(financeType);
         this.strategy.setCode(this.code);
         this.strategy.setParams(this.params);
         this.strategy.setBroker(Broker.builder()

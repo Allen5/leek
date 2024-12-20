@@ -1,8 +1,6 @@
 package club.cybercraftman.leek.core.strategy.common;
 
-import club.cybercraftman.leek.common.constant.finance.Direction;
-import club.cybercraftman.leek.common.constant.finance.OrderStatus;
-import club.cybercraftman.leek.common.constant.finance.TradeType;
+import club.cybercraftman.leek.common.constant.finance.*;
 import club.cybercraftman.leek.common.context.SpringContextUtil;
 import club.cybercraftman.leek.common.exception.LeekException;
 import club.cybercraftman.leek.core.broker.Broker;
@@ -23,6 +21,14 @@ import java.util.Map;
 @Setter
 @Slf4j
 public abstract class BaseStrategy {
+
+    @Getter
+    @Setter
+    private Market market;
+
+    @Getter
+    @Setter
+    private FinanceType financeType;
 
     /**
      * 回测记录
@@ -107,7 +113,7 @@ public abstract class BaseStrategy {
                 result = this.onClose(order);
             }
             // 根据result更新订单状态
-            // Tips: 回测没有撤单一说
+            // Tips: 回测没有撤单
             order.setStatus(result ? OrderStatus.DEAL.getStatus() : OrderStatus.FAIL.getStatus());
             order.setUpdatedAt(getCurrent());
             orderRepo.save(order);
@@ -141,7 +147,7 @@ public abstract class BaseStrategy {
     /**
      * 失败
      */
-    protected abstract void onFail();
+    protected abstract void onFail(BackTestOrder order);
 
 
     public abstract String getId();

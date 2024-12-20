@@ -45,4 +45,8 @@ public interface IFutureBackTestRepo extends JpaRepository<FutureBackTest, Long>
                               final @Param("offset") Integer offset,
                               final @Param("size") Integer size);
 
+    @Query("select a from FutureBackTest a where a.symbol = :symbol and a.datetime = :date")
+    FutureBackTest findOneByDateAndSymbol(final @Param("date") Date date,
+                                          final @Param("symbol") String symbol);
+
 }

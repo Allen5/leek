@@ -73,4 +73,33 @@ public class Broker {
         return tax;
     }
 
+    /**
+     * 扣减金额
+     * @param price
+     * @param volume
+     */
+    public void subNetCost(final BigDecimal price, final Integer volume) {
+        BigDecimal cost = getNetCost(price, volume);
+        this.capital = this.capital.subtract(cost);
+    }
+
+    /**
+     * 增加金额
+     * @param price
+     * @param volume
+     */
+    public void addNetCost(final BigDecimal price, final Integer volume) {
+        BigDecimal cost = getNetCost(price, volume);
+        this.capital = this.capital.add(cost);
+    }
+
+    /**
+     * 扣除手续费
+     */
+    public void subCommission(final BigDecimal commission) {
+        this.capital = this.capital.subtract(commission);
+    }
+
+
+
 }
