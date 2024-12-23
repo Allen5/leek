@@ -93,8 +93,10 @@ public abstract class TwoSideBaseStrategy extends BaseStrategy {
             positionRepo.save(position);
             // 创建收益流水
             BackTestProfit profit = addProfit(position, currentBar.getOpen(), changedVolume, currentBar);
-            //  更新资金. 只需要增加净收益即可
+            // 更新资金. 只需要增加净收益即可
             getBroker().addNet(profit.getNet());
+            // 更新资金。需要加回保证金
+            getBroker().addDepositValue(position.getOpenPrice(), changedVolume, currentBar.getMultiplier());
         }
         return true;
     }

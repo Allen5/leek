@@ -46,4 +46,8 @@ public interface IBackTestPositionRepo extends JpaRepository<BackTestPosition, L
                                                                            final @Param("direction") Integer direction,
                                                                            final @Param("status") Integer status);
 
+    @Query("select a from BackTestPosition a where a.recordId = :recordId and a.status = :status")
+    List<BackTestPosition> findAllByRecordIdAndStatus(final @Param("recordId") Long recordId,
+                                                      final @Param("status") Integer status);
+
 }

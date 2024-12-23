@@ -151,7 +151,7 @@ public class BackTestRecord {
      * 夏普比率
      */
     @Column(name = "sharp_ratio", precision = 18, scale = 4)
-    private BigDecimal sharp_ratio;
+    private BigDecimal sharpRatio;
 
 
     /**
@@ -163,8 +163,8 @@ public class BackTestRecord {
     /**
      * 索诺提比率
      */
-    @Column(name = "sonotti_ratio", precision = 18, scale = 4)
-    private BigDecimal sonottiRatio;
+    @Column(name = "sortino_ratio", precision = 18, scale = 4)
+    private BigDecimal sortinoRatio;
 
     @Override
     public final boolean equals(Object o) {
