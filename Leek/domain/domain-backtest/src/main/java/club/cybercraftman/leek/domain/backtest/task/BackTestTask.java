@@ -13,6 +13,7 @@ import club.cybercraftman.leek.common.thread.AbstractTask;
 import club.cybercraftman.leek.core.broker.Broker;
 import club.cybercraftman.leek.core.broker.Commission;
 import club.cybercraftman.leek.core.eveluator.EvaluatorUtil;
+import club.cybercraftman.leek.core.service.BackTestDailyStatService;
 import club.cybercraftman.leek.core.strategy.common.BaseStrategy;
 import club.cybercraftman.leek.core.strategy.common.Signal;
 import club.cybercraftman.leek.core.strategy.common.StrategyBuilder;
@@ -115,6 +116,9 @@ public abstract class BackTestTask extends AbstractTask {
             this.strategy.deal();                      // 处理前日挂单
             Signal signal = this.strategy.getSignal(); // 计算当日信号
             this.strategy.order(signal);               // 生成订单
+            // 生成日统计
+            BackTestDailyStatService dailyStatService = SpringContextUtil.getBean(BackTestDailyStatService.class);
+            dailyStatService.statDaily(this.market, this.financeType, this.record.getId(), curDay, this.strategy.getBroker());
         }
         // 获取当前剩余资金
         this.record.setFinalCapital(this.strategy.getBroker().getCapital());

@@ -8,6 +8,9 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Date;
+import java.util.List;
+
 @Repository
 @ConditionalOnBean(TradeDataSourceConfig.class)
 public interface IBackTestProfitRepo extends JpaRepository<BackTestProfit, Long> {
@@ -27,5 +30,9 @@ public interface IBackTestProfitRepo extends JpaRepository<BackTestProfit, Long>
      */
     @Query("select count(1) from BackTestProfit a where a.recordId = :recordId and a.profit < 0")
     Integer countLoseByRecordId(final @Param("recordId") Long recordId);
+
+    @Query("select a from BackTestProfit a where a.recordId = :recordId and a.closedAt = :closedAt")
+    List<BackTestProfit> findAllByRecordIdAndClosedAt(final @Param("recordId") Long recordId,
+                                                      final @Param("closedAt") Date closedAt);
 
 }
