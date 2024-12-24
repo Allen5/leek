@@ -1,10 +1,7 @@
 package club.cybercraftman.leek.core.service;
 
 import club.cybercraftman.leek.common.bean.CommonBar;
-import club.cybercraftman.leek.common.constant.finance.FinanceType;
-import club.cybercraftman.leek.common.constant.finance.Market;
-import club.cybercraftman.leek.common.constant.finance.OrderStatus;
-import club.cybercraftman.leek.common.constant.finance.TradeType;
+import club.cybercraftman.leek.common.constant.finance.*;
 import club.cybercraftman.leek.core.broker.Broker;
 import club.cybercraftman.leek.core.strategy.common.Signal;
 import club.cybercraftman.leek.repo.financedata.BackTestDataRepo;
@@ -78,11 +75,29 @@ public class BackTestOrderService {
                 // 退回保证金
                 capitalCurrentService.fallbackDeposit(recordId, datetime, order.getDeposit());
                 broker.addCapital(order.getDeposit());
+                if ( TradeType.CLOSE.getType().equals(order.getTradeType()) ) {
+                    // Tips: 如果是平仓单，需要逆序回退orderVolume;
+                    positionService.fallbackOrderVolume(recordId, order.getSymbol(), Direction.parse(order.getDirection()), order.getVolume(), datetime);
+                }
                 continue;
             }
             order.setStatus(OrderStatus.ORDER.getStatus());
-            // 3. 处理下单成功，进行开仓处理
+            order.setUpdatedAt(datetime);
+            orderRepo.save(order);
 
+            // 3. 处理下单成功，进行开仓处理
+            if ( TradeType.OPEN.getType().equals(order.getTradeType())) {
+                positionService.open(market, financeType, recordId, order, bar);
+            } else {
+                // 平仓单要先回退orderVolume
+                positionService.fallbackOrderVolume(recordId, order.getSymbol(), Direction.parse(order.getDirection()), order.getVolume(), datetime);
+                // Tips: 平仓收益与保证金在平仓逻辑中逐笔处理
+                positionService.close(recordId, order, bar, broker, datetime);
+            }
+            // 扣除手续费
+            BigDecimal commission = broker.getCommission(order.getPrice(), order.getVolume(), bar.getMultiplier(), bar.getPriceTick());
+            broker.subCapital(commission);
+            capitalCurrentService.subCommission(recordId, datetime, commission);
         }
     }
 
@@ -97,7 +112,7 @@ public class BackTestOrderService {
     private boolean preOrderCheck(final Long recordId, final Signal signal, final Date datetime, final Broker broker) {
         if ( signal.getTradeType().equals(TradeType.OPEN) ) {
             // 开仓信号需判断资金是否足够
-            if ( !broker.hasEnoughCapital(signal.getPrice(), signal.getVolume(), signal.getMultiplier()) ) {
+            if ( !broker.hasEnoughCapital(signal.getPrice(), signal.getVolume(), signal.getMultiplier(), signal.getPriceTick()) ) {
                 log.warn("[回测:{}]交易日:{}, 交易标的: {}, 当前资金不足，无法挂单. [capital: {}][price: {}, volume: {}, multiplier: {}, deposit: {}]",
                         recordId,
                         signal.getSymbol(),
@@ -110,8 +125,8 @@ public class BackTestOrderService {
                 return false;
             }
         } else {
-            // 平仓信号需要校验是否存在持仓
-            if ( !positionService.hasEnoughPosition(recordId, signal.getSymbol(), signal.getVolume()) ) {
+            // 平仓信号需要校验是否存在持仓，且份额充足
+            if ( !positionService.hasEnoughPosition(recordId, signal.getSymbol(), signal.getDirection(), signal.getVolume()) ) {
                 log.warn("[回测:{}]交易日:{}, 交易标的: {}, 当前可用持仓不足，无法挂单. [capital: {}][price: {}, volume: {}, multiplier: {}, deposit: {}]",
                         recordId,
                         signal.getSymbol(),
@@ -136,7 +151,7 @@ public class BackTestOrderService {
         order.setTradeType(signal.getTradeType().getType());
         order.setPrice(signal.getPrice());
         order.setVolume(signal.getVolume());
-        order.setDeposit(broker.getDepositValue(signal.getPrice(), signal.getVolume(), signal.getMultiplier()));
+        order.setDeposit(broker.getDepositValue(signal.getPrice(), signal.getVolume(), signal.getMultiplier(), signal.getPriceTick()));
         order.setStatus(OrderStatus.ORDER.getStatus());
         order.setCreatedAt(datetime);
         order = orderRepo.save(order);
@@ -144,6 +159,10 @@ public class BackTestOrderService {
         broker.subCapital(order.getDeposit());
         // 生成资金流水
         capitalCurrentService.subDeposit(recordId, datetime, order.getDeposit());
+        // 如果是平仓单，需要逆序更新orderVolume;
+        if  (TradeType.CLOSE.getType().equals(order.getTradeType()) ) {
+            positionService.addOrderVolume(recordId, signal.getSymbol(), signal.getDirection(), signal.getVolume(), datetime);
+        }
     }
 
     /**

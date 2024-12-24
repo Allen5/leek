@@ -87,24 +87,7 @@ public abstract class BaseStrategy {
      * 由具体子类实现开平仓逻辑
      * @param order
      */
-    protected abstract boolean onOpen(BackTestOrder order, CommonBar currentBar);
-
-    /**
-     * 由具体子类实现开平仓逻辑
-     * @param order
-     */
     protected abstract boolean onClose(BackTestOrder order, CommonBar currentBar);
-
-    /**
-     * 成交
-     */
-    protected abstract void onSuccess();
-
-    /**
-     * 失败
-     */
-    protected abstract void onFail(BackTestOrder order, CommonBar currentBar);
-
 
     public abstract String getId();
 

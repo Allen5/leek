@@ -123,7 +123,7 @@ public class EvaluatorUtil {
             }
             // TODO: 这里会有问题，commission需要记录下来。当合约乘数调整之后，两次算的手续费不一致。
             BigDecimal profit = diff.multiply(BigDecimal.valueOf(position.getAvailableVolume())).multiply(bar.getMultiplier()).multiply(bar.getPriceTick());
-            BigDecimal commission = broker.getCommission(position.getOpenPrice(), position.getAvailableVolume(), bar.getMultiplier());
+            BigDecimal commission = broker.getCommission(position.getOpenPrice(), position.getAvailableVolume(), bar.getMultiplier(), bar.getPriceTick());
             BigDecimal net = profit.subtract(commission);
             totalNet = totalNet.add(net);
         }

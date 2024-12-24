@@ -140,7 +140,7 @@ public class BackTestDailyStatService {
                 log.error("获取回测bar失败，market: {}, financeType: {}, symbol: {}", market, financeType, position.getSymbol());
                 throw new LeekRuntimeException("获取回测bar失败. datetime: " + currentDate + ", symbol: " + position.getSymbol());
             }
-            commission = commission.add(broker.getCommission(position.getOpenPrice(), position.getAvailableVolume(), bar.getMultiplier()));
+            commission = commission.add(broker.getCommission(position.getOpenPrice(), position.getAvailableVolume(), bar.getMultiplier(), bar.getPriceTick()));
         }
         // 计算当日平仓的手续费、服务费
         for (BackTestProfit profit : profits) {
@@ -169,7 +169,7 @@ public class BackTestDailyStatService {
                 log.error("获取回测bar失败，market: {}, financeType: {}, symbol: {}", market, financeType, position.getSymbol());
                 throw new LeekRuntimeException("获取回测bar失败. datetime: " + currentDate + ", symbol: " + position.getSymbol());
             }
-            deposit = deposit.add(broker.getDepositValue(position.getOpenPrice(), position.getAvailableVolume(), bar.getMultiplier()));
+            deposit = deposit.add(broker.getDepositValue(position.getOpenPrice(), position.getAvailableVolume(), bar.getMultiplier(), bar.getPriceTick()));
         }
         return deposit;
     }

@@ -22,10 +22,11 @@ public interface IBackTestPositionRepo extends JpaRepository<BackTestPosition, L
      * @param status
      * @return
      */
-    @Query("select sum(availableVolume) from BackTestPosition a where a.recordId = :recordId and a.symbol = :symbol and a.status = :status")
-    Long sumVolumeByRecordIdAndSymbolAndStatus(final @Param("recordId") Long recordId,
-                                                  final @Param("symbol") String symbol,
-                                                  final @Param("status") Integer status);
+    @Query("select sum(availableVolume) from BackTestPosition a where a.recordId = :recordId and a.symbol = :symbol and a.direction = :direction and a.status = :status")
+    Long sumVolumeByRecordIdAndSymbolAndDirectionAndStatus(final @Param("recordId") Long recordId,
+                                                           final @Param("symbol") String symbol,
+                                                           final @Param("direction") Integer direction,
+                                                           final @Param("status") Integer status);
 
 
     @Query("select a from BackTestPosition a where a.recordId = :recordId and a.symbol = :symbol ")
@@ -40,7 +41,7 @@ public interface IBackTestPositionRepo extends JpaRepository<BackTestPosition, L
      * @param direction
      * @return
      */
-    @Query("select a from BackTestPosition a where a.recordId = :recordId and a.symbol = :symbol and a.direction = :direction and a.status = :status order by a.updatedAt desc")
+    @Query("select a from BackTestPosition a where a.recordId = :recordId and a.symbol = :symbol and a.direction = :direction and a.status = :status order by a.createdAt desc")
     List<BackTestPosition> findAllByRecordIdAndSymbolAndDirectionAndStatus(final @Param("recordId") Long recordId,
                                                                            final @Param("symbol") String symbol,
                                                                            final @Param("direction") Integer direction,

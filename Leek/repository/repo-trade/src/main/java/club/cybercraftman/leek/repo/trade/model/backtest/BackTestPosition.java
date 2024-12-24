@@ -47,13 +47,6 @@ public class BackTestPosition {
     private String financeType;
 
     /**
-     * 品种代码
-     * 当金融产品为期货时，品种代码不可空
-     */
-    @Column(name = "product_code", nullable = false, length = 8)
-    private String productCode;
-
-    /**
      * 交易代码。 期货为合约代码，股票为股票代码
      */
     @Column(name = "symbol", nullable = false, length = 8)
@@ -65,11 +58,18 @@ public class BackTestPosition {
     @Column(name = "order_id", nullable = false)
     private Long orderId;
 
+
     /**
-     * 保证金比率
+     * 开仓保证金
      */
-    @Column(name = "deposit_ratio", nullable = false, precision = 18, scale = 4)
-    private BigDecimal depositRatio;
+    @Column(name = "deposit", nullable = false, precision = 18, scale = 3)
+    private BigDecimal deposit;
+
+    /**
+     * 可用保证金
+     */
+    @Column(name = "available_deposit", nullable = false, precision = 18, scale = 3)
+    private BigDecimal availableDeposit;
 
     /**
      * 开仓价格
@@ -84,10 +84,16 @@ public class BackTestPosition {
     private Integer openVolume;
 
     /**
-     * 可用份额
+     * 可用份额 = 开仓份额 - 挂单份额
      */
     @Column(name = "available_volume", nullable = false)
     private Integer availableVolume;
+
+    /**
+     * 挂单份额
+     */
+    @Column(name = "order_volume", nullable = false)
+    private Integer orderVolume;
 
     /**
      * 持仓形式
@@ -114,6 +120,11 @@ public class BackTestPosition {
      */
     @Column(name = "updated_at", nullable = false)
     private Date updatedAt;
+
+    // 可用份额 = 记录的可用份额 - 订单占用份额
+    public Integer getAvailableVolume() {
+        return this.availableVolume - this.orderVolume;
+    }
 
     @Override
     public final boolean equals(Object o) {

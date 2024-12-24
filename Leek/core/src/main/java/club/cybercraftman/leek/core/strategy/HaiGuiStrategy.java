@@ -1,9 +1,9 @@
 package club.cybercraftman.leek.core.strategy;
 
+import club.cybercraftman.leek.core.strategy.common.BaseStrategy;
 import club.cybercraftman.leek.core.strategy.common.Signal;
-import club.cybercraftman.leek.core.strategy.common.TwoSideBaseStrategy;
 
-public class HaiGuiStrategy extends TwoSideBaseStrategy {
+public class HaiGuiStrategy extends BaseStrategy {
 
     @Override
     public Signal getSignal() {

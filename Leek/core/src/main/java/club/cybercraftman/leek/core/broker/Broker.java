@@ -2,16 +2,12 @@ package club.cybercraftman.leek.core.broker;
 
 import club.cybercraftman.leek.common.constant.trade.CommissionCategory;
 import club.cybercraftman.leek.common.constant.trade.CommissionValueType;
-import club.cybercraftman.leek.common.context.SpringContextUtil;
-import club.cybercraftman.leek.core.service.BackTestCapitalCurrentService;
 import lombok.Builder;
 import lombok.Data;
 import lombok.ToString;
 import org.springframework.util.CollectionUtils;
 
-import javax.transaction.Transactional;
 import java.math.BigDecimal;
-import java.util.Date;
 import java.util.Map;
 
 /**
@@ -41,9 +37,9 @@ public class Broker {
     /**
      * 判断是否有足够的资金开单
      */
-    public boolean hasEnoughCapital(final BigDecimal price, final Integer volume, final BigDecimal multiplier) {
-        BigDecimal netCost = getDepositValue(price, volume, multiplier);
-        BigDecimal totalCost = netCost.add(getCommissionValue(CommissionCategory.TRADE_FEE, getNet(price, volume, multiplier)));
+    public boolean hasEnoughCapital(final BigDecimal price, final Integer volume, final BigDecimal multiplier, final BigDecimal priceTick) {
+        BigDecimal netCost = getDepositValue(price, volume, multiplier, priceTick);
+        BigDecimal totalCost = netCost.add(getCommissionValue(CommissionCategory.TRADE_FEE, getNet(price, volume, multiplier, priceTick)));
         return capital.compareTo(totalCost) > 0;
     }
 
@@ -54,8 +50,8 @@ public class Broker {
      * @param multiplier
      * @return
      */
-    public BigDecimal getDepositValue(final BigDecimal price, final Integer volume, final BigDecimal multiplier) {
-        return price.multiply(new BigDecimal(volume)).multiply(multiplier).multiply(depositRatio);
+    public BigDecimal getDepositValue(final BigDecimal price, final Integer volume, final BigDecimal multiplier, final BigDecimal priceTick) {
+        return price.multiply(new BigDecimal(volume)).multiply(multiplier).multiply(depositRatio).multiply(priceTick);
     }
 
     /**
@@ -65,8 +61,8 @@ public class Broker {
      * @param multiplier
      * @return
      */
-    public BigDecimal getNet(final BigDecimal price, final Integer volume, final BigDecimal multiplier) {
-        return price.multiply(new BigDecimal(volume)).multiply(multiplier);
+    public BigDecimal getNet(final BigDecimal price, final Integer volume, final BigDecimal multiplier, final BigDecimal priceTick) {
+        return price.multiply(new BigDecimal(volume)).multiply(multiplier).multiply(priceTick);
     }
 
     /**
@@ -96,59 +92,15 @@ public class Broker {
     }
 
     /**
-     * 扣减保证金
-     * @param price
-     * @param volume
-     */
-    public void subDepositValue(final BigDecimal price, final Integer volume, final BigDecimal multiplier) {
-        BigDecimal cost = getDepositValue(price, volume, multiplier);
-        this.capital = this.capital.subtract(cost);
-    }
-
-    /**
-     * 退回保证金
-     * @param price
-     * @param volume
-     */
-    public void addDepositValue(final BigDecimal price, final Integer volume, final BigDecimal multiplier) {
-        BigDecimal cost = getDepositValue(price, volume, multiplier);
-        this.capital = this.capital.add(cost);
-    }
-
-    /**
      * 计算手续费
      * @param price
      * @param volume
      * @param multiplier
      * @return
      */
-    public BigDecimal getCommission(final BigDecimal price, final Integer volume, final BigDecimal multiplier) {
-        BigDecimal net = getNet(price, volume, multiplier);
+    public BigDecimal getCommission(final BigDecimal price, final Integer volume, final BigDecimal multiplier, final BigDecimal priceTick) {
+        BigDecimal net = getNet(price, volume, multiplier, priceTick);
         return getCommissionValue(CommissionCategory.TRADE_FEE, net);
-    }
-
-    /**
-     * 扣除手续费
-     */
-    @Transactional
-    public void subCommission(final Long recordId,
-                              final Date currentDatetime,
-                              final BigDecimal price,
-                              final Integer volume,
-                              final BigDecimal multiplier) {
-        BigDecimal commission = getCommission(price, volume, multiplier);
-        BackTestCapitalCurrentService service = SpringContextUtil.getBean(BackTestCapitalCurrentService.class);
-        service.subCommission(recordId, currentDatetime, commission);
-        this.capital = this.capital.subtract(commission);
-    }
-
-    /**
-     * 增加收益
-     *
-     * @param net
-     */
-    public void addNet(final BigDecimal net) {
-        this.capital = this.capital.add(net);
     }
 
     /**
