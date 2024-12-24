@@ -16,9 +16,11 @@ import java.util.List;
 @ConditionalOnBean(FinanceDataDataSourceConfig.class)
 public interface IFutureBackTestRepo extends JpaRepository<FutureBackTest, Long> {
 
-    @Query(value = "select count(1) as bars, product_code as productCode from ods_future_backtest group by product_code having bars >= :minBars",
+    @Query(value = "select count(1) as bars, product_code as productCode from ods_future_backtest where datetime >= :start and datetime <= :end group by product_code having bars >= :minBars",
             nativeQuery = true)
-    List<Tuple> findProductCodesLargeThan(final @Param("minBars") int minBars);
+    List<Tuple> findProductCodesLargeThan(final @Param("minBars") int minBars,
+                                          final @Param("start") Date start,
+                                          final @Param("end") Date end);
 
     /**
      * 计算数量

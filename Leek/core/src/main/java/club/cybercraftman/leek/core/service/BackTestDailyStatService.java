@@ -10,11 +10,10 @@ import club.cybercraftman.leek.core.broker.Broker;
 import club.cybercraftman.leek.repo.financedata.BackTestDataRepo;
 import club.cybercraftman.leek.repo.trade.model.backtest.BackTestDailyStat;
 import club.cybercraftman.leek.repo.trade.model.backtest.BackTestPosition;
-import club.cybercraftman.leek.repo.trade.model.backtest.BackTestProfit;
 import club.cybercraftman.leek.repo.trade.model.backtest.BackTestRecord;
+import club.cybercraftman.leek.repo.trade.repository.backtest.IBackTestCapitalCurrentRepo;
 import club.cybercraftman.leek.repo.trade.repository.backtest.IBackTestDailyStatRepo;
 import club.cybercraftman.leek.repo.trade.repository.backtest.IBackTestPositionRepo;
-import club.cybercraftman.leek.repo.trade.repository.backtest.IBackTestProfitRepo;
 import club.cybercraftman.leek.repo.trade.repository.backtest.IBackTestRecordRepo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,10 +46,10 @@ public class BackTestDailyStatService {
     private IBackTestPositionRepo positionRepo;
 
     @Autowired
-    private IBackTestProfitRepo profitRepo;
+    private BackTestDataRepo backTestDataRepo;
 
     @Autowired
-    private BackTestDataRepo backTestDataRepo;
+    private IBackTestCapitalCurrentRepo capitalCurrentRepo;
 
     /**
      * 统计当日的回测数据
@@ -60,7 +59,7 @@ public class BackTestDailyStatService {
      * @param currentDate
      */
     @Transactional
-    public void statDaily(final Market market, final FinanceType financeType, final Long recordId, final Date currentDate, final Broker broker) {
+    public void statDaily(final Market market, final FinanceType financeType, final Long recordId, final Date currentDate) {
         // step1: 获取回测记录
         Optional<BackTestRecord> op = recordRepo.findById(recordId);
         if ( op.isEmpty() ) {
@@ -68,19 +67,17 @@ public class BackTestDailyStatService {
         }
         // 获取当前持仓单
         List<BackTestPosition> openPositions = positionRepo.findAllByRecordIdAndStatus(recordId, PositionStatus.OPEN.getStatus());
-        // 获取当前收益数据
-        List<BackTestProfit> profits = profitRepo.findAllByRecordIdAndClosedAt(recordId, currentDate);
         BackTestRecord record = op.get();
         BackTestDailyStat stat = new BackTestDailyStat();
         stat.setRecordId(recordId);
         stat.setDate(currentDate);
         stat.setBenchmark(calcBenchmark(record.getInitCapital()));
         // 计算当日收益: 当日平仓单的收益 + 当日持仓单的收益
-        stat.setProfit(calcDailyProfit(market, financeType, profits, openPositions, currentDate));
+        stat.setProfit(calcDailyProfit(market, financeType, currentDate));
         // 计算当日手续费服务费: 当日开、平仓单的手续费服务费
-        stat.setCommission(calcCommission(market, financeType, profits, openPositions, currentDate, broker));
+        stat.setCommission(calcCommission(market, financeType, currentDate));
         // 计算当日净收益： 当日收益 - 当日的手续费服务费
-        stat.setNet(stat.getProfit().subtract(stat.getCommission()));
+        stat.setNet();
         // 计算当日资产总值： 当日净收益 + 当前剩余资金 + 当日已支出保证金
         stat.setCapital(stat.getNet().add(broker.getCapital()).add(calcDeposit(market, financeType, openPositions, currentDate, broker)));
         dailyStatRepo.save(stat);

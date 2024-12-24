@@ -55,6 +55,12 @@ public class BackTestOrder {
     private Integer volume;
 
     /**
+     * 保证金
+     */
+    @Column(name = "deposit", nullable = false, precision = 18, scale = 3)
+    private BigDecimal deposit;
+
+    /**
      * 订单状态
      * @see OrderStatus
      */

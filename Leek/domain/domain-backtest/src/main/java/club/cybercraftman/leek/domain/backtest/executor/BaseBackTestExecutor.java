@@ -60,7 +60,7 @@ public abstract class BaseBackTestExecutor implements IBackTestExecutor {
      * @param minBars
      * @return
      */
-    protected abstract List<String> loadCodes(final Integer minBars);
+    protected abstract List<String> loadCodes(final Integer minBars, final DateRange dateRange);
 
     /**
      * 创建对应的执行任务
@@ -76,7 +76,7 @@ public abstract class BaseBackTestExecutor implements IBackTestExecutor {
      * @return
      */
     private List<BackTestTask> buildTasks(final BackTestParam param) {
-        List<String> codes = this.loadCodes(param.getMinBars());
+        List<String> codes = this.loadCodes(param.getMinBars(), param.getDateRange());
         // 确定数据范围. 规则: 开发环境 0~70%，测试：70%-80%，验证: 80%-100%
         int startPercent;
         int endPercent;

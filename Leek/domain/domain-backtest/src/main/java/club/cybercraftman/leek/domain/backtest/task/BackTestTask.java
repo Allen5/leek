@@ -14,6 +14,8 @@ import club.cybercraftman.leek.core.broker.Broker;
 import club.cybercraftman.leek.core.broker.Commission;
 import club.cybercraftman.leek.core.eveluator.EvaluatorUtil;
 import club.cybercraftman.leek.core.service.BackTestDailyStatService;
+import club.cybercraftman.leek.core.service.BackTestOrderService;
+import club.cybercraftman.leek.core.service.BackTestPositionService;
 import club.cybercraftman.leek.core.strategy.common.BaseStrategy;
 import club.cybercraftman.leek.core.strategy.common.Signal;
 import club.cybercraftman.leek.core.strategy.common.StrategyBuilder;
@@ -97,7 +99,14 @@ public abstract class BackTestTask extends AbstractTask {
         // step3: 初始化backTestRecord
         initRecord(dateRange);
         this.strategy.setRecordId(this.record.getId());
+        log.info("[回测Id: {} -- 线程ID: {} -- 交易标的: {}] == 开始逐bar执行",
+                this.record.getId(),
+                Thread.currentThread().getId(),
+                this.code);
         // step4: 逐日回测
+        BackTestOrderService orderService = SpringContextUtil.getBean(BackTestOrderService.class);
+        BackTestDailyStatService dailyStatService = SpringContextUtil.getBean(BackTestDailyStatService.class);
+        BackTestPositionService positionService = SpringContextUtil.getBean(BackTestPositionService.class);
         for (Date curDay : this.tradeDays ) {
             if ( curDay.before(dateRange.getStart()) ) {
                 continue;
@@ -113,14 +122,19 @@ public abstract class BackTestTask extends AbstractTask {
                     dateRange.getStart(), dateRange.getEnd(),
                     this.strategy.getBroker().getCapital(),
                     this.strategy.getName());
-            this.strategy.deal();                      // 处理前日挂单
-            Signal signal = this.strategy.getSignal(); // 计算当日信号
-            this.strategy.order(signal);               // 生成订单
-            // 生成日统计
-            BackTestDailyStatService dailyStatService = SpringContextUtil.getBean(BackTestDailyStatService.class);
+            // step4.1: 处理前日挂单
+            orderService.deal(market, financeType, this.record.getId(), curDay, this.strategy.getBroker());
+            // step4.2: 计算当日信号
+            Signal signal = this.strategy.getSignal();
+            // step4.3: 生成订单
+            orderService.order(this.record.getId(), signal, curDay, this.strategy.getBroker());
+            // step4.4: 计算日持仓收益: Tips: 这里在数据层面最好补充一个前结算价
+            positionService.calcProfit(this.record.getId(), this.strategy.getCurrent(), this.strategy.getPrev());
+            // step4.5: 生成日统计
             dailyStatService.statDaily(this.market, this.financeType, this.record.getId(), curDay, this.strategy.getBroker());
         }
         // 获取当前剩余资金
+        log.info("[回测Id: {} -- 线程ID: {} -- 交易标的: {}] == 逐bar执行完毕", this.record.getId(), Thread.currentThread().getId(), this.code);
         this.record.setFinalCapital(this.strategy.getBroker().getCapital());
     }
 
@@ -136,6 +150,9 @@ public abstract class BackTestTask extends AbstractTask {
 
     @Override
     protected void onSuccess() {
+        log.info("[回测Id: {}] 回测执行成功，进行统计。 线程ID-{}",
+                this.record.getId(),
+                Thread.currentThread().getId());
         // step4: 对策略结果进行评估计算
         EvaluatorUtil evaluator = SpringContextUtil.getBean(EvaluatorUtil.class);
         evaluator.evaluate(this.market, this.financeType, this.record, this.strategy.getCurrent());
@@ -202,6 +219,7 @@ public abstract class BackTestTask extends AbstractTask {
             return commission;
         }).collect(Collectors.toMap(Commission::getCategory, c -> c));
     }
+
 
     protected abstract DateRange calcDateRange(final String code, final Integer startPercent, final Integer endPercent);
 

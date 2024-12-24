@@ -2,12 +2,16 @@ package club.cybercraftman.leek.core.broker;
 
 import club.cybercraftman.leek.common.constant.trade.CommissionCategory;
 import club.cybercraftman.leek.common.constant.trade.CommissionValueType;
+import club.cybercraftman.leek.common.context.SpringContextUtil;
+import club.cybercraftman.leek.core.service.BackTestCapitalCurrentService;
 import lombok.Builder;
 import lombok.Data;
 import lombok.ToString;
 import org.springframework.util.CollectionUtils;
 
+import javax.transaction.Transactional;
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.Map;
 
 /**
@@ -126,8 +130,16 @@ public class Broker {
     /**
      * 扣除手续费
      */
-    public void subCommission(final BigDecimal price, final Integer volume, final BigDecimal multiplier) {
-        this.capital = this.capital.subtract(getCommission(price, volume, multiplier));
+    @Transactional
+    public void subCommission(final Long recordId,
+                              final Date currentDatetime,
+                              final BigDecimal price,
+                              final Integer volume,
+                              final BigDecimal multiplier) {
+        BigDecimal commission = getCommission(price, volume, multiplier);
+        BackTestCapitalCurrentService service = SpringContextUtil.getBean(BackTestCapitalCurrentService.class);
+        service.subCommission(recordId, currentDatetime, commission);
+        this.capital = this.capital.subtract(commission);
     }
 
     /**
@@ -137,6 +149,22 @@ public class Broker {
      */
     public void addNet(final BigDecimal net) {
         this.capital = this.capital.add(net);
+    }
+
+    /**
+     * 扣减金额
+     * @param amount
+     */
+    public void subCapital(final BigDecimal amount) {
+        this.capital = this.capital.subtract(amount);
+    }
+
+    /**
+     * 增加金额
+     * @param amount
+     */
+    public void addCapital(final BigDecimal amount) {
+        this.capital = this.capital.add(amount);
     }
 
 }

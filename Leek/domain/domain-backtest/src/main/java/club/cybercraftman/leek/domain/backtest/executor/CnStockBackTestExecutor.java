@@ -1,5 +1,6 @@
 package club.cybercraftman.leek.domain.backtest.executor;
 
+import club.cybercraftman.leek.common.bean.DateRange;
 import club.cybercraftman.leek.common.constant.finance.FinanceType;
 import club.cybercraftman.leek.common.constant.finance.Market;
 import club.cybercraftman.leek.domain.backtest.BackTestParam;
@@ -23,8 +24,9 @@ public class CnStockBackTestExecutor extends BaseBackTestExecutor {
         return result;
     }
 
+
     @Override
-    protected List<String> loadCodes(Integer minBars) {
+    protected List<String> loadCodes(Integer minBars, DateRange dateRange) {
         return List.of();
     }
 

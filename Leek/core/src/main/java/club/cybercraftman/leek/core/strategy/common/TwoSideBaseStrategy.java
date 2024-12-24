@@ -1,20 +1,14 @@
 package club.cybercraftman.leek.core.strategy.common;
 
 import club.cybercraftman.leek.common.bean.CommonBar;
-import club.cybercraftman.leek.common.constant.finance.Direction;
-import club.cybercraftman.leek.common.constant.finance.OrderStatus;
-import club.cybercraftman.leek.common.constant.finance.TradeType;
 import club.cybercraftman.leek.common.constant.trade.PositionStatus;
 import club.cybercraftman.leek.common.context.SpringContextUtil;
 import club.cybercraftman.leek.repo.trade.model.backtest.BackTestOrder;
 import club.cybercraftman.leek.repo.trade.model.backtest.BackTestPosition;
-import club.cybercraftman.leek.repo.trade.model.backtest.BackTestProfit;
-import club.cybercraftman.leek.repo.trade.repository.backtest.IBackTestOrderRepo;
 import club.cybercraftman.leek.repo.trade.repository.backtest.IBackTestPositionRepo;
-import club.cybercraftman.leek.repo.trade.repository.backtest.IBackTestProfitRepo;
 import lombok.extern.slf4j.Slf4j;
 
-import java.math.BigDecimal;
+import javax.transaction.Transactional;
 import java.util.List;
 
 /**
@@ -24,29 +18,7 @@ import java.util.List;
 public abstract class TwoSideBaseStrategy extends BaseStrategy {
 
     @Override
-    protected void onOrder(Signal signal) {
-        // 开仓需要记录资金是否足够
-        if ( signal.getTradeType().equals(TradeType.OPEN) ) {
-            if ( !getBroker().hasEnoughCapital(signal.getPrice(), signal.getVolume(), signal.getMultiplier()) ) {
-                log.warn("[回测:{}]交易日:{}, 交易标的: {}, 当前资金不足，无法挂单. [capital: {}][price: {}, volume: {}, multiplier: {}, deposite: {}]",
-                        getRecordId(),
-                        signal.getSymbol(),
-                        getCurrent(),
-                        getBroker().getCapital(),
-                        signal.getPrice(),
-                        signal.getVolume(),
-                        signal.getMultiplier(),
-                        getBroker().getDepositRatio());
-                return ;
-            }
-            // 扣除资金. 手续费需等开仓成功后扣除
-            getBroker().subDepositValue(signal.getPrice(), signal.getVolume(), signal.getMultiplier());
-        }
-        // 生成挂单
-        this.generateOrder(signal);
-    }
-
-    @Override
+    @Transactional
     protected boolean onOpen(BackTestOrder order, CommonBar currentBar) {
         // 二次校验金额
         if ( !getBroker().hasEnoughCapital(order.getPrice(), order.getVolume(), currentBar.getMultiplier()) ) {
@@ -64,10 +36,11 @@ public abstract class TwoSideBaseStrategy extends BaseStrategy {
         // 创建持仓
         openPosition(order);
         // 更新资金: 扣除手续费
-        getBroker().subCommission(order.getPrice(), order.getVolume(), currentBar.getMultiplier());
+        getBroker().subCommission(getRecordId(), currentBar.getDatetime(), order.getPrice(), order.getVolume(), currentBar.getMultiplier());
         return true;
     }
 
+    @Transactional
     @Override
     protected boolean onClose(BackTestOrder order, CommonBar currentBar) {
         // 获取持仓，按时间倒序
@@ -91,9 +64,11 @@ public abstract class TwoSideBaseStrategy extends BaseStrategy {
             }
             position.setUpdatedAt(getCurrent());
             positionRepo.save(position);
-            // 创建收益流水
-            BackTestProfit profit = addProfit(position, currentBar.getOpen(), changedVolume, currentBar);
+
+            // 计算平仓收益，计算平仓手续费，计算退回保证金
+
             // 更新资金. 只需要增加净收益即可
+            // TODO: 这里不对，相当于开仓手续费减了两次。
             getBroker().addNet(profit.getNet());
             // 更新资金。需要加回保证金
             getBroker().addDepositValue(position.getOpenPrice(), changedVolume, currentBar.getMultiplier());
@@ -110,24 +85,6 @@ public abstract class TwoSideBaseStrategy extends BaseStrategy {
     protected void onFail(BackTestOrder order, CommonBar currentBar) {
         getBroker().addDepositValue(order.getPrice(), order.getVolume(), currentBar.getMultiplier());
     }
-
-    private void generateOrder(Signal signal) {
-        BackTestOrder order = new BackTestOrder();
-        order.setRecordId(this.getRecordId());
-        order.setSymbol(signal.getSymbol());
-        order.setDirection(signal.getDirection().getType());
-        order.setTradeType(signal.getTradeType().getType());
-        order.setPrice(signal.getPrice());
-        order.setVolume(signal.getVolume());
-        order.setStatus(OrderStatus.ORDER.getStatus());
-        order.setCreatedAt(getCurrent());
-        order.setUpdatedAt(getCurrent());
-        // 生成订单
-        IBackTestOrderRepo repo = SpringContextUtil.getBean(IBackTestOrderRepo.class);
-        repo.save(order);
-    }
-
-
 
     /**
      * 生成持仓记录
@@ -164,50 +121,6 @@ public abstract class TwoSideBaseStrategy extends BaseStrategy {
     private List<BackTestPosition> getPositions(final Long recordId, final String symbol, final Integer direction) {
         IBackTestPositionRepo repo = SpringContextUtil.getBean(IBackTestPositionRepo.class);
         return repo.findAllByRecordIdAndSymbolAndDirectionAndStatus(recordId, symbol, direction, PositionStatus.OPEN.getStatus());
-    }
-
-    /**
-     * 创建收益流水
-     * @param position   持仓信息
-     * @param closePrice 平仓价格
-     * @param closeVolume 平仓份额
-     * @return
-     */
-    private BackTestProfit addProfit(final BackTestPosition position, final BigDecimal closePrice, final Integer closeVolume, final CommonBar currentBar) {
-        BackTestProfit profit = new BackTestProfit();
-        profit.setRecordId(getRecordId());
-        profit.setSymbol(position.getSymbol());
-        profit.setDirection(position.getDirection());
-        profit.setOpenPrice(position.getOpenPrice());
-        profit.setClosePrice(closePrice);
-        profit.setVolume(closeVolume);
-
-        // 根据多空方向计算收益
-        BigDecimal diff;
-        if (Direction.LONG.getType().equals(profit.getDirection()) ) {
-            diff = profit.getClosePrice().subtract(profit.getOpenPrice());
-        } else {
-            diff = profit.getOpenPrice().subtract(profit.getClosePrice());
-        }
-        // 收益 = diff * volume * multiplier * priceTick
-        BigDecimal profitValue = diff
-                        .multiply(new BigDecimal(closeVolume))
-                        .multiply(currentBar.getMultiplier())
-                        .multiply(currentBar.getPriceTick());
-        profit.setProfit(profitValue);
-        profit.setOpenCommission(getBroker().getCommission(position.getOpenPrice(), position.getOpenVolume(), currentBar.getMultiplier()));
-        profit.setCloseCommission(getBroker().getCommission(closePrice, closeVolume, currentBar.getMultiplier()));
-        profit.setOtherCommission(BigDecimal.ZERO);
-
-        // 净收益 = 收益 - OpenCommission - CloseCommission - OtherCommission
-        BigDecimal net = profit.getProfit().subtract(profit.getOpenCommission()).subtract(profit.getCloseCommission()).subtract(profit.getOtherCommission());
-        profit.setNet(net);
-
-        profit.setOpenedAt(position.getCreatedAt());
-        profit.setClosedAt(getCurrent());
-        IBackTestProfitRepo repo = SpringContextUtil.getBean(IBackTestProfitRepo.class);
-        profit = repo.save(profit);
-        return profit;
     }
 
 

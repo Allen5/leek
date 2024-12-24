@@ -5,9 +5,5 @@ package club.cybercraftman.leek.core.strategy.common;
  */
 public abstract class OneSideBaseStrategy extends BaseStrategy {
 
-    @Override
-    protected void onOrder(Signal signal) {
-
-    }
 
 }

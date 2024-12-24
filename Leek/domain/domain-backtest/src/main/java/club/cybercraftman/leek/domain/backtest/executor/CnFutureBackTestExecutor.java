@@ -1,5 +1,6 @@
 package club.cybercraftman.leek.domain.backtest.executor;
 
+import club.cybercraftman.leek.common.bean.DateRange;
 import club.cybercraftman.leek.common.constant.finance.FinanceType;
 import club.cybercraftman.leek.common.constant.finance.Market;
 import club.cybercraftman.leek.domain.backtest.BackTestParam;
@@ -35,8 +36,8 @@ public class CnFutureBackTestExecutor extends BaseBackTestExecutor {
 
 
     @Override
-    protected List<String> loadCodes(Integer minBars) {
-        List<Tuple> tuples = backTestRepo.findProductCodesLargeThan(minBars);
+    protected List<String> loadCodes(Integer minBars, DateRange dateRange) {
+        List<Tuple> tuples = backTestRepo.findProductCodesLargeThan(minBars, dateRange.getStart(), dateRange.getEnd());
         return tuples.stream().map(t -> t.get("productCode", String.class)).collect(Collectors.toList());
     }
 

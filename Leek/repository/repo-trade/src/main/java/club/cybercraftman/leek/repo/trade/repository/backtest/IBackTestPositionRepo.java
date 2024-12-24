@@ -8,7 +8,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,10 +22,10 @@ public interface IBackTestPositionRepo extends JpaRepository<BackTestPosition, L
      * @param status
      * @return
      */
-    @Query("select count(1) from BackTestPosition a where a.recordId = :recordId and a.symbol = :symbol and a.status = :status")
-    Integer countByRecordIdAndSymbolAndStatus(final @Param("recordId") Long recordId,
-                                              final @Param("symbol") String symbol,
-                                              final @Param("status") Integer status);
+    @Query("select sum(availableVolume) from BackTestPosition a where a.recordId = :recordId and a.symbol = :symbol and a.status = :status")
+    Long sumVolumeByRecordIdAndSymbolAndStatus(final @Param("recordId") Long recordId,
+                                                  final @Param("symbol") String symbol,
+                                                  final @Param("status") Integer status);
 
 
     @Query("select a from BackTestPosition a where a.recordId = :recordId and a.symbol = :symbol ")
