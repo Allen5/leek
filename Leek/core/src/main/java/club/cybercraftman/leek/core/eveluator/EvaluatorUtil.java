@@ -5,6 +5,7 @@ import club.cybercraftman.leek.core.service.BackTestDailyStatService;
 import club.cybercraftman.leek.repo.trade.model.backtest.BackTestDailyStat;
 import club.cybercraftman.leek.repo.trade.model.backtest.BackTestRecord;
 import club.cybercraftman.leek.repo.trade.repository.backtest.IBackTestDailyStatRepo;
+import club.cybercraftman.leek.repo.trade.repository.backtest.IBackTestPositionCloseRepo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -27,6 +28,9 @@ public class EvaluatorUtil {
 
     @Autowired
     private IBackTestDailyStatRepo dailyStatRepo;
+
+    @Autowired
+    private IBackTestPositionCloseRepo closeRepo;
 
     public BackTestRecord evaluate(final BackTestRecord record, final Date finishedDate) {
         // 计算策略收益
@@ -112,13 +116,14 @@ public class EvaluatorUtil {
      * @return
      */
     public BigDecimal calcWinRatio(final Long recordId) {
-        // TODO: 胜率需要思考下，需要根据交易记录来计算
-//        Integer winCount = profitRepo.countWinByRecordId(recordId);
-//        Integer loseCount = profitRepo.countLoseByRecordId(recordId);
-//        if (winCount + loseCount > 0) {
-//            return BigDecimal.valueOf(winCount).divide(BigDecimal.valueOf(winCount + loseCount), 4, RoundingMode.HALF_UP);
-//        }
-        return BigDecimal.ZERO;
+        Integer winCount = closeRepo.countWinByRecordId(recordId);
+        Integer totalCount = closeRepo.countTotalByRecordId(recordId);
+        if ( totalCount <= 0 ) {
+            return BigDecimal.ZERO;
+        }
+        return BigDecimal.valueOf(winCount)
+                .divide(BigDecimal.valueOf(totalCount), 4, RoundingMode.HALF_UP)
+                .multiply(BigDecimal.valueOf(100));
     }
 
     /**

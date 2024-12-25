@@ -11,6 +11,8 @@ import club.cybercraftman.leek.core.broker.Broker;
 import club.cybercraftman.leek.repo.financedata.BackTestDataRepo;
 import club.cybercraftman.leek.repo.trade.model.backtest.BackTestOrder;
 import club.cybercraftman.leek.repo.trade.model.backtest.BackTestPosition;
+import club.cybercraftman.leek.repo.trade.model.backtest.BackTestPositionClose;
+import club.cybercraftman.leek.repo.trade.repository.backtest.IBackTestPositionCloseRepo;
 import club.cybercraftman.leek.repo.trade.repository.backtest.IBackTestPositionRepo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +31,9 @@ public class BackTestPositionService {
 
     @Autowired
     private IBackTestPositionRepo backTestPositionRepo;
+
+    @Autowired
+    private IBackTestPositionCloseRepo backTestPositionCloseRepo;
 
     @Autowired
     private BackTestCapitalCurrentService capitalCurrentService;
@@ -155,9 +160,9 @@ public class BackTestPositionService {
             capitalCurrentService.subCommission(recordId, datetime, commission);
 
             // 计算平仓收益(净收益)
-            BigDecimal profit = calcNet(position, bar, changeVolume);
-            broker.addCapital(profit);
-            capitalCurrentService.addNet(recordId, datetime, profit.subtract(commission));
+            BigDecimal net = calcNet(position, bar, changeVolume);
+            broker.addCapital(net);
+            capitalCurrentService.addNet(recordId, datetime, net);
 
             // 计算退回的保证金
             BigDecimal deposit = position.getDeposit();
@@ -171,6 +176,9 @@ public class BackTestPositionService {
             position.setAvailableDeposit(position.getAvailableDeposit().subtract(deposit));
             position.setUpdatedAt(datetime);
             backTestPositionRepo.save(position);
+
+            // 增加平仓记录
+            addClosePosition(recordId, position, datetime, order.getPrice(), changeVolume, net);
         }
     }
 
@@ -214,6 +222,22 @@ public class BackTestPositionService {
         } else {
             return position.getOpenPrice().subtract(bar.getClose()).multiply(BigDecimal.valueOf(volume)).multiply(bar.getMultiplier());
         }
+    }
+
+    @Transactional
+    private void addClosePosition(final Long recordId, final BackTestPosition position, final Date datetime, final BigDecimal closePrice, final Integer volume, final BigDecimal net) {
+        BackTestPositionClose close = new BackTestPositionClose();
+        close.setRecordId(recordId);
+        close.setDatetime(datetime);
+        close.setPositionId(position.getId());
+        close.setSymbol(position.getSymbol());
+        close.setDirection(position.getDirection());
+        close.setOpenPrice(position.getOpenPrice());
+        close.setClosePrice(closePrice);
+        close.setVolume(volume);
+        close.setNet(net);
+        // Tips: 最好再加上手续费，可以逐笔统计收益与手续费的比率
+        backTestPositionCloseRepo.save(close);
     }
 
 }
