@@ -1,6 +1,7 @@
 package club.cybercraftman.leek.core.eveluator;
 
 import club.cybercraftman.leek.common.exception.LeekRuntimeException;
+import club.cybercraftman.leek.core.service.BackTestDailyStatService;
 import club.cybercraftman.leek.repo.trade.model.backtest.BackTestDailyStat;
 import club.cybercraftman.leek.repo.trade.model.backtest.BackTestRecord;
 import club.cybercraftman.leek.repo.trade.repository.backtest.IBackTestDailyStatRepo;
@@ -9,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
+import javax.persistence.Tuple;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
@@ -37,12 +39,12 @@ public class EvaluatorUtil {
         record.setFinalCapital(dailyStatRepo.getCapital(record.getId(), finishedDate));
         // 计算策略指数
         record.setAnnualizedReturns(calcAnnualizedReturns(record));
-        record.setMaxDrawDown(calcMaxDrawDown(record.getId()));
-        record.setMaxDrawDownPeriod(calcMaxDrawDownPeriod(record.getId()));
         record.setWinRatio(calcWinRatio(record.getId()));
-        record.setSharpRatio(calcSharpRatio(record.getId()));
+        record.setSharpRatio(calcSharpRatio(record.getId(), record.getInitCapital()));
         record.setInformationRatio(calcInformationRatio(record.getId()));
-        record.setSortinoRatio(calcSortinoRatio(record.getId()));
+        record.setSortinoRatio(calcSortinoRatio(record.getId(), record.getInitCapital()));
+        // 计算最大回撤
+        calcMaxDrawDown(record);
         return record;
     }
 
@@ -68,23 +70,40 @@ public class EvaluatorUtil {
     }
 
     /**
-     * 计算最大回撤
-     * @param recordId
+     * 计算最大回撤、最大回撤周期
+     * @param record 回测记录
      * @return
      */
-    public BigDecimal calcMaxDrawDown(final Long recordId) {
-        // TODO: 待思考
-        return BigDecimal.ZERO;
-    }
+    public void calcMaxDrawDown(final BackTestRecord record) {
+        List<BackTestDailyStat> stats = dailyStatRepo.findAllByRecordId(record.getId());
+        if ( CollectionUtils.isEmpty(stats) ) {
+            record.setMaxDrawDown(BigDecimal.ZERO);
+            record.setMaxDrawDownPeriod(0);
+            return ;
+        }
 
-    /**
-     * 计算最大回撤周期
-     * @param recordId
-     * @return
-     */
-    public Integer calcMaxDrawDownPeriod(final Long recordId) {
-        // TODO: 待思考
-        return 0;
+        BigDecimal peek = stats.get(0).getCapital();
+        BigDecimal maxDrawDown = BigDecimal.ZERO;
+        Date maxDate = null;
+        Date minDate = null;
+        for (BackTestDailyStat stat : stats) {
+            if ( stat.getCapital().compareTo(peek) > 0 ) {
+                peek = stat.getCapital();
+                maxDate = stat.getDate();
+            } else {
+                BigDecimal drawdown = peek.subtract(stat.getCapital()).divide(peek, 4, RoundingMode.HALF_UP);
+                if ( maxDrawDown.compareTo(drawdown) > 0 ) {
+                    minDate = stat.getDate();
+                }
+            }
+        }
+        if ( maxDate == null || minDate == null ) {
+            record.setMaxDrawDown(BigDecimal.ZERO);
+            record.setMaxDrawDownPeriod(0);
+        } else {
+            record.setMaxDrawDown(maxDrawDown.multiply(new BigDecimal(100)));
+            record.setMaxDrawDownPeriod(dailyStatRepo.countByRecordIdAndDateRange(record.getId(), minDate, maxDate));
+        }
     }
 
     /**
@@ -104,19 +123,32 @@ public class EvaluatorUtil {
 
     /**
      * 计算夏普比率
+     * 夏普比率的结果表示每承担一单位风险，投资组合能够获得多少超额收益
      * @param recordId
      * @return
      */
-    public BigDecimal calcSharpRatio(final Long recordId) {
-        // Rp 是投资组合的预期回报率。
-        // Rf 是无风险利率，通常可以用短期政府债券的利率作为代理。
-        // σp 是投资组合的标准差，代表投资的波动性或风险。
-        // sharp = (Rp-Rf) / σp
-        return BigDecimal.ZERO;
+    public BigDecimal calcSharpRatio(final Long recordId, final BigDecimal initCapital) {
+        // step1: 按日统计收益率
+        List<Tuple> returnRecords = dailyStatRepo.getReturnRateByRecordId(recordId, initCapital);
+        // step1.1: 获取投资组合回报率
+        List<BigDecimal> ratios = returnRecords.stream().map(r -> r.get("ratio", BigDecimal.class)).collect(Collectors.toList());
+        // step1.2: 计算平均回报率
+        double avgRatio = ratios.stream().mapToDouble(BigDecimal::doubleValue).average().orElse(0.000);
+        // step2: 计算超额收益率
+        List<BigDecimal> excessRatio = ratios.stream().map(r -> r.subtract(BackTestDailyStatService.BENCHMARK_RATE)).collect(Collectors.toList());
+        // step3: 计算标准差
+        BigDecimal standardDeviation = BigDecimal.valueOf(Math.sqrt(excessRatio.stream().mapToDouble(e -> Math.pow(e.doubleValue() - (avgRatio - BackTestDailyStatService.BENCHMARK_RATE.doubleValue()), 2))
+                .average().orElse(0.000)));
+        if ( BigDecimal.ZERO.compareTo(standardDeviation) == 0 ) {
+            return BigDecimal.ZERO;
+        }
+        // 计算夏普比率
+        return BigDecimal.valueOf(avgRatio).subtract(BackTestDailyStatService.BENCHMARK_RATE).divide(standardDeviation, 4, RoundingMode.HALF_UP);
     }
 
     /**
      * 计算信息比率
+     * 投资组合经理每承担一单位跟踪误差所获得超额回报的数量
      * @param recordId
      * @return
      */
@@ -159,12 +191,26 @@ public class EvaluatorUtil {
 
     /**
      * 计算索诺提比率
+     * 衡量投资组合风险调整收益的指标，它专注于下行风险，即负回报的风险，而不是整个回报分布的标准差
      * @param recordId
      * @return
      */
-    public BigDecimal calcSortinoRatio(final Long recordId) {
-
-        return BigDecimal.ZERO;
+    public BigDecimal calcSortinoRatio(final Long recordId, final BigDecimal initCapital) {
+        // step1: 按日统计收益率
+        List<Tuple> returnRecords = dailyStatRepo.getReturnRateByRecordId(recordId, initCapital);
+        // step1.1: 获取投资组合回报率
+        List<BigDecimal> ratios = returnRecords.stream().map(r -> r.get("ratio", BigDecimal.class)).collect(Collectors.toList());
+        // step1.2: 计算平均回报率
+        double avgRatio = ratios.stream().mapToDouble(BigDecimal::doubleValue).average().orElse(0.000);
+        // step2: 计算下行风险
+        double sumValue = ratios.stream().mapToDouble(r -> Math.pow(Math.min(r.subtract(BackTestDailyStatService.BENCHMARK_RATE).doubleValue(), 0), 2))
+                .sum();
+        BigDecimal downsideStandardDeviation = BigDecimal.valueOf(Math.sqrt(sumValue / ratios.size()));
+        if ( BigDecimal.ZERO.compareTo(downsideStandardDeviation) == 0 ) {
+            return BigDecimal.ZERO;
+        }
+        // step3: 计算索诺提比率
+        return BigDecimal.valueOf(avgRatio).subtract(BackTestDailyStatService.BENCHMARK_RATE).divide(downsideStandardDeviation, 4, RoundingMode.HALF_UP);
     }
 
 }

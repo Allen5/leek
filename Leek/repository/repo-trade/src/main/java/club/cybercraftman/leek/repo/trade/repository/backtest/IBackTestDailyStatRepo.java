@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import javax.persistence.Tuple;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
@@ -53,5 +54,27 @@ public interface IBackTestDailyStatRepo extends JpaRepository<BackTestDailyStat,
      */
     @Query("select COALESCE(a.capital, 0) from BackTestDailyStat a where a.recordId = :recordId and a.date = :date")
     BigDecimal getCapital(final @Param("recordId") Long recordId, final @Param("date") Date date);
+
+    /**
+     * 获取日回报率
+     * @param recordId
+     * @param initCapital
+     * @return
+     */
+    @Query("select (sum(net) / :capital) as ratio, date from BackTestDailyStat where recordId = :recordId group by date order by date asc")
+    List<Tuple> getReturnRateByRecordId(final @Param("recordId") Long recordId,
+                                        final @Param("capital") BigDecimal initCapital);
+
+    /**
+     * 计算日期范围内的交易日数量
+     * @param recordId
+     * @param start
+     * @param end
+     * @return
+     */
+    @Query("select count(1) from BackTestDailyStat where recordId = :recordId and date >= :start and date <= :end")
+    Integer countByRecordIdAndDateRange(final @Param("recordId") Long recordId,
+                                        final @Param("start") Date start,
+                                        final @Param("end") Date end);
 
 }

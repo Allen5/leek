@@ -26,7 +26,7 @@ import java.util.Optional;
 public class BackTestDailyStatService {
 
     // 基准为 2% 年化利率的储蓄
-    private static final BigDecimal BENCHMARK_RATE = new BigDecimal("0.02");
+    public static final BigDecimal BENCHMARK_RATE = new BigDecimal("0.02");
 
     @Autowired
     private IBackTestDailyStatRepo dailyStatRepo;
