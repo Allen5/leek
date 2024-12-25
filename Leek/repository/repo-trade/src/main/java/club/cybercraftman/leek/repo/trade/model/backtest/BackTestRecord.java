@@ -124,6 +124,12 @@ public class BackTestRecord {
     private BigDecimal net;
 
     /**
+     * 手续费、服务费
+     */
+    @Column(name = "commission", precision = 18, scale = 3)
+    private BigDecimal commission;
+
+    /**
      * 年化收益
      */
     @Column(name = "annualized_returns", precision = 18, scale = 4)

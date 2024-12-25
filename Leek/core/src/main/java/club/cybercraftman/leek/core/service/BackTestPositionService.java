@@ -5,8 +5,10 @@ import club.cybercraftman.leek.common.constant.finance.Direction;
 import club.cybercraftman.leek.common.constant.finance.FinanceType;
 import club.cybercraftman.leek.common.constant.finance.Market;
 import club.cybercraftman.leek.common.constant.trade.PositionStatus;
+import club.cybercraftman.leek.common.exception.LeekException;
 import club.cybercraftman.leek.common.exception.LeekRuntimeException;
 import club.cybercraftman.leek.core.broker.Broker;
+import club.cybercraftman.leek.repo.financedata.BackTestDataRepo;
 import club.cybercraftman.leek.repo.trade.model.backtest.BackTestOrder;
 import club.cybercraftman.leek.repo.trade.model.backtest.BackTestPosition;
 import club.cybercraftman.leek.repo.trade.repository.backtest.IBackTestPositionRepo;
@@ -30,6 +32,9 @@ public class BackTestPositionService {
 
     @Autowired
     private BackTestCapitalCurrentService capitalCurrentService;
+
+    @Autowired
+    private BackTestDataRepo dataRepo;
 
     /**
      * 检查是否有持仓
@@ -143,15 +148,16 @@ public class BackTestPositionService {
                 position.setAvailableVolume(position.getAvailableVolume() - totalVolume);
                 totalVolume = 0;
             }
-            // 计算平仓收益
-            BigDecimal profit = calcProfit(position, bar, changeVolume);
-            broker.addCapital(profit);
-            capitalCurrentService.addProfit(recordId, datetime, profit);
 
             // 计算平仓手续费
             BigDecimal commission = broker.getCommission(order.getPrice(), changeVolume, bar.getMultiplier(), bar.getPriceTick());
             broker.subCapital(commission);
             capitalCurrentService.subCommission(recordId, datetime, commission);
+
+            // 计算平仓收益(净收益)
+            BigDecimal profit = calcNet(position, bar, changeVolume);
+            broker.addCapital(profit);
+            capitalCurrentService.addNet(recordId, datetime, profit.subtract(commission));
 
             // 计算退回的保证金
             BigDecimal deposit = position.getDeposit();
@@ -168,7 +174,41 @@ public class BackTestPositionService {
         }
     }
 
-    private BigDecimal calcProfit(final BackTestPosition position, final CommonBar bar, final Integer volume) {
+    /**
+     * 统计日持仓收益（净收益），更新到资金流水表
+     * @param recordId
+     * @param current
+     * @param prev
+     */
+    @Transactional
+    public void statDailyOpenPositionNet(final Long recordId, final Date current, final Date prev, final Broker broker) throws LeekException {
+        // step1: 获取持仓列表
+        List<BackTestPosition> positions = backTestPositionRepo.findAllByRecordIdAndStatus(recordId, PositionStatus.OPEN.getStatus());
+        if ( CollectionUtils.isEmpty(positions) ) {
+            return ;
+        }
+        // step2: 逐条统计
+        for (BackTestPosition position: positions) {
+            // step2.1: 获取当前bar
+            CommonBar currentBar = dataRepo.getCurrentBar(Market.parse(position.getMarketCode()), FinanceType.parse(position.getFinanceType()), current, position.getSymbol());
+            // step2.2: 获取前一bar
+            CommonBar prevBar = dataRepo.getCurrentBar(Market.parse(position.getMarketCode()), FinanceType.parse(position.getFinanceType()), prev, position.getSymbol());
+            // step2.3: 根据结算价计算净收益
+            BigDecimal diff;
+            if ( Direction.LONG.getType().equals(position.getDirection()) ) {
+                diff = currentBar.getSettle().subtract(prevBar.getSettle());
+            } else {
+                diff = prevBar.getSettle().subtract(currentBar.getSettle());
+            }
+            // step2.4: 计算净收益
+            BigDecimal net = diff.multiply(BigDecimal.valueOf(position.getAvailableVolume())).multiply(currentBar.getMultiplier()).multiply(currentBar.getPriceTick());
+             // step2.5: 更新资金流水
+            broker.addCapital(net);
+            capitalCurrentService.addNet(recordId, current, net);
+        }
+    }
+
+    private BigDecimal calcNet(final BackTestPosition position, final CommonBar bar, final Integer volume) {
         if ( Direction.LONG.getType().equals(position.getDirection()) ) {
             return bar.getClose().subtract(position.getOpenPrice()).multiply(BigDecimal.valueOf(volume)).multiply(bar.getPriceTick());
         } else {

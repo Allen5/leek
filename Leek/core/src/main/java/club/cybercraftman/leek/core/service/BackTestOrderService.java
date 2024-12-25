@@ -41,6 +41,9 @@ public class BackTestOrderService {
      */
     @Transactional
     public void order(final Long recordId, final Signal signal, final Date datetime, final Broker broker) {
+        if ( null == signal ) {
+            return ;
+        }
         if ( !preOrderCheck(recordId, signal, datetime, broker) ) {
             return ;
         }
@@ -57,9 +60,8 @@ public class BackTestOrderService {
     @Transactional
     public void deal(final Market market, final FinanceType financeType, final Long recordId, final Date datetime, final Broker broker) {
         List<BackTestOrder> orders = orderRepo.findAllByRecordIdAndStatus(recordId, OrderStatus.ORDER.getStatus());
-        log.info("[回测Id: {} - 交易日: {}]共有 {} 订单待处理", datetime, recordId, orders.size());
+        log.info("[回测Id: {} - 交易日: {}]共有 {} 订单待处理", recordId, datetime, orders.size());
         if ( CollectionUtils.isEmpty(orders) ) {
-            log.info("[回测Id: {}]当日无订单", recordId);
             return ;
         }
         // 逐笔处理

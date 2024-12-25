@@ -20,4 +20,5 @@ public class HaiGuiStrategy extends BaseStrategy {
     public String getName() {
         return "海龟策略";
     }
+
 }

@@ -1,14 +1,7 @@
 package club.cybercraftman.leek.core.eveluator;
 
-import club.cybercraftman.leek.common.bean.CommonBar;
-import club.cybercraftman.leek.common.constant.finance.Direction;
-import club.cybercraftman.leek.common.constant.finance.FinanceType;
-import club.cybercraftman.leek.common.constant.finance.Market;
-import club.cybercraftman.leek.common.constant.trade.PositionStatus;
 import club.cybercraftman.leek.common.exception.LeekRuntimeException;
-import club.cybercraftman.leek.core.broker.Broker;
 import club.cybercraftman.leek.repo.trade.model.backtest.BackTestDailyStat;
-import club.cybercraftman.leek.repo.trade.model.backtest.BackTestPosition;
 import club.cybercraftman.leek.repo.trade.model.backtest.BackTestRecord;
 import club.cybercraftman.leek.repo.trade.repository.backtest.IBackTestDailyStatRepo;
 import lombok.extern.slf4j.Slf4j;
@@ -30,17 +23,19 @@ import java.util.stream.Collectors;
 @Slf4j
 public class EvaluatorUtil {
 
-    // daily里面已经将持仓收益计算完了，直接统计即可
     @Autowired
     private IBackTestDailyStatRepo dailyStatRepo;
 
     public BackTestRecord evaluate(final BackTestRecord record, final Date finishedDate) {
-        // 计算策略收益（包含已结算收益 + 持仓收益）
-        record.setProfit(calcTotalProfit(market, financeType,record.getId(), finishedDate));
-        // 计算净收益（包含已结算净收益 + 持仓收益）
-        record.setNet(calcTotalNet(market, financeType, record.getId(), finishedDate));
-        // 计算期末资产总值
-        record.setFinalCapital(calcFinalCapital(market, financeType, record, finishedDate));
+        // 计算策略收益
+        record.setProfit(dailyStatRepo.sumProfit(record.getId()));
+        // 计算策略净收益
+        record.setNet(dailyStatRepo.sumNet(record.getId()));
+        // 计算手续费、服务费
+        record.setCommission(dailyStatRepo.sumCommission(record.getId()));
+        // 获取期末资产总值
+        record.setFinalCapital(dailyStatRepo.getCapital(record.getId(), finishedDate));
+        // 计算策略指数
         record.setAnnualizedReturns(calcAnnualizedReturns(record));
         record.setMaxDrawDown(calcMaxDrawDown(record.getId()));
         record.setMaxDrawDownPeriod(calcMaxDrawDownPeriod(record.getId()));
@@ -49,119 +44,6 @@ public class EvaluatorUtil {
         record.setInformationRatio(calcInformationRatio(record.getId()));
         record.setSortinoRatio(calcSortinoRatio(record.getId()));
         return record;
-    }
-
-    private BigDecimal calcTotalProfit(final Market market, final FinanceType financeType, final Long recordId, final Date finishedDate) {
-        // 已结算收益
-        BigDecimal settledProfit = profitRepo.sumSettledProfitByRecordId(recordId);
-        // 持仓收益
-        BigDecimal positionProfit = calcPositionProfit(market, financeType, recordId, finishedDate);
-        return settledProfit.add(positionProfit);
-    }
-
-    /**
-     * 计算总净收益
-     * @param market
-     * @param financeType
-     * @param recordId
-     * @param finishedDate
-     * @return
-     */
-    private BigDecimal calcTotalNet(final Market market, final FinanceType financeType, final Long recordId, final Date finishedDate, final Broker broker) {
-        // 已结算净收益
-        BigDecimal settledProfit = profitRepo.sumNetByRecordId(recordId);
-        // 持仓收益
-        BigDecimal positionProfit = calcPositionNet(market, financeType, recordId, finishedDate, broker);
-        return settledProfit.add(positionProfit);
-    }
-
-    private BigDecimal calcPositionProfit(final Market market, final FinanceType financeType, final Long recordId, final Date currentDate) {
-        // step1: 获取持仓信息
-        List<BackTestPosition> positions = positionRepo.findAllByRecordIdAndStatus(recordId, PositionStatus.OPEN.getStatus());
-        if (CollectionUtils.isEmpty(positions)) {
-            return BigDecimal.ZERO;
-        }
-        // step2: 逐个持仓计算其最后回测bar的持仓收益
-        BigDecimal totalProfit = BigDecimal.ZERO;
-        for (BackTestPosition position: positions) {
-            CommonBar bar = backTestDataRepo.getCurrentBar(market, financeType, currentDate, position.getSymbol());
-            if (bar == null) {
-                log.error("获取回测bar失败，market: {}, financeType: {}, symbol: {}", market, financeType, position.getSymbol());
-                throw new LeekRuntimeException("获取回测bar失败. datetime: " + currentDate + ", symbol: " + position.getSymbol());
-            }
-            BigDecimal diff;
-            if ( Direction.LONG.getType().equals(position.getDirection()) ) {
-                diff = bar.getSettle().subtract(position.getOpenPrice());
-            } else {
-                diff = position.getOpenPrice().subtract(bar.getSettle());
-            }
-            BigDecimal profit = diff.multiply(BigDecimal.valueOf(position.getAvailableVolume())).multiply(bar.getMultiplier()).multiply(bar.getPriceTick());
-            totalProfit = totalProfit.add(profit);
-        }
-        return totalProfit;
-    }
-
-    private BigDecimal calcPositionNet(final Market market, final FinanceType financeType, final Long recordId, final Date currentDate, final Broker broker) {
-        // step1: 获取持仓信息
-        List<BackTestPosition> positions = positionRepo.findAllByRecordIdAndStatus(recordId, PositionStatus.OPEN.getStatus());
-        if (CollectionUtils.isEmpty(positions)) {
-            return BigDecimal.ZERO;
-        }
-        // step2: 逐个持仓计算其最后回测bar的持仓收益
-        BigDecimal totalNet = BigDecimal.ZERO;
-        for (BackTestPosition position: positions) {
-            CommonBar bar = backTestDataRepo.getCurrentBar(market, financeType, currentDate, position.getSymbol());
-            if (bar == null) {
-                log.error("获取回测bar失败，market: {}, financeType: {}, symbol: {}", market, financeType, position.getSymbol());
-                throw new LeekRuntimeException("获取回测bar失败. datetime: " + currentDate + ", symbol: " + position.getSymbol());
-            }
-            BigDecimal diff;
-            if ( Direction.LONG.getType().equals(position.getDirection()) ) {
-                diff = bar.getSettle().subtract(position.getOpenPrice());
-            } else {
-                diff = position.getOpenPrice().subtract(bar.getSettle());
-            }
-            // TODO: 这里会有问题，commission需要记录下来。当合约乘数调整之后，两次算的手续费不一致。
-            BigDecimal profit = diff.multiply(BigDecimal.valueOf(position.getAvailableVolume())).multiply(bar.getMultiplier()).multiply(bar.getPriceTick());
-            BigDecimal commission = broker.getCommission(position.getOpenPrice(), position.getAvailableVolume(), bar.getMultiplier(), bar.getPriceTick());
-            BigDecimal net = profit.subtract(commission);
-            totalNet = totalNet.add(net);
-        }
-        return totalNet;
-    }
-
-
-
-
-    /**
-     * 计算期末资产
-     * @return
-     */
-    public BigDecimal calcFinalCapital(final Market market, final FinanceType financeType, final BackTestRecord record, final Date finishedDateTime) {
-        // step1: 获取持仓信息
-        List<BackTestPosition> positions = positionRepo.findAllByRecordIdAndStatus(record.getId(), PositionStatus.OPEN.getStatus());
-        if (CollectionUtils.isEmpty(positions)) {
-            return record.getFinalCapital();
-        }
-        // step2: 逐个持仓计算其最后回测bar的持仓收益
-        BigDecimal totalProfit = BigDecimal.ZERO;
-        for (BackTestPosition position: positions) {
-            CommonBar bar = backTestDataRepo.getCurrentBar(market, financeType, finishedDateTime, position.getSymbol());
-            if (bar == null) {
-                log.error("获取回测bar失败，market: {}, financeType: {}, symbol: {}", market, financeType, position.getSymbol());
-                throw new LeekRuntimeException("获取回测bar失败. datetime: " + finishedDateTime + ", symbol: " + position.getSymbol());
-            }
-            BigDecimal diff;
-            if ( Direction.LONG.getType().equals(position.getDirection()) ) {
-                diff = bar.getSettle().subtract(position.getOpenPrice());
-            } else {
-                diff = position.getOpenPrice().subtract(bar.getSettle());
-            }
-            BigDecimal profit = diff.multiply(BigDecimal.valueOf(position.getAvailableVolume())).multiply(bar.getMultiplier()).multiply(bar.getPriceTick());
-            totalProfit = totalProfit.add(profit);
-        }
-        // finalCapital + 持仓资产价值（期货按当日结算价计算，股票按当日收盘价计算) + 持仓保证金
-        return record.getFinalCapital().add(totalProfit);
     }
 
     /**
@@ -211,11 +93,12 @@ public class EvaluatorUtil {
      * @return
      */
     public BigDecimal calcWinRatio(final Long recordId) {
-        Integer winCount = profitRepo.countWinByRecordId(recordId);
-        Integer loseCount = profitRepo.countLoseByRecordId(recordId);
-        if (winCount + loseCount > 0) {
-            return BigDecimal.valueOf(winCount).divide(BigDecimal.valueOf(winCount + loseCount), 4, RoundingMode.HALF_UP);
-        }
+        // TODO: 胜率需要思考下，需要根据交易记录来计算
+//        Integer winCount = profitRepo.countWinByRecordId(recordId);
+//        Integer loseCount = profitRepo.countLoseByRecordId(recordId);
+//        if (winCount + loseCount > 0) {
+//            return BigDecimal.valueOf(winCount).divide(BigDecimal.valueOf(winCount + loseCount), 4, RoundingMode.HALF_UP);
+//        }
         return BigDecimal.ZERO;
     }
 

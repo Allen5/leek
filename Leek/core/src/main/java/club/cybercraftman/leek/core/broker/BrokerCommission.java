@@ -12,7 +12,7 @@ import java.math.BigDecimal;
  */
 @Data
 @ToString
-public class Commission {
+public class BrokerCommission {
 
     /**
      * 费用类型

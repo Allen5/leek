@@ -1,9 +1,10 @@
 package club.cybercraftman.leek.core.strategy.common;
 
-import club.cybercraftman.leek.common.bean.CommonBar;
 import club.cybercraftman.leek.common.constant.finance.*;
+import club.cybercraftman.leek.common.context.SpringContextUtil;
 import club.cybercraftman.leek.core.broker.Broker;
-import club.cybercraftman.leek.repo.trade.model.backtest.BackTestOrder;
+import club.cybercraftman.leek.core.service.BackTestPositionService;
+import club.cybercraftman.leek.repo.financedata.BackTestDataRepo;
 import com.alibaba.fastjson2.JSON;
 import lombok.Getter;
 import lombok.Setter;
@@ -78,16 +79,26 @@ public abstract class BaseStrategy {
     }
 
     /**
+     * 获取持仓服务接口
+     * @return
+     */
+    public BackTestPositionService getPositionService() {
+        return SpringContextUtil.getBean(BackTestPositionService.class);
+    }
+
+    /**
+     * 获取数据接口
+     * @return
+     */
+    public BackTestDataRepo getBackTestDataRepo() {
+        return SpringContextUtil.getBean(BackTestDataRepo.class);
+    }
+
+    /**
      * 计算交易信号
      * @return
      */
     public abstract Signal getSignal();
-
-    /**
-     * 由具体子类实现开平仓逻辑
-     * @param order
-     */
-    protected abstract boolean onClose(BackTestOrder order, CommonBar currentBar);
 
     public abstract String getId();
 

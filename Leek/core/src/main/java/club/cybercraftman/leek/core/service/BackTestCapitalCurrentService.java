@@ -76,24 +76,6 @@ public class BackTestCapitalCurrentService {
         capitalCurrentRepo.save(current);
     }
 
-    /**
-     * 记录收益
-     * @param recordId
-     * @param date
-     * @param amount
-     */
-    @Transactional
-    public void addProfit(final Long recordId,
-                          final Date date,
-                          final BigDecimal amount) {
-        BackTestCapitalCurrent current = new BackTestCapitalCurrent();
-        current.setRecordId(recordId);
-        current.setType(CapitalCurrentType.INCOME.getType());
-        current.setCategory(CapitalCurrentCategory.PROFIT.getCategory());
-        current.setDatetime(date);
-        current.setAmount(amount);
-        capitalCurrentRepo.save(current);
-    }
 
     /**
      * 记录净收益

@@ -1,17 +1,13 @@
 package club.cybercraftman.leek.domain.backtest.task;
 
 import club.cybercraftman.leek.common.bean.DateRange;
-import club.cybercraftman.leek.common.constant.ValidStatus;
 import club.cybercraftman.leek.common.constant.finance.FinanceType;
 import club.cybercraftman.leek.common.constant.finance.Market;
 import club.cybercraftman.leek.common.constant.trade.BackTestRecordStatus;
-import club.cybercraftman.leek.common.constant.trade.CommissionCategory;
-import club.cybercraftman.leek.common.constant.trade.CommissionValueType;
 import club.cybercraftman.leek.common.context.SpringContextUtil;
 import club.cybercraftman.leek.common.exception.LeekException;
 import club.cybercraftman.leek.common.thread.AbstractTask;
 import club.cybercraftman.leek.core.broker.Broker;
-import club.cybercraftman.leek.core.broker.Commission;
 import club.cybercraftman.leek.core.eveluator.EvaluatorUtil;
 import club.cybercraftman.leek.core.service.BackTestDailyStatService;
 import club.cybercraftman.leek.core.service.BackTestOrderService;
@@ -21,19 +17,16 @@ import club.cybercraftman.leek.core.strategy.common.Signal;
 import club.cybercraftman.leek.core.strategy.common.StrategyBuilder;
 import club.cybercraftman.leek.domain.backtest.executor.BackTestRunningMode;
 import club.cybercraftman.leek.repo.trade.model.backtest.BackTestRecord;
-import club.cybercraftman.leek.repo.trade.repository.ICommissionRepo;
 import club.cybercraftman.leek.repo.trade.repository.backtest.IBackTestRecordRepo;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.util.CollectionUtils;
 
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @NoArgsConstructor
 @Slf4j
@@ -129,9 +122,9 @@ public abstract class BackTestTask extends AbstractTask {
             // step4.3: 生成订单
             orderService.order(this.record.getId(), signal, curDay, this.strategy.getBroker());
             // step4.4: 计算日持仓收益: Tips: 这里在数据层面最好补充一个前结算价
-            positionService.calcProfit(this.record.getId(), this.strategy.getCurrent(), this.strategy.getPrev());
+            positionService.statDailyOpenPositionNet(this.record.getId(), this.strategy.getCurrent(), this.strategy.getPrev(), this.strategy.getBroker());
             // step4.5: 生成日统计
-            dailyStatService.statDaily(this.market, this.financeType, this.record.getId(), curDay, this.strategy.getBroker());
+            dailyStatService.statDaily(this.market, this.financeType, this.record.getId(), curDay);
         }
         // 获取当前剩余资金
         log.info("[回测Id: {} -- 线程ID: {} -- 交易标的: {}] == 逐bar执行完毕", this.record.getId(), Thread.currentThread().getId(), this.code);
@@ -155,7 +148,7 @@ public abstract class BackTestTask extends AbstractTask {
                 Thread.currentThread().getId());
         // step4: 对策略结果进行评估计算
         EvaluatorUtil evaluator = SpringContextUtil.getBean(EvaluatorUtil.class);
-        evaluator.evaluate(this.market, this.financeType, this.record, this.strategy.getCurrent());
+        evaluator.evaluate(this.record, this.strategy.getCurrent());
 
         this.record.setStatus(BackTestRecordStatus.SUCCESS.getStatus());
         this.record.setUpdatedAt(new Date());
@@ -195,31 +188,8 @@ public abstract class BackTestTask extends AbstractTask {
         this.strategy.setFinanceType(financeType);
         this.strategy.setCode(this.code);
         this.strategy.setParams(this.params);
-        this.strategy.setBroker(Broker.builder()
-                .capital(this.initCapital)
-                .commissionMap(getCommissions())
-                .build());
+        this.strategy.setBroker(new Broker(market, financeType, this.initCapital));
     }
-
-    /**
-     * 获取交易手续费
-     * @return
-     */
-    private Map<CommissionCategory, Commission> getCommissions() {
-        ICommissionRepo repo = SpringContextUtil.getBean(ICommissionRepo.class);
-        List<club.cybercraftman.leek.repo.trade.model.Commission> commissions = repo.findAllByStatus(market.getCode(), financeType.getType(), ValidStatus.VALID.getStatus());
-        if ( CollectionUtils.isEmpty(commissions) ) {
-            return null;
-        }
-        return commissions.stream().map(c -> {
-            Commission commission = new Commission();
-            commission.setCategory(CommissionCategory.parse(c.getCategory()));
-            commission.setValueType(CommissionValueType.parse(c.getType()));
-            commission.setValue(c.getCommission());
-            return commission;
-        }).collect(Collectors.toMap(Commission::getCategory, c -> c));
-    }
-
 
     protected abstract DateRange calcDateRange(final String code, final Integer startPercent, final Integer endPercent);
 

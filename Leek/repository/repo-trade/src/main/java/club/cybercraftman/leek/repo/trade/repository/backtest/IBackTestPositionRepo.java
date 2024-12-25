@@ -22,7 +22,7 @@ public interface IBackTestPositionRepo extends JpaRepository<BackTestPosition, L
      * @param status
      * @return
      */
-    @Query("select sum(availableVolume) from BackTestPosition a where a.recordId = :recordId and a.symbol = :symbol and a.direction = :direction and a.status = :status")
+    @Query("select COALESCE(sum(availableVolume),0) from BackTestPosition a where a.recordId = :recordId and a.symbol = :symbol and a.direction = :direction and a.status = :status")
     Long sumVolumeByRecordIdAndSymbolAndDirectionAndStatus(final @Param("recordId") Long recordId,
                                                            final @Param("symbol") String symbol,
                                                            final @Param("direction") Integer direction,
