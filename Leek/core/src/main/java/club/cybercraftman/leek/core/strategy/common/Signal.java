@@ -39,7 +39,7 @@ public class Signal {
     /**
      * 量
      */
-    private Integer volume;
+    private Long volume;
 
     /**
      * 乘数

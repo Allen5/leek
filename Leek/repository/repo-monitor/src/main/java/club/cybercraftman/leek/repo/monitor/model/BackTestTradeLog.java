@@ -34,7 +34,7 @@ public class BackTestTradeLog {
     /**
      * 交易代码
      */
-    @Column(name = "symbol", nullable = false, length = 8)
+    @Column(name = "symbol", nullable = false, length = 16)
     private String symbol;
 
     /**

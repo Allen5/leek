@@ -37,17 +37,18 @@ public class Broker {
     /**
      * 保证金比例. 默认100%. 可设置
      */
-    private BigDecimal depositRatio = new BigDecimal("100.0");
+    private BigDecimal depositRatio;
 
     /**
      * 手续费、服务费等
      */
     private Map<CommissionCategory, BrokerCommission> commissionMap;
 
-    public Broker(final Market market, final FinanceType financeType, final BigDecimal capital) {
+    public Broker(final Market market, final FinanceType financeType, final BigDecimal capital, final BigDecimal depositRatio) {
         this.market = market;
         this.financeType = financeType;
         this.capital = capital;
+        this.depositRatio = depositRatio;
     }
 
     @PostConstruct
@@ -69,7 +70,7 @@ public class Broker {
     /**
      * 判断是否有足够的资金开单
      */
-    public boolean hasEnoughCapital(final BigDecimal price, final Integer volume, final BigDecimal multiplier, final BigDecimal priceTick) {
+    public boolean hasEnoughCapital(final BigDecimal price, final Long volume, final BigDecimal multiplier, final BigDecimal priceTick) {
         BigDecimal netCost = getDepositValue(price, volume, multiplier, priceTick);
         BigDecimal totalCost = netCost.add(getCommissionValue(CommissionCategory.TRADE_FEE, getNet(price, volume, multiplier, priceTick)));
         return capital.compareTo(totalCost) > 0;
@@ -82,7 +83,7 @@ public class Broker {
      * @param multiplier
      * @return
      */
-    public BigDecimal getDepositValue(final BigDecimal price, final Integer volume, final BigDecimal multiplier, final BigDecimal priceTick) {
+    public BigDecimal getDepositValue(final BigDecimal price, final Long volume, final BigDecimal multiplier, final BigDecimal priceTick) {
         return price.multiply(new BigDecimal(volume)).multiply(multiplier).multiply(depositRatio).multiply(priceTick);
     }
 
@@ -93,7 +94,7 @@ public class Broker {
      * @param multiplier
      * @return
      */
-    public BigDecimal getNet(final BigDecimal price, final Integer volume, final BigDecimal multiplier, final BigDecimal priceTick) {
+    public BigDecimal getNet(final BigDecimal price, final Long volume, final BigDecimal multiplier, final BigDecimal priceTick) {
         return price.multiply(new BigDecimal(volume)).multiply(multiplier).multiply(priceTick);
     }
 
@@ -130,7 +131,7 @@ public class Broker {
      * @param multiplier
      * @return
      */
-    public BigDecimal getCommission(final BigDecimal price, final Integer volume, final BigDecimal multiplier, final BigDecimal priceTick) {
+    public BigDecimal getCommission(final BigDecimal price, final Long volume, final BigDecimal multiplier, final BigDecimal priceTick) {
         BigDecimal net = getNet(price, volume, multiplier, priceTick);
         return getCommissionValue(CommissionCategory.TRADE_FEE, net);
     }

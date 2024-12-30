@@ -51,4 +51,29 @@ public interface IFutureBackTestRepo extends JpaRepository<FutureBackTest, Long>
     FutureBackTest findOneByDateAndSymbol(final @Param("date") Date date,
                                           final @Param("symbol") String symbol);
 
+    /**
+     * 获取主力合约
+     * @param productCode
+     * @param datetime
+     * @return
+     */
+    @Query("select a from FutureBackTest a " +
+            " where a.productCode = :productCode " +
+            " and a.datetime = :datetime " +
+            " and a.isMainContract = 1")
+    FutureBackTest findMainByDateAndCode(final @Param("productCode") String productCode,
+                                         final @Param("datetime") Date datetime);
+
+    /**
+     * 获取周期行情数据
+     * @param symbol
+     * @param minDate
+     * @param maxDate
+     * @return
+     */
+    @Query("select a from FutureBackTest a where a.symbol = :symbol and a.datetime >= :minDate and a.datetime <= :maxDate ")
+    List<FutureBackTest> findAllBySymbolAndDateRange(final @Param("symbol") String symbol,
+                                                     final @Param("minDate") Date minDate,
+                                                     final @Param("maxDate") Date maxDate);
+
 }

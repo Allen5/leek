@@ -47,7 +47,7 @@ public class BackTestPositionService {
      * @param symbol
      * @return
      */
-    public boolean hasEnoughPosition(Long recordId, String symbol, Direction direction, Integer volume) {
+    public boolean hasEnoughPosition(Long recordId, String symbol, Direction direction, Long volume) {
         Long availableVolume = backTestPositionRepo.sumVolumeByRecordIdAndSymbolAndDirectionAndStatus(recordId, symbol, direction.getType(), PositionStatus.OPEN.getStatus());
         return availableVolume != null && availableVolume >= volume;
     }
@@ -62,27 +62,39 @@ public class BackTestPositionService {
         return backTestPositionRepo.findAllByRecordIdAndStatus(recordId, status.getStatus());
     }
 
+
+    /**
+     * 获取指定交易代码的持仓
+     * @param recordId
+     * @param symbol
+     * @param status
+     * @return
+     */
+    public List<BackTestPosition> getPositions(Long recordId, String symbol, PositionStatus status) {
+        return backTestPositionRepo.findAllByRecordIdAndSymbolAndStatus(recordId, symbol, status.getStatus());
+    }
+
     /**
      * 倒序更新持仓的订单份额
      * @param recordId
      * @param totalVolume
      */
     @Transactional
-    public void addOrderVolume(final Long recordId, final String symbol, final Direction direction, final Integer totalVolume, final Date datetime) {
+    public void addOrderVolume(final Long recordId, final String symbol, final Direction direction, final Long totalVolume, final Date datetime) {
         // Tips: 这里已经完成倒序排序
         List<BackTestPosition> positions = backTestPositionRepo.findAllByRecordIdAndSymbolAndDirectionAndStatus(recordId, symbol, direction.getType(), PositionStatus.OPEN.getStatus());
         if ( CollectionUtils.isEmpty(positions) ) {
             throw new LeekRuntimeException("校验已成功，仍旧未获取到持仓信息。请检查程序. recordId: " + recordId + " symbol: " + symbol + ", direction: " + direction);
         }
-        Integer currentVolume = totalVolume;
+        Long currentVolume = totalVolume;
         for (BackTestPosition position : positions) {
-            Integer changeVolume;
+            Long changeVolume;
             if ( currentVolume >= position.getAvailableVolume() ) {
                 changeVolume = position.getAvailableVolume();
                 currentVolume = currentVolume - changeVolume;
             } else {
                 changeVolume = currentVolume;
-                currentVolume = 0;
+                currentVolume = 0L;
             }
             position.setOrderVolume(position.getOrderVolume() + changeVolume);
             position.setUpdatedAt(datetime);
@@ -97,24 +109,24 @@ public class BackTestPositionService {
      * @param direction
      */
     @Transactional
-    public void fallbackOrderVolume(final Long recordId, final String symbol, final Direction direction, final Integer totalVolume, final Date datetime) {
+    public void fallbackOrderVolume(final Long recordId, final String symbol, final Direction direction, final Long totalVolume, final Date datetime) {
         List<BackTestPosition> positions = backTestPositionRepo.findAllByRecordIdAndSymbolAndDirectionAndStatus(recordId, symbol, direction.getType(), PositionStatus.OPEN.getStatus());
         if ( CollectionUtils.isEmpty(positions) ) {
             return ;
         }
-        Integer currentVolume = totalVolume;
+        Long currentVolume = totalVolume;
         for (BackTestPosition position : positions) {
             if ( position.getOpenVolume() == 0 ) {
                 continue;
             }
             if ( currentVolume >= position.getOrderVolume() ) {
                 currentVolume = currentVolume - position.getOrderVolume();
-                position.setOrderVolume(0);
+                position.setOrderVolume(0L);
             } else {
                 position.setOrderVolume(position.getOrderVolume() - currentVolume);
-                currentVolume = 0;
+                currentVolume = 0L;
             }
-            position.setOrderVolume(0);
+            position.setOrderVolume(0L);
             position.setUpdatedAt(datetime);
             backTestPositionRepo.save(position);
         }
@@ -133,7 +145,7 @@ public class BackTestPositionService {
         position.setOpenPrice(order.getPrice());
         position.setOpenVolume(order.getVolume());
         position.setAvailableVolume(order.getVolume());
-        position.setOrderVolume(0);
+        position.setOrderVolume(0L);
         position.setDirection(order.getDirection());
         position.setStatus(PositionStatus.OPEN.getStatus());
         position.setCreatedAt(bar.getDatetime());
@@ -150,18 +162,18 @@ public class BackTestPositionService {
             return ;
         }
         // 逐笔平仓
-        Integer totalVolume = order.getVolume();
+        Long totalVolume = order.getVolume();
         for (BackTestPosition position : positions) {
-            Integer changeVolume;
+            Long changeVolume;
             if (totalVolume >= position.getAvailableVolume()) {
                 changeVolume = position.getAvailableVolume();
                 totalVolume = totalVolume - changeVolume;
-                position.setAvailableVolume(0);
+                position.setAvailableVolume(0L);
                 position.setStatus(PositionStatus.CLOSE.getStatus());
             } else {
                 changeVolume = totalVolume;
                 position.setAvailableVolume(position.getAvailableVolume() - totalVolume);
-                totalVolume = 0;
+                totalVolume = 0L;
             }
 
             // 计算平仓手续费
@@ -226,7 +238,7 @@ public class BackTestPositionService {
         }
     }
 
-    private BigDecimal calcNet(final BackTestPosition position, final CommonBar bar, final Integer volume) {
+    private BigDecimal calcNet(final BackTestPosition position, final CommonBar bar, final Long volume) {
         if ( Direction.LONG.getType().equals(position.getDirection()) ) {
             return bar.getClose().subtract(position.getOpenPrice()).multiply(BigDecimal.valueOf(volume)).multiply(bar.getPriceTick());
         } else {
@@ -235,7 +247,7 @@ public class BackTestPositionService {
     }
 
     @Transactional
-    private void addClosePosition(final Long recordId, final BackTestPosition position, final Date datetime, final BigDecimal closePrice, final Integer volume, final BigDecimal net) {
+    private void addClosePosition(final Long recordId, final BackTestPosition position, final Date datetime, final BigDecimal closePrice, final Long volume, final BigDecimal net) {
         BackTestPositionClose close = new BackTestPositionClose();
         close.setRecordId(recordId);
         close.setDatetime(datetime);

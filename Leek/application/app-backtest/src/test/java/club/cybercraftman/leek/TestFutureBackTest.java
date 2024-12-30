@@ -49,9 +49,10 @@ public class TestFutureBackTest {
     private Map<String, Object> buildParams() {
         Map<String, Object> params = new HashMap<>();
         params.put(StrategyParam.PERIOD.getKey(), 20); // 20个bar的周期
-        params.put(StrategyParam.BREAKTHROUGH_CLZ.getKey(), "club.cybercraftman.leek.core.strategy.breakthrough.BollingBreakThrough");
+        params.put(StrategyParam.BREAKTHROUGH_CLZ.getKey(), "BollingBreakThrough");
         params.put(StrategyParam.BREAKTHROUGH_SD_FACTOR.getKey(), new BigDecimal("2")); // 2倍标准差
-        params.put(StrategyParam.TRADE_CASH_RATE.getKey(), new BigDecimal("0.2")); // 每个交易单位为总资金的20%
+        params.put(StrategyParam.DEPOSIT_RATIO.getKey(), new BigDecimal("0.2")); // 20%的保证金比率
+        params.put(StrategyParam.TRADE_CASH_RATE.getKey(), new BigDecimal("1")); // 每个交易单位为总资金的100%
         params.put(StrategyParam.STOP_LOSS_RATE.getKey(), new BigDecimal("0.2")); // 20%止损
         params.put(StrategyParam.INCREASE_POSITION_LIMIT_COUNT.getKey(), 4); // 最多4次增仓
         params.put(StrategyParam.FORCE_CLOSE_TRIGGER_COUNT.getKey(), 5);

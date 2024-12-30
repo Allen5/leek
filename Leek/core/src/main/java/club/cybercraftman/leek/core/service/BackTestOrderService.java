@@ -107,7 +107,7 @@ public class BackTestOrderService {
                     position.getSymbol());
             // step2: 判断是否已进入实际最后交易日
             // step2.1: 计算实际最后交易日 = （最后交易日 - days） 从calendar中获取最后实际交易日
-            Date realLastTradeDate = calendarRepo.findMaxDate(position.getMarketCode(), position.getFinanceType(), currentBar.getLastTradeDate(), days);
+            Date realLastTradeDate = calendarRepo.findMinDate(position.getMarketCode(), position.getFinanceType(), currentBar.getLastTradeDate(), days);
             if ( datetime.before(realLastTradeDate) ) {
                 // step2.2: 若当前时间小于，则忽略。未触发强平
                 continue;
@@ -286,11 +286,7 @@ public class BackTestOrderService {
         BackTestOrder order = new BackTestOrder();
         order.setRecordId(recordId);
         order.setSymbol(position.getSymbol());
-        if ( Direction.LONG.getType().equals(position.getDirection()) ) {
-            order.setDirection(Direction.SHORT.getType());
-        } else {
-            order.setDirection(Direction.LONG.getType());
-        }
+        order.setDirection(position.getDirection());
         order.setTradeType(TradeType.CLOSE.getType());
         order.setPrice(price);
         order.setVolume(position.getAvailableVolume());
@@ -299,7 +295,7 @@ public class BackTestOrderService {
         order.setCreatedAt(datetime);
         order = orderRepo.save(order);
         // 需要逆序更新orderVolume
-        positionService.addOrderVolume(recordId, position.getSymbol(), Direction.parse(order.getDirection()), order.getVolume(), datetime);
+        positionService.addOrderVolume(recordId, position.getSymbol(), Direction.parse(position.getDirection()), order.getVolume(), datetime);
     }
 
     /**
@@ -310,7 +306,7 @@ public class BackTestOrderService {
      * @param bar
      * @return
      */
-    private boolean couldDeal(final Long recordId, final Long orderId, final BigDecimal orderPrice, final Integer volume, final CommonBar bar) {
+    private boolean couldDeal(final Long recordId, final Long orderId, final BigDecimal orderPrice, final Long volume, final CommonBar bar) {
         if ( bar.getVolume() <= volume ) { // 订单量大于成交量，则无法成交
             log.error("[回测Id: {}-订单:{}][交易标的: {}][交易日: {}]成交量为{}，小于订单的成交量:{}，无法成交",
                     recordId,

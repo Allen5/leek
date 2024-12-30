@@ -195,7 +195,7 @@ public abstract class BackTestTask extends AbstractTask {
         this.strategy.setFinanceType(financeType);
         this.strategy.setCode(this.code);
         this.strategy.setParams(this.params);
-        this.strategy.setBroker(new Broker(market, financeType, this.initCapital));
+        this.strategy.setBroker(new Broker(market, financeType, this.initCapital, this.strategy.<BigDecimal>getParam(StrategyParam.DEPOSIT_RATIO.getKey())));
     }
 
     protected abstract DateRange calcDateRange(final String code, final Integer startPercent, final Integer endPercent);

@@ -46,7 +46,7 @@ public class Commission {
     /**
      * 补充字段，针对可按交易代码设置手续费的场景
      */
-    @Column(name = "symbol")
+    @Column(name = "symbol", length = 16)
     private String symbol;
 
     /**

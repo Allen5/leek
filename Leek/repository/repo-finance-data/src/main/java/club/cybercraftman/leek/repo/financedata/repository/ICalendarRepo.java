@@ -67,8 +67,14 @@ public interface ICalendarRepo extends JpaRepository<Calendar, String> {
      * @param offset
      * @return
      */
-    @Query(value = "select min(t.date) from Calendar t where t.date <= :date and t.marketCode = :marketCode and t.financeType = :financeType order by t.date desc limit :offset", nativeQuery = true)
-    Date findMaxDate(final @Param("market") String marketCode,
+    @Query(value = "select min(date) from (" +
+            "select t.* from Calendar t where " +
+            "   t.date <= :date " +
+            "and t.market_code = :marketCode " +
+            "and t.finance_type = :financeType " +
+            "order by t.date desc " +
+            "limit :offset) t", nativeQuery = true)
+    Date findMinDate(final @Param("marketCode") String marketCode,
                      final @Param("financeType") String financeType,
                      final @Param("date") Date date,
                      final @Param("offset") Integer offset);

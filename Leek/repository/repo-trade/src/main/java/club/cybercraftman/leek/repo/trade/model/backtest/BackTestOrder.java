@@ -30,7 +30,7 @@ public class BackTestOrder {
     /**
      * 交易代码
      */
-    @Column(name = "symbol", nullable = false, length = 8)
+    @Column(name = "symbol", nullable = false, length = 16)
     private String symbol;
 
     /**
@@ -52,7 +52,7 @@ public class BackTestOrder {
     private BigDecimal price;
 
     @Column(name = "volume", nullable = false)
-    private Integer volume;
+    private Long volume;
 
     /**
      * 保证金

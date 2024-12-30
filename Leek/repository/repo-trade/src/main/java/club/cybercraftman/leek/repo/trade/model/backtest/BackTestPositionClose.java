@@ -44,7 +44,7 @@ public class BackTestPositionClose {
     /**
      * 交易代码
      */
-    @Column(name = "symbol", nullable = false, length = 8)
+    @Column(name = "symbol", nullable = false, length = 16)
     private String symbol;
 
     /**
@@ -69,7 +69,7 @@ public class BackTestPositionClose {
      * 平仓份额
      */
     @Column(name = "volume", nullable = false)
-    private Integer volume;
+    private Long volume;
 
     /**
      * 净收益

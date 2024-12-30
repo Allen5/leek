@@ -26,9 +26,9 @@ public class CommonBar {
 
     private BigDecimal settle;
 
-    private BigDecimal openInterest;
+    private Long openInterest;
 
-    private Integer volume;
+    private Long volume;
 
     private BigDecimal amount;
 

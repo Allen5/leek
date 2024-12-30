@@ -22,8 +22,9 @@ public enum StrategyParam {
      * 风控参数
      */
     TRADE_CASH_RATE(2000, "TRADE_CASH_RATE", "交易资金比例（每笔）"),
-    STOP_LOSS_CLZ(2001, "STOP_LOSS_CLZ", "止损计算类名"),
-    STOP_LOSS_RATE(2002, "STOP_LOSS_RATE", "止损比例(每笔)"),
+    DEPOSIT_RATIO(2001, "DEPOSIT_RATIO", "保证金比例"),
+    STOP_LOSS_CLZ(2002, "STOP_LOSS_CLZ", "止损计算类名"),
+    STOP_LOSS_RATE(2003, "STOP_LOSS_RATE", "止损比例(每笔)"),
 
     /**
      * 交易参数

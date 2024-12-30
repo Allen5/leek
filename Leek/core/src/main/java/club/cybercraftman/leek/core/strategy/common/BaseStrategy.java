@@ -1,6 +1,8 @@
 package club.cybercraftman.leek.core.strategy.common;
 
+import club.cybercraftman.leek.common.bean.CommonBar;
 import club.cybercraftman.leek.common.constant.finance.*;
+import club.cybercraftman.leek.common.constant.trade.StrategyParam;
 import club.cybercraftman.leek.common.context.SpringContextUtil;
 import club.cybercraftman.leek.common.exception.LeekRuntimeException;
 import club.cybercraftman.leek.core.broker.Broker;
@@ -14,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.CollectionUtils;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Date;
 import java.util.Map;
 
@@ -124,8 +127,33 @@ public abstract class BaseStrategy {
      */
     public abstract BigDecimal stopLoss(final BackTestPosition position);
 
+    /**
+     * 计算可用资金
+     * @return
+     */
+    protected BigDecimal getAvailableCapital() {
+        BigDecimal rate = this.getParam(StrategyParam.TRADE_CASH_RATE.getKey());
+        return this.broker.getCapital().multiply(rate);
+    }
+
+    /**
+     * 计算开仓手数
+     * @return
+     */
+    protected Long getOpenVolume(final CommonBar bar) {
+        // 一个单位的保证金
+        BigDecimal unitDeposit = getBroker().getDepositValue(bar.getClose(), 1L, bar.getMultiplier(), bar.getPriceTick());
+        BigDecimal capital = this.getAvailableCapital();
+        if ( capital.compareTo(unitDeposit) <= 0 ) {
+            return 0L;
+        }
+        // 计算可购买手数
+        return capital.divide(unitDeposit, 2, RoundingMode.DOWN).toBigInteger().longValue();
+    }
+
     public abstract String getId();
 
     public abstract String getName();
+
 
 }

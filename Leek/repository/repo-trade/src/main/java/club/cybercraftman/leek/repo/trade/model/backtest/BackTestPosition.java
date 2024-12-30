@@ -49,7 +49,7 @@ public class BackTestPosition {
     /**
      * 交易代码。 期货为合约代码，股票为股票代码
      */
-    @Column(name = "symbol", nullable = false, length = 8)
+    @Column(name = "symbol", nullable = false, length = 16)
     private String symbol;
 
     /**
@@ -81,19 +81,19 @@ public class BackTestPosition {
      * 已开仓份额
      */
     @Column(name = "open_volume", nullable = false)
-    private Integer openVolume;
+    private Long openVolume;
 
     /**
      * 可用份额 = 开仓份额 - 挂单份额
      */
     @Column(name = "available_volume", nullable = false)
-    private Integer availableVolume;
+    private Long availableVolume;
 
     /**
      * 挂单份额
      */
     @Column(name = "order_volume", nullable = false)
-    private Integer orderVolume;
+    private Long orderVolume;
 
     /**
      * 持仓形式
@@ -122,7 +122,7 @@ public class BackTestPosition {
     private Date updatedAt;
 
     // 可用份额 = 记录的可用份额 - 订单占用份额
-    public Integer getAvailableVolume() {
+    public Long getAvailableVolume() {
         return this.availableVolume - this.orderVolume;
     }
 

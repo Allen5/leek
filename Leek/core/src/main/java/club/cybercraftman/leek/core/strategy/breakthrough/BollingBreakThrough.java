@@ -12,7 +12,7 @@ import java.util.List;
  * 布林带突破
  * Tips: 如何避免布林带假信号？
  */
-@Component
+@Component("BollingBreakThrough")
 @Slf4j
 public class BollingBreakThrough extends BaseBreakThrough {
 

@@ -51,4 +51,16 @@ public interface IBackTestPositionRepo extends JpaRepository<BackTestPosition, L
     List<BackTestPosition> findAllByRecordIdAndStatus(final @Param("recordId") Long recordId,
                                                       final @Param("status") Integer status);
 
+    /**
+     * 获取指定交易代码的持仓列表
+     * @param recordId
+     * @param symbol
+     * @param status
+     * @return
+     */
+    @Query("select a from BackTestPosition a where a.recordId = :recordId and a.symbol = :symbol and a.status = :status")
+    List<BackTestPosition> findAllByRecordIdAndSymbolAndStatus(final @Param("recordId") Long recordId,
+                                                               final @Param("symbol") String symbol,
+                                                               final @Param("status") Integer status);
+
 }
