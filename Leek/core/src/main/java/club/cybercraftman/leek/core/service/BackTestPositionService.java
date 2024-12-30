@@ -200,7 +200,7 @@ public class BackTestPositionService {
             backTestPositionRepo.save(position);
 
             // 增加平仓记录
-            addClosePosition(recordId, position, datetime, order.getPrice(), changeVolume, net);
+            addClosePosition(recordId, position, datetime, order.getPrice(), changeVolume, net, commission);
         }
     }
 
@@ -247,7 +247,7 @@ public class BackTestPositionService {
     }
 
     @Transactional
-    private void addClosePosition(final Long recordId, final BackTestPosition position, final Date datetime, final BigDecimal closePrice, final Long volume, final BigDecimal net) {
+    private void addClosePosition(final Long recordId, final BackTestPosition position, final Date datetime, final BigDecimal closePrice, final Long volume, final BigDecimal net, final BigDecimal commission) {
         BackTestPositionClose close = new BackTestPositionClose();
         close.setRecordId(recordId);
         close.setDatetime(datetime);
@@ -258,7 +258,7 @@ public class BackTestPositionService {
         close.setClosePrice(closePrice);
         close.setVolume(volume);
         close.setNet(net);
-        // Tips: 最好再加上手续费，可以逐笔统计收益与手续费的比率
+        close.setCommission(commission);
         backTestPositionCloseRepo.save(close);
     }
 
