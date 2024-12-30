@@ -33,11 +33,6 @@
         </dependency>
 
         <dependency>
-            <groupId>club.cybercraftman.leek</groupId>
-            <artifactId>core</artifactId>
-        </dependency>
-
-        <dependency>
             <groupId>club.cybercraftman.leek.domain</groupId>
             <artifactId>domain-meta</artifactId>
         </dependency>

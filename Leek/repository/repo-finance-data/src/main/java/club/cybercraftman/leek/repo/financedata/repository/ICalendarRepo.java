@@ -59,4 +59,18 @@ public interface ICalendarRepo extends JpaRepository<Calendar, String> {
                               final @Param("financeType") String financeType,
                               final @Param("today") Date today);
 
+    /**
+     * 获取一定时间范围内的最小日期
+     * @param marketCode
+     * @param financeType
+     * @param date
+     * @param offset
+     * @return
+     */
+    @Query(value = "select min(t.date) from Calendar t where t.date <= :date and t.marketCode = :marketCode and t.financeType = :financeType order by t.date desc limit :offset", nativeQuery = true)
+    Date findMaxDate(final @Param("market") String marketCode,
+                     final @Param("financeType") String financeType,
+                     final @Param("date") Date date,
+                     final @Param("offset") Integer offset);
+
 }

@@ -2,15 +2,18 @@ package club.cybercraftman.leek.core.strategy.common;
 
 import club.cybercraftman.leek.common.constant.finance.*;
 import club.cybercraftman.leek.common.context.SpringContextUtil;
+import club.cybercraftman.leek.common.exception.LeekRuntimeException;
 import club.cybercraftman.leek.core.broker.Broker;
 import club.cybercraftman.leek.core.service.BackTestPositionService;
 import club.cybercraftman.leek.repo.financedata.BackTestDataRepo;
+import club.cybercraftman.leek.repo.trade.model.backtest.BackTestPosition;
 import com.alibaba.fastjson2.JSON;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.CollectionUtils;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.Map;
 
@@ -56,7 +59,21 @@ public abstract class BaseStrategy {
     /**
      * 策略参数
      */
+    @Setter
     private Map<String, Object> params;
+
+    /**
+     * 获取参数
+     * @param key
+     * @return
+     * @param <T>
+     */
+    public <T> T getParam(final String key) {
+        if ( !params.containsKey(key) ) {
+            throw new LeekRuntimeException("策略运行参数" + key + "未设置");
+        }
+        return (T) params.get(key);
+    }
 
     /**
      * 序列化参数
@@ -99,6 +116,13 @@ public abstract class BaseStrategy {
      * @return
      */
     public abstract Signal getSignal();
+
+    /**
+     * 是否触发止损
+     * @param position 持仓
+     * @return 止损价格或NULL
+     */
+    public abstract BigDecimal stopLoss(final BackTestPosition position);
 
     public abstract String getId();
 

@@ -4,6 +4,7 @@ import club.cybercraftman.leek.common.bean.DateRange;
 import club.cybercraftman.leek.common.constant.finance.FinanceType;
 import club.cybercraftman.leek.common.constant.finance.Market;
 import club.cybercraftman.leek.common.constant.trade.BackTestRecordStatus;
+import club.cybercraftman.leek.common.constant.trade.StrategyParam;
 import club.cybercraftman.leek.common.context.SpringContextUtil;
 import club.cybercraftman.leek.common.exception.LeekException;
 import club.cybercraftman.leek.common.thread.AbstractTask;
@@ -121,9 +122,15 @@ public abstract class BackTestTask extends AbstractTask {
             Signal signal = this.strategy.getSignal();
             // step4.3: 生成订单
             orderService.order(this.record.getId(), signal, curDay, this.strategy.getBroker());
-            // step4.4: 计算日持仓收益: Tips: 这里在数据层面最好补充一个前结算价
+            // step4.4: 止损单处理(触发止损)
+            orderService.stopLoss(this.record.getId(), this.strategy);
+            // step4.5: 临近交易日强平处理（针对期货合约）
+            orderService.forceCloseNearLastTradeDate(this.record.getId(), curDay, this.strategy.getBroker(), this.strategy.<Integer>getParam(StrategyParam.FORCE_CLOSE_TRIGGER_COUNT.getKey()));
+            // step4.6: 剩余资金为负触发强平
+            orderService.forceCloseOnNegativeCapital(this.record.getId(), curDay, this.strategy.getBroker());
+            // step4.7: 计算日持仓收益: Tips: 这里在数据层面最好补充一个前结算价
             positionService.statDailyOpenPositionNet(this.record.getId(), this.strategy.getCurrent(), this.strategy.getPrev(), this.strategy.getBroker());
-            // step4.5: 生成日统计
+            // step4.8: 生成日统计
             dailyStatService.statDaily(this.market, this.financeType, this.record.getId(), curDay);
         }
         // 获取当前剩余资金

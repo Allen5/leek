@@ -36,4 +36,14 @@ public class CommonBar {
 
     private BigDecimal priceTick;
 
+    /**
+     * 最后交易日
+     */
+    private Date lastTradeDate;
+
+    /**
+     * 退市日
+     */
+    private Date delistDate;
+
 }

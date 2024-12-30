@@ -23,13 +23,13 @@ public class EtlJobTest {
     @Test
     public void testFutureBarEtl() {
         // 行情数据清洗
-        this.run("F10001");
+        this.run("F10000");
     }
 
     @Test
     public void testBackTestEtl() {
         // 回测数据清洗
-        this.run("F10002");
+        this.run("F10001");
     }
 
     private void run(final String functionId) {

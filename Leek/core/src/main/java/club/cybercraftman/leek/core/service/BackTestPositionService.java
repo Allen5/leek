@@ -53,6 +53,16 @@ public class BackTestPositionService {
     }
 
     /**
+     * 获取持仓列表
+     * @param recordId 回测记录ID
+     * @param status  持仓状态
+     * @return
+     */
+    public List<BackTestPosition> getPositions(Long recordId, PositionStatus status) {
+        return backTestPositionRepo.findAllByRecordIdAndStatus(recordId, status.getStatus());
+    }
+
+    /**
      * 倒序更新持仓的订单份额
      * @param recordId
      * @param totalVolume

@@ -98,6 +98,18 @@ public class FutureBackTest {
     @Column(name = "price_tick", nullable = false, precision = 18, scale = 3)
     private BigDecimal priceTick;
 
+    /**
+     * 最后交易日
+     */
+    @Column(name = "last_trade_date", nullable = false)
+    private Date lastTradeDate;
+
+    /**
+     * 退市日
+     */
+    @Column(name = "delist_date", nullable = false)
+    private Date delistDate;
+
     @Override
     public final boolean equals(Object o) {
         if (this == o) return true;

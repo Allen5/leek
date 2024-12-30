@@ -61,7 +61,8 @@ public class FutureBackTestEtlJob extends BaseSparkJob {
                 "  amount,  " +
                 "  exchange_code,  " +
                 "  multiplier,  " +
-                "  price_tick " +
+                "  price_tick, " +
+                "  delist_date " +
                 "FROM (  " +
                 "  " +
                 " SELECT  " +
@@ -70,7 +71,7 @@ public class FutureBackTestEtlJob extends BaseSparkJob {
                 "  SELECT   " +
                 "  t.datetime,  " +
                 "  t.symbol,  " +
-                "  t.volume_rank + t.open_interest_rank as total_rank,  " +
+                "  (t.volume_rank + t.open_interest_rank) as total_rank,  " +
                 "  t.volume,  " +
                 "  t.last_deliver_date,  " +
                 "  t.last_trade_date,  " +
@@ -85,7 +86,8 @@ public class FutureBackTestEtlJob extends BaseSparkJob {
                 "  t.exchange_code,  " +
                 "  t.multiplier,  " +
                 "  t.price_tick,  " +
-                "  t.open_interest " +
+                "  t.open_interest, " +
+                "  t.delist_date    " +
                 "  from (  " +
                 "  SELECT  " +
                 "    a.volume as volume ,  " +
@@ -106,7 +108,8 @@ public class FutureBackTestEtlJob extends BaseSparkJob {
                 "    a.product_code as product_code ,  " +
                 "    b.exchange_code as exchange_code,  " +
                 "    b.multiplier as multiplier,  " +
-                "    b.price_tick as price_tick  " +
+                "    b.price_tick as price_tick,  " +
+                "    b.delist_date as delist_date " +
                 "  from #futureBar1d# a left join #futureContract# b on a.symbol = b.code  " +
                 "  where last_deliver_date is not null and a.`datetime` <= last_trade_date  " +
                 "  order by datetime) t  " +

@@ -2,10 +2,16 @@ package club.cybercraftman.leek.core.service;
 
 import club.cybercraftman.leek.common.bean.CommonBar;
 import club.cybercraftman.leek.common.constant.finance.*;
+import club.cybercraftman.leek.common.constant.trade.PositionStatus;
+import club.cybercraftman.leek.common.exception.LeekException;
+import club.cybercraftman.leek.common.exception.LeekRuntimeException;
 import club.cybercraftman.leek.core.broker.Broker;
+import club.cybercraftman.leek.core.strategy.common.BaseStrategy;
 import club.cybercraftman.leek.core.strategy.common.Signal;
 import club.cybercraftman.leek.repo.financedata.BackTestDataRepo;
+import club.cybercraftman.leek.repo.financedata.repository.ICalendarRepo;
 import club.cybercraftman.leek.repo.trade.model.backtest.BackTestOrder;
+import club.cybercraftman.leek.repo.trade.model.backtest.BackTestPosition;
 import club.cybercraftman.leek.repo.trade.repository.backtest.IBackTestOrderRepo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +39,9 @@ public class BackTestOrderService {
     @Autowired
     private BackTestPositionService positionService;
 
+    @Autowired
+    private ICalendarRepo calendarRepo;
+
     /**
      * 下单
      * @param signal
@@ -48,6 +57,106 @@ public class BackTestOrderService {
             return ;
         }
         makeOrder(recordId, signal, datetime, broker);
+    }
+
+    /**
+     * 对当前触发止损的持仓生成挂单
+     * @param recordId 回测记录ID
+     */
+    @Transactional
+    public void stopLoss(final Long recordId, final BaseStrategy strategy) {
+        // step1: 获取当前持仓
+        List<BackTestPosition> positions = this.positionService.getPositions(recordId, PositionStatus.OPEN);
+        if ( CollectionUtils.isEmpty(positions) ) {
+            return ;
+        }
+        for (BackTestPosition position : positions) {
+            BigDecimal price = strategy.stopLoss(position);
+            if ( null == price ) {
+                continue;
+            }
+            log.warn("[回测id: {}][持仓id: {}]触发止损，止损价格: {}", recordId, position.getId(), price);
+            makeForceCloseOrder(recordId, position, price, strategy.getCurrent());
+        }
+    }
+
+    /**
+     * 临近最后交易日进行强平操作
+     * @param recordId
+     * @param datetime
+     * @param broker
+     * @param days
+     * @throws LeekException
+     */
+    @Transactional
+    public void forceCloseNearLastTradeDate(final Long recordId, final Date datetime, final Broker broker, final Integer days) throws LeekException {
+        if ( !broker.getFinanceType().equals(FinanceType.FUTURE) ) {
+            // 非期货市场不需要处理强平操作
+            return ;
+        }
+        // step1: 获取当前持仓
+        List<BackTestPosition> positions = positionService.getPositions(recordId, PositionStatus.OPEN);
+        if ( CollectionUtils.isEmpty(positions) ) {
+            return ;
+        }
+        for (BackTestPosition position: positions) {
+            // 获取当前的bar
+            CommonBar currentBar = dataRepo.getCurrentBar(Market.parse(position.getMarketCode()),
+                    FinanceType.parse(position.getFinanceType()),
+                    datetime,
+                    position.getSymbol());
+            // step2: 判断是否已进入实际最后交易日
+            // step2.1: 计算实际最后交易日 = （最后交易日 - days） 从calendar中获取最后实际交易日
+            Date realLastTradeDate = calendarRepo.findMaxDate(position.getMarketCode(), position.getFinanceType(), currentBar.getLastTradeDate(), days);
+            if ( datetime.before(realLastTradeDate) ) {
+                // step2.2: 若当前时间小于，则忽略。未触发强平
+                continue;
+            }
+            // step2.3: 若 >= 最后实际交易日，且 < 退市日，此时可用当前的收盘价进行平仓挂单
+            if ( datetime.compareTo(realLastTradeDate) >= 0 &&
+                 datetime.compareTo(currentBar.getDelistDate()) < 0 ) {
+                // 处理平仓单
+                makeForceCloseOrder(recordId, position, currentBar.getClose(), datetime);
+            }
+            // step2.4: 若 >= 退市日，则表示该笔持仓无法平仓，结束策略运行，需要调整策略参数。
+            if ( datetime.after(currentBar.getDelistDate()) ) {
+                log.error("[回测id: {}][持仓: {}][当前交易日: {}][退市日:{}]无法平仓，退出回测",
+                        recordId,
+                        position,
+                        datetime,
+                        currentBar.getDelistDate());
+                throw new LeekRuntimeException("无法平仓，退出回测");
+            }
+        }
+    }
+
+    /**
+     * 可用资金为负时触发强平
+     */
+    @Transactional
+    public void forceCloseOnNegativeCapital(final Long recordId, final Date datetime, final Broker broker) throws LeekException {
+        if (!broker.getFinanceType().equals(FinanceType.FUTURE)) {
+            // 非期货市场不需要处理强平操作
+            return;
+        }
+        // 若当前资金为负，则触发强平
+        if ( BigDecimal.ZERO.compareTo(broker.getCapital()) >= 0 ) {
+            return ;
+        }
+        List<BackTestPosition> positions = positionService.getPositions(recordId, PositionStatus.OPEN);
+        if ( CollectionUtils.isEmpty(positions) ) {
+            return ;
+        }
+        log.warn("[回测id:{}]当前资金为: {}, 持仓数为: {}. 触发强平", recordId, broker.getCapital(), positions.size());
+        for (BackTestPosition position : positions) {
+            // 获取当前的bar
+            CommonBar currentBar = dataRepo.getCurrentBar(Market.parse(position.getMarketCode()),
+                    FinanceType.parse(position.getFinanceType()),
+                    datetime,
+                    position.getSymbol());
+            // 生成平仓单
+            makeForceCloseOrder(recordId, position, currentBar.getClose(), datetime);
+        }
     }
 
     /**
@@ -165,6 +274,32 @@ public class BackTestOrderService {
         if  (TradeType.CLOSE.getType().equals(order.getTradeType()) ) {
             positionService.addOrderVolume(recordId, signal.getSymbol(), signal.getDirection(), signal.getVolume(), datetime);
         }
+    }
+
+    /**
+     * 强平触发单
+     * @param recordId
+     * @param position
+     * @param price
+     */
+    private void makeForceCloseOrder(final Long recordId, final BackTestPosition position, final BigDecimal price, final Date datetime) {
+        BackTestOrder order = new BackTestOrder();
+        order.setRecordId(recordId);
+        order.setSymbol(position.getSymbol());
+        if ( Direction.LONG.getType().equals(position.getDirection()) ) {
+            order.setDirection(Direction.SHORT.getType());
+        } else {
+            order.setDirection(Direction.LONG.getType());
+        }
+        order.setTradeType(TradeType.CLOSE.getType());
+        order.setPrice(price);
+        order.setVolume(position.getAvailableVolume());
+        order.setDeposit(BigDecimal.ZERO);
+        order.setStatus(OrderStatus.ORDER.getStatus());
+        order.setCreatedAt(datetime);
+        order = orderRepo.save(order);
+        // 需要逆序更新orderVolume
+        positionService.addOrderVolume(recordId, position.getSymbol(), Direction.parse(order.getDirection()), order.getVolume(), datetime);
     }
 
     /**
