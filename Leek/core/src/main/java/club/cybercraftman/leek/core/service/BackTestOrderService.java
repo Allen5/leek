@@ -177,7 +177,7 @@ public class BackTestOrderService {
         for (BackTestOrder order : orders) {
             // 1. 获取当前价格
             CommonBar bar = dataRepo.getCurrentBar(market, financeType, datetime, order.getSymbol());
-            boolean result = couldDeal(recordId, order.getId(), order.getPrice(), bar);
+            boolean result = couldDeal(recordId, order.getId(), order.getPrice(), order.getVolume(), bar);
             // 2. 处理下单失败
             if ( !result ) {
                 order.setStatus(OrderStatus.FAIL.getStatus());
@@ -310,9 +310,15 @@ public class BackTestOrderService {
      * @param bar
      * @return
      */
-    private boolean couldDeal(final Long recordId, final Long orderId, final BigDecimal orderPrice, final CommonBar bar) {
-        if ( bar.getVolume() <= 0 ) {
-            log.error("[回测Id: {}-订单:{}][交易标的: {}][交易日: {}]成交量为0，无法成交", recordId, orderId, bar.getSymbol(), bar.getDatetime());
+    private boolean couldDeal(final Long recordId, final Long orderId, final BigDecimal orderPrice, final Integer volume, final CommonBar bar) {
+        if ( bar.getVolume() <= volume ) { // 订单量大于成交量，则无法成交
+            log.error("[回测Id: {}-订单:{}][交易标的: {}][交易日: {}]成交量为{}，小于订单的成交量:{}，无法成交",
+                    recordId,
+                    orderId,
+                    bar.getSymbol(),
+                    bar.getDatetime(),
+                    bar.getVolume(),
+                    volume);
             return false;
         }
         boolean result = orderPrice.compareTo(bar.getLow()) >= 0 && orderPrice.compareTo(bar.getHigh()) <= 0;
